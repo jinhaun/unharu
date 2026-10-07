@@ -1482,6 +1482,22 @@
       return typeItems.filter((item) => itemExpenseCategory(item) === expenseCategoryFilter);
     }
 
+    // Within a date: tasks first, then each other category in time order.
+    // Equal times preserve their existing order; missing/invalid times come last.
+    function compareDayItems(a, b) {
+      const categories = ['task', 'meeting', 'expense', 'certificate', 'shared'];
+      const rank = (item) => {
+        const index = categories.indexOf(item.type);
+        return index < 0 ? categories.length : index;
+      };
+      const minutes = (item) => {
+        const match = typeof item.time === 'string' && /^(\d{1,2}):(\d{2})$/.exec(item.time.trim());
+        if (!match || Number(match[1]) > 23 || Number(match[2]) > 59) return Infinity;
+        return Number(match[1]) * 60 + Number(match[2]);
+      };
+      return rank(a) - rank(b) || minutes(a) - minutes(b) || 0;
+    }
+
     function renderCalendar() {
       const year = viewDate.getFullYear();
       const month = viewDate.getMonth();
@@ -1505,7 +1521,8 @@
         number.className = 'day-number';
         number.textContent = current.getDate();
         cell.append(number);
-        visible.filter((item) => item.date === key).slice(0,3).forEach((item) => {
+        const dayItems = visible.filter((item) => item.date === key).sort(compareDayItems);
+        dayItems.slice(0,3).forEach((item) => {
           const button = document.createElement('button');
           button.type = 'button';
           button.className = `event ${item.type}`;
@@ -1519,7 +1536,7 @@
           button.setAttribute('aria-label', `${key} ${item.title}, 하루 기록 전체 보기`);
           cell.append(button);
         });
-        const dayCount = visible.filter((item) => item.date === key).length;
+        const dayCount = dayItems.length;
         if (dayCount > 3) {
           const more = document.createElement('span');
           more.className = 'day-more';
@@ -1534,7 +1551,7 @@
       $('#day-details-dialog').dataset.date=key;
       const dayItems = [...items, ...(showCertificates ? certificateItems : []),...(window.DAYFLOW_SHARING?.received()||[])]
         .filter((item) => item.date === key)
-        .sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+        .sort(compareDayItems);
       const date = new Date(`${key}T00:00:00`);
       $('#day-details-title').textContent = date.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
       const expenseSum = dayItems.filter((item) => item.type === 'expense').reduce((sum,item) => sum + Number(item.amount || 0), 0);
@@ -1596,7 +1613,7 @@
         const prefix = `${viewDate.getFullYear()}-${pad(viewDate.getMonth()+1)}`;
         list = list.filter((item) => !item.date || item.date.startsWith(prefix));
       }
-      list.sort((a,b) => `${a.date || '9999'} ${a.time || '99:99'}`.localeCompare(`${b.date || '9999'} ${b.time || '99:99'}`));
+      list.sort((a,b) => (a.date || '9999').localeCompare(b.date || '9999') || compareDayItems(a,b));
       $('#list-title').textContent = mode === 'today' ? '오늘 기록' : '월간 기록 목록';
       $('#list-count').textContent = `${list.length}건`;
       const root = $('#record-list');
