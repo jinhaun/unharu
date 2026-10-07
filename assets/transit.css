@@ -1,0 +1,44 @@
+.station-tools {display:grid;gap:8px;margin-top:8px;min-width:0}
+.station-tools button,.station-tools select,#transit-route-choice,#transit-save-amount {min-height:44px;max-width:100%;width:100%;border:1px solid #8da8ad;border-radius:8px;padding:10px;background:#fff;color:#153b42;font:inherit;font-size:14px}
+.station-tools button {cursor:pointer;background:#e7f3f2;font-weight:700}
+.station-tools button:disabled {opacity:.55;cursor:wait}
+.station-tools small {line-height:1.5;overflow-wrap:anywhere;color:#dceeed}
+.station-tools :focus-visible,#transit-route-choice:focus-visible,#transit-save-amount:focus-visible {outline:3px solid #e7b85a;outline-offset:3px}
+#transit-choices {display:grid;gap:8px;margin:12px 0}
+#transit-choices[hidden] {display:none}
+#transit-amount-help {display:block;line-height:1.5;margin:8px 0}
+.transit-help a {color:inherit;text-decoration:underline}
+.transit-result label {display:block;margin:12px 0 8px;font-weight:700}
+@media(max-width:600px) {.route-fields {grid-template-columns:minmax(0,1fr)}.route-field {min-width:0}.transit-step strong {overflow-wrap:anywhere}}
+.transit-planner .trip-guide {font-size:13px!important;line-height:1.65!important;color:#e7f3f2!important;margin:12px 0!important;overflow-wrap:anywhere}
+.transit-planner select {width:100%;min-width:0;max-width:100%;min-height:44px;border:1px solid #8da8ad;border-radius:8px;padding:10px;background:#fff;color:#153b42;font:inherit;font-size:16px}
+.transit-result .trip-confirm {display:flex;align-items:flex-start;gap:10px;min-height:44px;padding:12px;border:1px solid #8da8ad;border-radius:8px;cursor:pointer;font-size:14px;line-height:1.6;color:#fff}
+.trip-confirm input {width:20px;height:20px;flex:none;margin:2px 0;accent-color:#f0c36f}
+.transit-planner input:focus-visible,.transit-planner select:focus-visible {outline:3px solid #e7b85a;outline-offset:3px}
+#transit-save-amount {font-size:16px}
+#transit-trip-time {min-height:44px;width:100%;max-width:100%;border:1px solid #8da8ad;border-radius:8px;padding:10px;background:#fff;color:#153b42;font:inherit;font-size:16px}
+#transit-save-amount:read-only {background:#e7f3f2}
+.transit-planner .transit-route {flex-wrap:wrap}
+.transit-planner .transit-route strong {max-width:100%;overflow-wrap:anywhere}
+.transit-planner .transit-step {grid-template-columns:60px minmax(0,1fr)}
+.transit-planner .transit-step strong,.transit-planner .transit-step span {font-size:12px}
+.trip-record-detail {padding:12px;margin:12px 0;border:1px solid #bed4d1;border-radius:8px;background:#edf5f2;color:#153b42;overflow-wrap:anywhere}
+.trip-record-detail h4 {margin:0;font-size:14px}
+.trip-record-detail p,.trip-record-detail li {font-size:13px;line-height:1.7}
+.trip-record-detail ol {padding-left:22px}
+#edit-trip-field[hidden] {display:none}
+#waypoint-field[hidden],#waypoint-settings[hidden],#waypoint-choices[hidden] {display:none}
+#waypoint-field {grid-column:1/-1;grid-row:2}
+#toggle-waypoint {min-height:44px;margin:12px 0;padding:10px 14px;border:1px solid #bed4d1;border-radius:8px;background:#e7f3f2;color:#153b42;font:inherit;cursor:pointer}
+#waypoint-settings,#waypoint-choices {display:grid;gap:10px;margin:12px 0;padding:12px;border:1px solid #8da8ad;border-radius:8px;min-width:0}
+#waypoint-settings input {width:100%;min-width:0;min-height:44px;padding:10px;border:1px solid #8da8ad;border-radius:8px;font:inherit;font-size:16px}
+#waypoint-settings small {line-height:1.6;color:#e7f3f2}
+#toggle-waypoint:focus-visible {outline:3px solid #e7b85a;outline-offset:3px}
+.route-fields:has(#waypoint-field:not([hidden])) {grid-template-columns:minmax(0,1fr)}
+#reverse-transit,#transit-route-label,.saved-route-return {min-height:44px;max-width:100%;padding:10px;border:1px solid #8da8ad;border-radius:8px;background:#e7f3f2;color:#153b42;font:inherit;font-size:14px}
+#reverse-transit,#transit-route-label {width:100%;margin:8px 0;white-space:normal}
+.saved-route-return {cursor:pointer}
+.transit-planner button:focus-visible {outline:3px solid #e7b85a;outline-offset:3px}
+.saved-route-item {grid-template-columns:minmax(0,1fr) auto auto!important;gap:8px}
+.saved-route-item button {min-height:44px;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:600px){.saved-route-item {grid-template-columns:1fr 1fr!important}.saved-route-use {grid-column:1/-1}}

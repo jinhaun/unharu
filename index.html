@@ -1,0 +1,2250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f3036">
+  <title>운하루 | 나의 하루가 흐르는 곳</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg:#f6f4ff; --surface:#fff; --surface-2:#faf9ff; --ink:#11111b; --muted:#5f6473;
+      --line:#dedbea; --nav:#171224; --nav-2:#38236e; --purple:#6d34df; --purple-dark:#4f20af;
+      --purple-soft:#ece4ff; --lime:#c7f65b; --cyan:#d9f3f5; --amber:#fff0c9; --danger:#b42318;
+      --personal-ink:#123d7a; --personal-bg:#e5efff; --personal-line:#2563eb;
+      --expense-ink:#7c2d12; --expense-bg:#fff0df; --expense-line:#ea580c;
+      --certificate-ink:#14532d; --certificate-bg:#e1f7e8; --certificate-line:#16a34a;
+      --focus:#2563eb; --shadow:0 8px 24px rgba(44,30,82,.10); --speed:180ms ease;
+    }
+    * { box-sizing:border-box; }
+    html { overflow-x:hidden; scroll-behavior:smooth; }
+    body { margin:0; min-width:320px; overflow-x:hidden; color:var(--ink); background:var(--bg); font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif; }
+    button,input,textarea,select { font:inherit; }
+    button { min-height:44px; cursor:pointer; touch-action:manipulation; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
+    .skip { position:fixed; top:-80px; left:12px; z-index:200; padding:12px 16px; color:#fff; background:#000; border-radius:8px; }
+    .skip:focus { top:12px; }
+    .app { min-height:100vh; display:grid; grid-template-columns:220px minmax(0,1fr); }
+    .rail { position:sticky; top:0; height:100vh; padding:22px 14px; color:#dbe3f0; background:var(--nav); }
+    .brand { margin:2px 8px 27px; color:#fff; font-size:19px; font-weight:950; letter-spacing:-.04em; }
+    .brand em { color:#a98aff; font-style:normal; }
+    .brand small { display:block; margin-top:5px; color:#968ba8; font-size:9px; letter-spacing:.14em; }
+    .nav { display:grid; gap:5px; }
+    .nav-label { margin:18px 12px 6px; color:#8f849d; font-size:9px; font-weight:900; letter-spacing:.12em; }
+    .nav button,.nav a { display:flex; align-items:center; gap:9px; width:100%; min-height:44px; padding:0 12px; border:0; border-radius:8px; color:#cbd5e1; background:transparent; text-align:left; text-decoration:none; font-size:12px; font-weight:750; cursor:pointer; touch-action:manipulation; }
+    .nav button:hover,.nav a:hover { background:#251d37; }
+    .nav button[aria-pressed="true"] { color:#fff; background:var(--nav-2); box-shadow:inset 3px 0 #9d72ff; }
+    .nav svg { width:17px; height:17px; flex:none; stroke:currentColor; }
+    .nav-badge { display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px; margin-left:auto; padding:0 5px; border-radius:999px; color:#21183a; background:var(--lime); font-size:9px; font-weight:950; }
+    .filter-nav { display:flex; flex-wrap:wrap; gap:5px; margin:18px 8px 0; padding-top:16px; border-top:1px solid #30283e; }
+    .filter-nav button { min-height:32px; padding:0 9px; border:1px solid #3c334a; border-radius:999px; color:#a9a0b5; background:transparent; font-size:9px; font-weight:800; }
+    .filter-nav button[aria-pressed="true"] { color:#fff; border-color:#7651c8; background:#38236e; }
+    .rail-summary { margin:28px 8px 0; padding-top:18px; border-top:1px solid #30283e; }
+    .rail-summary span { color:#958ca4; font-size:10px; }
+    .rail-summary strong { display:block; margin-top:5px; color:var(--lime); font-size:24px; }
+    .privacy { position:absolute; right:20px; bottom:22px; left:20px; color:#91899e; font-size:9px; line-height:1.5; }
+    .main { min-width:0; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:70px; padding:11px 22px; border-bottom:1px solid var(--line); background:#fff; }
+    .topbar h1 { margin:0; font-size:18px; }
+    .topbar p { margin:3px 0 0; color:var(--muted); font-size:10px; }
+    .top-actions { display:flex; align-items:center; gap:8px; }
+    .saved-status { display:flex; align-items:center; gap:7px; min-height:38px; padding:0 12px; border-radius:999px; color:#4b2a9d; background:#efe9ff; font-size:10px; font-weight:850; }
+    .saved-status::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--purple); box-shadow:0 0 0 4px #ddd1ff; }
+    .today-button { padding:0 14px; border:1px solid var(--line); border-radius:8px; color:var(--ink); background:#fff; font-size:11px; font-weight:800; }
+    .weather-card { display:grid; grid-template-columns:250px minmax(0,1fr); gap:14px; margin:14px 16px 0; padding:14px 16px; border:1px solid #a8cfc8; border-radius:14px; color:#173238; background:linear-gradient(120deg,rgba(230,245,241,.97),rgba(255,250,235,.96)); box-shadow:var(--shadow); }
+    .weather-overview { display:grid; grid-template-columns:44px minmax(0,1fr); gap:11px; align-items:center; padding-right:14px; border-right:1px solid #bed8d3; }
+    .weather-symbol { display:grid; place-items:center; width:44px; height:44px; border-radius:50%; color:#174e57; background:#f4c768; }
+    .weather-symbol svg { width:25px; height:25px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.8; }
+    .weather-eyebrow { margin:0 0 2px!important; color:#48706d!important; font-size:9px!important; font-weight:900; letter-spacing:.08em; }
+    .weather-mainline { display:flex; align-items:baseline; gap:8px; min-width:0; }
+    .weather-mainline strong { font-size:24px; line-height:1; }
+    .weather-mainline span { min-width:0; font-size:11px; font-weight:850; }
+    .weather-range { margin:5px 0 0!important; color:#526b69!important; font-size:9px!important; line-height:1.4!important; }
+    .weather-rain { min-width:0; }
+    .weather-rain-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .weather-rain-title strong { display:block; font-size:11px; }
+    .weather-rain-title span { display:block; margin-top:2px; color:#5e7774; font-size:9px; }
+    .weather-refresh { flex:none; min-width:88px; padding:0 10px; border:1px solid #83aaa5; border-radius:8px; color:#174e4d; background:#fffdf8; font-size:9px; font-weight:850; }
+    .weather-refresh:disabled { cursor:wait; opacity:.55; }
+    .weather-status { margin:8px 0 0!important; color:#4a6562!important; font-size:9px!important; line-height:1.45!important; }
+    .weather-districts { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+    .weather-chip { display:inline-flex; align-items:center; min-height:30px; padding:5px 9px; border:1px solid #d6a65e; border-radius:999px; color:#6d391e; background:#fff4d8; font-size:9px; font-weight:800; line-height:1.35; }
+    .weather-empty { width:100%; padding:9px 11px; border:1px dashed #8eb5af; border-radius:9px; color:#315b58; background:rgba(255,255,255,.48); font-size:10px; }
+    .weather-card[data-state="error"] { border-color:#d6a39e; }
+    .weather-card[data-state="error"] .weather-status { color:#8a332d!important; }
+    .hero { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:18px; margin:14px 16px 0; padding:18px 20px; border-radius:15px; color:#fff; background:#2a2140; box-shadow:var(--shadow); }
+    .hero p { margin:0 0 4px; color:#c4b5fd; font-size:9px; font-weight:900; letter-spacing:.14em; }
+    .hero h2 { margin:0; font-size:clamp(20px,2.5vw,30px); letter-spacing:-.035em; }
+    .hero h2 span { color:var(--lime); }
+    .score { display:flex; align-items:center; gap:9px; min-width:145px; padding:10px 13px; border:1px solid #65567e; border-radius:10px; background:#1b1628; }
+    .score strong { color:var(--lime); font-size:27px; }
+    .score span { color:#d8d1e5; font-size:9px; line-height:1.35; }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 16px 0; }
+    .metric { padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 1px 2px rgba(15,23,42,.04); }
+    .metric:first-child { background:var(--lime); border-color:#b5df53; }
+    .metric:last-child { background:var(--purple-soft); border-color:#d8c7ff; }
+    .metric span { color:var(--muted); font-size:10px; }
+    .metric strong { display:block; margin-top:4px; font-size:19px; }
+    .workspace { display:grid; grid-template-columns:minmax(0,1fr) 336px; gap:14px; padding:14px 16px 30px; }
+    .card { border:1px solid var(--line); border-radius:12px; background:#fff; box-shadow:0 3px 14px rgba(15,23,42,.045); }
+    .calendar-card { padding:15px; overflow:hidden; }
+    .calendar-mode-note { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:-2px 0 12px; padding:10px 12px; border:1px solid #86d49a; border-radius:9px; color:#14532d; background:#e7f8ec; }
+    .calendar-mode-note[hidden] { display:none; }
+    .calendar-mode-note strong { display:block; font-size:11px; }
+    .calendar-mode-note span { display:block; margin-top:2px; color:#356447; font-size:9px; }
+    .calendar-mode-note button { flex:none; padding:0 12px; border:1px solid #86d49a; border-radius:7px; color:#14532d; background:#fff; font-size:10px; font-weight:850; }
+    .expense-category-filter { display:flex; flex-wrap:wrap; gap:8px; margin:-2px 0 12px; padding:10px; border:1px solid #edb782; border-radius:9px; background:#fff7ed; }
+    .expense-category-filter[hidden] { display:none; }
+    .expense-category-filter button { flex:1 1 76px; min-height:44px; padding:0 10px; border:1px solid #edb782; border-radius:999px; color:#7c3e1d; background:#fff; font-size:10px; font-weight:850; }
+    .expense-category-filter button[aria-pressed="true"] { color:#fff; border-color:#b84f22; background:#b84f22; box-shadow:0 0 0 2px rgba(184,79,34,.18); }
+    .calendar-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .month-title { display:flex; align-items:center; gap:8px; }
+    .month-title h2 { min-width:128px; margin:0; font-size:18px; }
+    .month-nav { display:flex; gap:5px; }
+    .month-nav button { width:44px; padding:0; border:1px solid var(--line); border-radius:7px; color:var(--ink); background:#fff; font-weight:900; }
+    .view-buttons { display:flex; gap:6px; }
+    .view-buttons button { padding:0 11px; border:1px solid var(--line); border-radius:7px; color:var(--muted); background:#fff; font-size:10px; font-weight:800; }
+    .view-buttons button[aria-pressed="true"] { color:#fff; background:#211a35; border-color:#211a35; }
+    .weekdays,.days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+    .weekdays { padding:9px 0; color:var(--muted); background:#f8fafc; border:1px solid var(--line); border-bottom:0; }
+    .weekdays span { font-size:10px; font-weight:850; text-align:center; }
+    .days { border-top:1px solid var(--line); border-left:1px solid var(--line); }
+    .day { min-height:108px; padding:8px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:#fff; }
+    .day.outside { color:#9ca3af; background:#fafafa; }
+    .day.today { background:#f6f1ff; box-shadow:inset 0 0 0 2px var(--purple); }
+    .day-number { display:block; margin-bottom:6px; font-size:11px; font-weight:850; }
+    .event { display:block; width:100%; min-height:0; margin-top:4px; padding:6px 7px; border:0; border-left:2px solid; border-radius:6px; overflow:hidden; text-align:left; font-size:9px; font-weight:800; line-height:1.25; white-space:nowrap; text-overflow:ellipsis; }
+    .event.task,.event.meeting { color:var(--personal-ink); background:var(--personal-bg); border-color:var(--personal-line); }
+    .event.expense { color:var(--expense-ink); background:var(--expense-bg); border-color:var(--expense-line); }
+    .event.certificate { color:var(--certificate-ink); background:var(--certificate-bg); border-color:var(--certificate-line); }
+    .empty-day { color:#9ca3af; font-size:9px; }
+    .list-view { display:none; }
+    .list-view.active { display:block; }
+    .list-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .list-header h2 { margin:0; font-size:18px; }
+    .record-list { display:grid; gap:8px; }
+    .record { display:grid; grid-template-columns:84px minmax(0,1fr) auto; align-items:center; gap:12px; padding:12px; border:1px solid var(--line); border-radius:9px; background:#fff; }
+    .record time { color:var(--muted); font-size:10px; font-weight:800; }
+    .record strong { display:block; font-size:12px; }
+    .record span { color:var(--muted); font-size:9px; }
+    .badge { display:inline-flex; align-items:center; min-height:24px; margin-top:5px; padding:0 8px; border-radius:999px; font-size:9px!important; font-weight:850; }
+    .badge.task,.badge.meeting { color:var(--personal-ink); background:var(--personal-bg); }
+    .badge.expense { color:var(--expense-ink); background:var(--expense-bg); }
+    .badge.certificate { color:var(--certificate-ink); background:var(--certificate-bg); }
+    .badge.repeat-mark { margin-left:4px; color:#173238; background:#d9f1ec; }
+    .badge.category-mark { margin-left:4px; color:#6b3418; background:#fff0d8; }
+    .review-mark { margin-left:5px; color:#7a4d00!important; background:#fff4d6!important; }
+    .edit-button { padding:0 12px; border:1px solid var(--line); border-radius:7px; color:var(--ink); background:#fff; font-size:10px; font-weight:800; }
+    .empty { padding:28px; border:1px dashed #cbd5e1; border-radius:10px; color:var(--muted); text-align:center; font-size:12px; }
+    .side { display:grid; gap:14px; align-content:start; }
+    .capture { padding:16px; color:#fff; background:#30284f; border-color:#30284f; }
+    .capture-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+    .capture h2,.recent h2 { margin:0; font-size:14px; }
+    .capture-head span { padding:4px 7px; border-radius:999px; color:#fff; background:var(--purple); font-size:9px; font-weight:900; }
+    .capture p { margin:-2px 0 11px; color:#cec7de; font-size:10px; line-height:1.45; }
+    .mode-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:10px; }
+    .mode-tabs button { min-height:38px; padding:0 4px; border:1px solid #574e70; border-radius:7px; color:#ddd7e8; background:#3b3357; font-size:9px; font-weight:850; }
+    .mode-tabs button[aria-pressed="true"] { color:#21183a; background:#c4b5fd; border-color:#c4b5fd; }
+    .expense-entry-options { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:-1px 0 11px; padding:7px; border:1px solid #574e70; border-radius:9px; background:#27203f; }
+    .expense-entry-options[hidden] { display:none; }
+    .expense-entry-options button { min-height:44px; padding:0 8px; border:1px solid transparent; border-radius:7px; color:#cfc8dd; background:transparent; font-size:10px; font-weight:850; }
+    .expense-entry-options button[aria-pressed="true"] { color:#21183a; border-color:#e8ddff; background:#fff; }
+    .expense-category-field { margin:0 0 11px; }
+    .expense-category-field[hidden] { display:none; }
+    .expense-category-field select { width:100%; min-height:44px; padding:8px 10px; border:1px solid #6b8b8e; border-radius:8px; color:var(--ink); background:#fffaf0; }
+    .expense-category-field select:disabled { opacity:.7; cursor:not-allowed; }
+    .expense-category-field small { display:block; margin-top:5px; color:#cfc8dd; font-size:9px; line-height:1.4; }
+    .transit-planner { margin:0 0 12px; padding:12px; border:1px solid #625879; border-radius:10px; background:#241d3a; }
+    .transit-planner[hidden],.transit-result[hidden],.save-button[hidden] { display:none; }
+    .transit-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+    .transit-head strong { font-size:11px; }
+    .transit-head span { padding:4px 7px; border-radius:999px; color:#241d3a; background:#c7f65b; font-size:8px; font-weight:900; }
+    .saved-routes { margin:0 0 10px; padding:9px; border:1px solid #574e70; border-radius:9px; background:#2c2444; }
+    .saved-routes[hidden] { display:none; }
+    .saved-routes-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px; }
+    .saved-routes-head strong { color:#fff; font-size:9px; }
+    .saved-routes-head span { color:#c7f65b; font-size:8px; font-weight:900; }
+    .saved-route-list { display:grid; gap:6px; }
+    .saved-route-item { display:grid; grid-template-columns:minmax(0,1fr) 44px; gap:6px; }
+    .saved-route-use,.saved-route-delete { min-height:44px; border-radius:7px; }
+    .saved-route-use { min-width:0; padding:7px 9px; border:1px solid #625879; color:#fff; background:#3a3154; text-align:left; }
+    .saved-route-use strong,.saved-route-use small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .saved-route-use strong { font-size:9px; }
+    .saved-route-use small { margin-top:3px; color:#c9c2d4; font-size:8px; }
+    .saved-route-delete { padding:0; border:1px solid #765d72; color:#ffd2cf; background:#3a283f; font-size:8px; font-weight:850; }
+    .route-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .route-field label { display:block; margin-bottom:5px; color:#f4f1fb; font-size:10px; font-weight:800; }
+    .route-field input { width:100%; min-height:44px; padding:8px 10px; border:1px solid #625879; border-radius:8px; color:var(--ink); background:#fff; }
+    .route-preference { margin:10px 0 0; padding:0; border:0; }
+    .route-preference legend { margin-bottom:6px; padding:0; color:#f4f1fb; font-size:10px; font-weight:800; }
+    .route-preference-options { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .route-choice { position:relative; cursor:pointer; }
+    .route-choice input { position:absolute; width:1px; height:1px; opacity:0; }
+    .route-choice span { display:flex; min-height:52px; padding:8px 9px; border:1px solid #625879; border-radius:8px; color:#d7d1e2; background:#332b4b; flex-direction:column; justify-content:center; }
+    .route-choice strong { color:#fff; font-size:9px; line-height:1.4; }
+    .route-choice small { margin-top:2px; color:#bdb5ca; font-size:8px; line-height:1.35; }
+    .route-choice input:checked + span { border-color:#c7f65b; color:#21183a; background:#f4ffd8; box-shadow:inset 0 0 0 1px #c7f65b; }
+    .route-choice input:checked + span strong,.route-choice input:checked + span small { color:#263312; }
+    .route-choice input:focus-visible + span { outline:3px solid var(--focus); outline-offset:3px; }
+    .village-bus-option { display:grid; grid-template-columns:20px minmax(0,1fr); gap:2px 8px; align-items:center; min-height:44px; margin-top:8px; padding:7px 9px; border:1px solid #625879; border-radius:8px; color:#fff; background:#332b4b; cursor:pointer; }
+    .village-bus-option input { grid-row:1/3; width:18px; height:18px; margin:0; accent-color:#7e42e7; }
+    .village-bus-option strong { font-size:9px; }
+    .village-bus-option small { color:#c9c2d4; font-size:8px; line-height:1.35; }
+    .route-actions { display:grid; grid-template-columns:1fr 1.45fr; gap:7px; margin-top:9px; }
+    .transit-save-route,.transit-calculate { width:100%; border-radius:8px; font-size:10px; font-weight:900; }
+    .transit-save-route { border:1px solid #756b8a; color:#eee9f7; background:#3b3357; }
+    .transit-calculate { border:1px solid #dacfff; color:#241d3a; background:#fff; }
+    .transit-calculate:disabled { cursor:wait; opacity:.72; }
+    .transit-help { margin:7px 0 0!important; color:#cfc8dd!important; font-size:9px!important; }
+    .transit-status { min-height:17px; margin:7px 0 0; color:#e6e0ef; font-size:9px; line-height:1.45; }
+    .transit-status[data-state="error"] { color:#ffd2cf; }
+    .transit-result { margin-top:10px; padding:11px; border:1px solid #706586; border-radius:9px; background:#332b4b; }
+    .transit-route { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+    .transit-route strong { max-width:72%; color:#fff; font-size:10px; line-height:1.4; }
+    .transit-route span { flex:none; color:#c7f65b; font-size:9px; font-weight:900; }
+    .transit-result p { margin:7px 0!important; color:#d8d2e4!important; font-size:9px!important; }
+    .transit-steps { display:grid; gap:6px; margin:9px 0; padding:0; list-style:none; }
+    .transit-steps[hidden] { display:none; }
+    .transit-step { display:grid; grid-template-columns:46px minmax(0,1fr); align-items:center; gap:7px; min-height:34px; padding:5px 7px; border-radius:7px; color:#ece8f4; background:#29223f; }
+    .transit-step span { display:inline-flex; align-items:center; justify-content:center; min-height:24px; padding:0 6px; border-radius:999px; color:#fff; background:#5f536f; font-size:8px; font-weight:900; }
+    .transit-step span.bus { background:#3c6f3a; }
+    .transit-step span.village-bus { background:#7a4d00; }
+    .transit-step span.subway { background:#37599a; }
+    .transit-step strong { min-width:0; font-size:9px; font-weight:750; line-height:1.4; overflow-wrap:anywhere; }
+    .transit-save { width:100%; border:0; border-radius:8px; color:#21183a; background:#c7f65b; font-size:10px; font-weight:900; }
+    .transit-save:disabled { cursor:not-allowed; color:#938ba0; background:#4a425c; }
+    .input-label { display:block; margin-bottom:6px; color:#fff; font-size:11px; font-weight:800; }
+    .quick-date-field { margin-bottom:11px; }
+    .quick-date-field input { width:100%; min-height:44px; padding:8px 10px; border:1px solid #51496a; border-radius:8px; color:var(--ink); background:#fff; color-scheme:light; }
+    .quick-date-field small { display:block; margin-top:5px; color:#cfc8dd; font-size:9px; line-height:1.4; }
+    .reminder-settings { margin:0 0 11px; padding:10px; border:1px solid #625879; border-radius:9px; background:#243f44; }
+    .reminder-settings[hidden] { display:none; }
+    .reminder-toggle { display:grid; grid-template-columns:20px minmax(0,1fr); gap:2px 8px; align-items:center; min-height:44px; color:#fff; cursor:pointer; }
+    .reminder-toggle input { grid-row:1/3; width:18px; height:18px; margin:0; accent-color:#f0c36f; }
+    .reminder-toggle strong { font-size:10px; }
+    .reminder-toggle small { color:#c9dcda; font-size:8px; line-height:1.4; }
+    .reminder-time { display:grid; grid-template-columns:88px minmax(0,1fr); align-items:center; gap:8px; margin-top:7px; }
+    .reminder-time label { margin:0; color:#f4f1fb; font-size:9px; font-weight:800; }
+    .reminder-time select { width:100%; min-height:44px; padding:8px 10px; border:1px solid #6b8b8e; border-radius:8px; color:var(--ink); background:#fffaf0; }
+    .reminder-time select:disabled { opacity:.55; cursor:not-allowed; }
+    .repeat-settings { margin:0 0 11px; padding:10px; border:1px solid #625879; border-radius:9px; background:#2f2947; }
+    .repeat-settings[hidden] { display:none; }
+    .repeat-settings legend { padding:0 4px; color:#fff; font-size:10px; font-weight:900; }
+    .repeat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .repeat-field label { display:block; margin-bottom:5px; color:#f4f1fb; font-size:9px; font-weight:800; }
+    .repeat-field select { width:100%; min-height:44px; padding:8px 10px; border:1px solid #6b8b8e; border-radius:8px; color:var(--ink); background:#fffaf0; }
+    .repeat-field select:disabled { opacity:.55; cursor:not-allowed; }
+    .repeat-help { margin:7px 0 0!important; color:#cfc8dd!important; font-size:8px!important; line-height:1.45; }
+    .calendar-export-button { border:1px solid #8f743f; color:#173238; background:#f4c768; }
+    .calendar-export-button[hidden] { display:none; }
+    .input-hint { min-height:30px; margin:7px 0 9px!important; color:#ded8ea!important; }
+    textarea { width:100%; min-height:102px; resize:vertical; padding:10px; border:1px solid #51496a; border-radius:8px; color:var(--ink); background:#fff; line-height:1.5; }
+    .error { min-height:17px; margin:5px 0 0; color:#ffd2cf; font-size:10px; }
+    .save-button { width:100%; border:0; border-radius:8px; color:#21183a; background:#c4b5fd; font-weight:900; }
+    .save-button:hover { background:#d5caff; }
+    .recent { padding:16px; }
+    .recent-list { display:grid; gap:9px; margin:11px 0 0; padding:0; list-style:none; }
+    .recent-item { display:grid; grid-template-columns:46px 1fr auto; gap:8px; align-items:center; padding-top:9px; border-top:1px solid var(--line); }
+    .recent-item:first-child { padding-top:0; border-top:0; }
+    .recent-item time { color:var(--purple-dark); font-size:9px; font-weight:900; }
+    .recent-item strong { display:block; font-size:10px; }
+    .recent-item span { color:var(--muted); font-size:9px; }
+    .recent-item button { min-height:36px; padding:0 9px; border:1px solid var(--line); border-radius:7px; background:#fff; font-size:9px; font-weight:800; }
+    dialog { width:min(560px,calc(100vw - 28px)); padding:0; border:0; border-radius:16px; color:var(--ink); background:#fff; box-shadow:0 28px 90px rgba(15,10,30,.34); }
+    dialog::backdrop { background:rgba(17,12,28,.62); }
+    .dialog-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 18px; border-bottom:1px solid var(--line); }
+    .dialog-head h2 { margin:0; font-size:17px; }
+    .close-button { width:44px; padding:0; border:1px solid var(--line); border-radius:8px; color:var(--ink); background:#fff; font-weight:900; }
+    .edit-form { padding:18px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field.full { grid-column:1/-1; }
+    .field label { display:block; margin-bottom:6px; font-size:11px; font-weight:800; }
+    .field input,.field select,.field textarea { width:100%; min-height:44px; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .field textarea { min-height:82px; }
+    .review-box { display:flex; align-items:center; gap:8px; min-height:44px; }
+    .review-box input { width:18px; height:18px; }
+    .dialog-actions { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:16px; }
+    .dialog-actions div { display:flex; gap:8px; }
+    .dialog-actions button { padding:0 15px; border-radius:8px; font-size:11px; font-weight:850; }
+    .delete-button { border:1px solid #fecaca; color:var(--danger); background:#fff; }
+    .cancel-button { border:1px solid var(--line); color:var(--ink); background:#fff; }
+    .update-button { border:0; color:#fff; background:var(--purple); }
+    .toast { position:fixed; right:18px; bottom:18px; z-index:150; max-width:min(390px,calc(100vw - 36px)); padding:14px 17px; border-radius:11px; color:#fff; background:#111827; box-shadow:0 14px 40px rgba(0,0,0,.25); transform:translateY(150%); transition:transform 220ms ease; }
+    .toast.show { transform:translateY(0); }
+    .toast strong { display:block; margin-bottom:2px; }
+    .toast span { color:#d1d5db; font-size:11px; }
+
+    /* v17: 기능 구조는 유지하고 물빛·석조·다리 조명 색으로만 운하도시 분위기를 더합니다. */
+    :root {
+      --bg:#eef6f4; --surface:#fffdf8; --surface-2:#f4faf8; --ink:#102a2d; --muted:#53696b;
+      --line:#c9d9d5; --nav:#0d2930; --nav-2:#1b5960; --purple:#167478; --purple-dark:#0f5b5f;
+      --purple-soft:#dbeeed; --lime:#f0c36f; --cyan:#d8efed; --amber:#f7e6c2;
+      --focus:#0b7075; --shadow:0 8px 22px rgba(23,72,76,.10);
+    }
+    body {
+      background:
+        radial-gradient(circle at 82% 7%,rgba(62,150,151,.09),transparent 30%),
+        repeating-linear-gradient(0deg,transparent 0 47px,rgba(20,112,117,.028) 48px),
+        var(--bg);
+    }
+    .rail { background:linear-gradient(180deg,#0b252c 0%,#123940 58%,#0d2c32 100%); }
+    .brand em,.rail-summary strong { color:var(--lime); }
+    .brand small,.nav-label,.rail-summary span,.privacy { color:#9db7b8; }
+    .nav button,.nav a { color:#d5e3e2; }
+    .nav button:hover,.nav a:hover { background:#17444a; }
+    .nav button[aria-pressed="true"] { color:#fff; background:#1b5960; box-shadow:inset 3px 0 var(--lime); }
+    .filter-nav,.rail-summary { border-color:#2c5559; }
+    .filter-nav button { color:#b9cdcc; border-color:#41666a; }
+    .filter-nav button[aria-pressed="true"] { color:#102a2d; border-color:#f0c36f; background:#f0c36f; }
+    .topbar { background:#fffdf8; }
+    .saved-status { color:#115a5e; background:#dff2ef; }
+    .saved-status::before { background:#167478; box-shadow:0 0 0 4px #bee2de; }
+    .hero {
+      position:relative;
+      overflow:hidden;
+      border:1px solid #3e7378;
+      background:
+        repeating-linear-gradient(0deg,transparent 0 14px,rgba(187,231,227,.045) 15px),
+        linear-gradient(125deg,#0f3036 0%,#174a51 58%,#226871 100%);
+    }
+    .hero::before {
+      content:"";
+      position:absolute;
+      right:-28px;
+      bottom:-72px;
+      width:230px;
+      height:150px;
+      border:1px solid rgba(240,195,111,.32);
+      border-bottom:0;
+      border-radius:120px 120px 0 0;
+      box-shadow:0 0 0 18px rgba(255,255,255,.025),0 0 0 36px rgba(255,255,255,.018);
+    }
+    .hero > * { position:relative; z-index:1; }
+    .hero p { color:#f3d49a; }
+    .hero h2 span,.score strong { color:#f0c36f; }
+    .score { border-color:#4e7d81; background:rgba(8,38,43,.72); }
+    .score span { color:#d8e8e7; }
+    .metric { background:#fffdf8; }
+    .metric:first-child { color:#2e2b20; border-color:#e3b65e; background:#f4ce84; }
+    .metric:last-child { border-color:#bfdedb; background:#dfeeed; }
+    .card { border-color:var(--line); background:#fffdf8; box-shadow:0 3px 14px rgba(26,74,78,.055); }
+    .calendar-mode-note { border-color:#77b5a2; color:#174b3c; background:#e4f4eb; }
+    .calendar-mode-note span { color:#416b5e; }
+    .calendar-mode-note button { border-color:#77b5a2; color:#174b3c; background:#fffdf8; }
+    .day { background:#fffdf8; }
+    .day.outside { background:#f6f7f4; }
+    .day.today { background:#e9f4f2; box-shadow:inset 0 0 0 2px #167478; }
+    .view-buttons button[aria-pressed="true"] { background:#174a51; border-color:#174a51; }
+    .capture { color:#fff; background:#164047; border-color:#164047; }
+    .capture-head span { color:#173238; background:#f0c36f; }
+    .capture p { color:#c9dcda; }
+    .mode-tabs button { color:#d7e5e4; border-color:#507278; background:#204d54; }
+    .mode-tabs button[aria-pressed="true"] { color:#103035; border-color:#bfe2dd; background:#bfe2dd; }
+    .expense-entry-options { border-color:#456b70; background:#10343a; }
+    .expense-entry-options button { color:#cfe0df; }
+    .expense-entry-options button[aria-pressed="true"] { color:#113137; border-color:#e0efed; background:#fffdf8; }
+    .transit-planner { border-color:#4e7479; background:#0f343a; }
+    .transit-head span { color:#173238; background:#f0c36f; }
+    .saved-routes { border-color:#496d72; background:#153d43; }
+    .saved-routes-head span { color:#f0c36f; }
+    .saved-route-use { border-color:#587d81; background:#204b51; }
+    .saved-route-use small { color:#c5d7d5; }
+    .saved-route-delete { border-color:#8d6b69; color:#ffe1dc; background:#4b3435; }
+    .route-field input,.quick-date-field input,textarea { background:#fffdf8; }
+    .route-choice span { color:#d6e4e3; border-color:#50757a; background:#1b474e; }
+    .route-choice small { color:#bdcfcd; }
+    .route-choice input:checked + span { border-color:#e1b45e; color:#2b3025; background:#fff1d3; box-shadow:inset 0 0 0 1px #e1b45e; }
+    .route-choice input:checked + span strong,.route-choice input:checked + span small { color:#3d321e; }
+    .village-bus-option { border-color:#50757a; background:#1b474e; }
+    .village-bus-option small { color:#c5d7d5; }
+    .village-bus-option input { accent-color:#167478; }
+    .transit-save-route { color:#e8f2f1; border-color:#638488; background:#24535a; }
+    .transit-calculate { color:#173238; border-color:#e4d8bd; background:#fffdf8; }
+    .transit-result { border-color:#5b7f83; background:#1c484e; }
+    .transit-route span { color:#f0c36f; }
+    .transit-step { color:#edf5f4; background:#123a40; }
+    .transit-save { color:#173238; background:#f0c36f; }
+    .transit-save:disabled { color:#9eb0ae; background:#3f5c60; }
+    .input-hint { color:#d6e3e2!important; }
+    .save-button { color:#103035; background:#bfe2dd; }
+    .save-button:hover { background:#d2ebe7; }
+    .update-button { background:#167478; }
+    .toast { background:#0f3036; }
+
+    /* v18: 직접 만든 운하도시 그림을 배경으로 사용하되, 일정 정보의 대비를 먼저 지킵니다. */
+    body {
+      background-color:#dce9e7;
+      background-image:
+        linear-gradient(180deg,rgba(233,243,241,.62) 0%,rgba(238,246,244,.78) 38%,rgba(238,246,244,.91) 100%),
+        url("assets/canal-city-background-2026-10-06-v01.png");
+      background-position:center top;
+      background-size:cover;
+      background-attachment:fixed;
+      background-repeat:no-repeat;
+    }
+    .main {
+      min-height:100vh;
+      background:linear-gradient(90deg,rgba(238,246,244,.20),rgba(238,246,244,.44));
+    }
+    .topbar {
+      background:rgba(255,253,248,.94);
+      -webkit-backdrop-filter:blur(10px);
+      backdrop-filter:blur(10px);
+    }
+    .hero {
+      background:
+        linear-gradient(90deg,rgba(7,35,41,.94) 0%,rgba(9,43,49,.84) 48%,rgba(8,49,55,.56) 100%),
+        url("assets/canal-city-background-2026-10-06-v01.png") center 58% / cover no-repeat;
+      box-shadow:0 12px 30px rgba(7,46,51,.20);
+    }
+    .hero::before { display:none; }
+    .card,.metric { background:rgba(255,253,248,.975); }
+    .workspace { position:relative; }
+
+    /* v19: 캘린더 안쪽에도 운하도시가 비치되 날짜와 일정이 먼저 읽히도록 밝은 막을 겹칩니다. */
+    .calendar-card {
+      position:relative;
+      background:
+        linear-gradient(180deg,rgba(255,253,248,.76),rgba(244,250,248,.84)),
+        url("assets/canal-city-background-2026-10-06-v01.png") center 54% / cover no-repeat;
+      border-color:#aac8c3;
+      box-shadow:0 12px 32px rgba(20,77,82,.13);
+    }
+    .calendar-head {
+      padding:8px;
+      border-radius:10px;
+      background:rgba(255,253,248,.78);
+      -webkit-backdrop-filter:blur(5px);
+      backdrop-filter:blur(5px);
+    }
+    .weekdays {
+      background:rgba(238,247,245,.90);
+      -webkit-backdrop-filter:blur(4px);
+      backdrop-filter:blur(4px);
+    }
+    .days { background:rgba(226,240,237,.20); }
+    .day { background:rgba(255,253,248,.84); }
+    .day.outside { background:rgba(244,247,244,.76); }
+    .day.today { background:rgba(221,242,239,.90); box-shadow:inset 0 0 0 2px #167478; }
+    .day:hover { background:rgba(255,253,248,.94); }
+
+    /* v20: 세 참고 사진의 수로·석조·등대·외벽·덧문을 화면 전체 디자인 언어로 연결합니다. */
+    :root {
+      --bg:#e9f1ed; --surface:#fffaf0; --surface-2:#eef5ef; --ink:#102f35; --muted:#50696b;
+      --line:#a9c8c4; --nav:#082d38; --nav-2:#1c6670; --purple:#0d7780; --purple-dark:#075b63;
+      --purple-soft:#d8eeeb; --lime:#f4c768; --cyan:#d6efed; --amber:#f7dfaa;
+      --focus:#f0a64b; --shadow:0 12px 28px rgba(5,52,61,.14);
+      --canal-night:#082d38; --canal-water:#0d6f7a; --lagoon:#55c6c4; --terracotta:#c95e43;
+      --ochre:#e0a545; --stone:#fff6e6; --shutter:#285b4f; --coral:#df765e; --lamp:#f4c768;
+    }
+    html,body { max-width:100%; overflow-x:clip; }
+    body {
+      background-color:#d6e6e2;
+      background-image:
+        linear-gradient(180deg,rgba(5,42,51,.18) 0%,rgba(226,239,235,.74) 29%,rgba(238,245,240,.93) 100%),
+        url("assets/canal-city-panorama-2026-10-06-v01.png");
+      background-position:center top;
+      background-size:cover;
+      background-attachment:fixed;
+    }
+    .app,.main,.workspace { min-width:0; max-width:100%; }
+    .main {
+      position:relative;
+      background:
+        linear-gradient(90deg,rgba(238,245,240,.18),rgba(238,245,240,.48)),
+        repeating-linear-gradient(90deg,transparent 0 79px,rgba(8,83,91,.025) 80px);
+    }
+    .rail {
+      position:sticky;
+      overflow:hidden;
+      border-right:1px solid rgba(244,199,104,.40);
+      background:
+        linear-gradient(180deg,rgba(4,31,39,.94) 0%,rgba(7,52,62,.93) 55%,rgba(8,45,56,.98) 100%),
+        url("assets/canal-city-panorama-2026-10-06-v01.png") 17% center / cover no-repeat;
+      box-shadow:12px 0 34px rgba(4,35,43,.13);
+    }
+    .rail::before {
+      content:"";
+      position:absolute;
+      right:0;
+      bottom:0;
+      left:0;
+      height:31%;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(0deg,rgba(85,198,196,.09) 0 1px,transparent 1px 10px),
+        linear-gradient(180deg,transparent,rgba(32,126,133,.20));
+    }
+    .rail::after {
+      content:"";
+      position:absolute;
+      right:-46px;
+      bottom:17%;
+      width:168px;
+      height:78px;
+      border:2px solid rgba(244,199,104,.28);
+      border-bottom:0;
+      border-radius:90px 90px 0 0;
+      pointer-events:none;
+    }
+    .rail > * { position:relative; z-index:1; }
+    .brand {
+      position:relative;
+      margin-bottom:30px;
+      padding:12px 10px 14px 38px;
+      border:1px solid rgba(244,199,104,.34);
+      border-radius:12px 12px 5px 5px;
+      background:rgba(4,34,42,.54);
+      box-shadow:inset 0 -3px rgba(85,198,196,.12);
+    }
+    .brand::before {
+      content:"";
+      position:absolute;
+      top:13px;
+      left:12px;
+      width:14px;
+      height:21px;
+      border:2px solid var(--lamp);
+      border-radius:7px 7px 3px 3px;
+      background:rgba(244,199,104,.13);
+      box-shadow:0 0 16px rgba(244,199,104,.35);
+    }
+    .brand em,.rail-summary strong { color:var(--lamp); }
+    .brand small,.nav-label,.rail-summary span,.privacy { color:#abc5c2; }
+    .nav button,.nav a { color:#e0ece9; border:1px solid transparent; }
+    .nav button:hover,.nav a:hover { border-color:rgba(244,199,104,.22); background:rgba(39,101,103,.64); }
+    .nav button[aria-pressed="true"] {
+      color:#fffaf0;
+      border-color:rgba(244,199,104,.47);
+      background:linear-gradient(90deg,rgba(201,94,67,.88),rgba(13,111,122,.84));
+      box-shadow:inset 4px 0 var(--lamp),0 7px 18px rgba(2,27,34,.22);
+    }
+    .nav-badge { color:#402b10; background:var(--lamp); }
+    .filter-nav,.rail-summary { border-color:rgba(169,200,196,.25); }
+    .filter-nav button { color:#c5d7d4; border-color:rgba(169,200,196,.28); background:rgba(3,37,44,.30); }
+    .filter-nav button[aria-pressed="true"] { color:#213234; border-color:var(--lamp); background:var(--lamp); }
+
+    .topbar {
+      position:relative;
+      border-bottom:1px solid #d4b774;
+      background:
+        linear-gradient(90deg,rgba(255,250,240,.97),rgba(245,236,215,.94)),
+        repeating-linear-gradient(90deg,transparent 0 38px,rgba(85,70,42,.035) 39px);
+      box-shadow:0 5px 18px rgba(6,54,61,.09);
+    }
+    .topbar::after {
+      content:"";
+      position:absolute;
+      right:0;
+      bottom:-4px;
+      left:0;
+      height:4px;
+      background:linear-gradient(90deg,var(--terracotta),var(--lamp) 45%,var(--lagoon));
+      opacity:.78;
+    }
+    .topbar h1 { color:#173e42; letter-spacing:-.035em; }
+    .saved-status { color:#174e4d; border:1px solid #b9d8d2; background:#e2f1ed; }
+    .saved-status::before { background:var(--lagoon); box-shadow:0 0 0 4px #c8e7e1; }
+    .today-button { color:#3b351f; border-color:#d5af61; background:#fff6df; }
+
+    .hero {
+      min-height:142px;
+      border:1px solid rgba(244,199,104,.65);
+      border-radius:18px 18px 10px 10px;
+      background:
+        linear-gradient(90deg,rgba(3,32,41,.91) 0%,rgba(5,49,58,.72) 49%,rgba(20,53,59,.43) 100%),
+        url("assets/canal-city-panorama-2026-10-06-v01.png") center 52% / cover no-repeat;
+      box-shadow:0 16px 35px rgba(4,42,51,.24),inset 0 -7px rgba(43,151,157,.16);
+    }
+    .hero::before {
+      display:block;
+      content:"";
+      position:absolute;
+      right:18%;
+      bottom:-36px;
+      width:160px;
+      height:74px;
+      border:2px solid rgba(244,199,104,.33);
+      border-bottom:0;
+      border-radius:92px 92px 0 0;
+      box-shadow:0 0 0 12px rgba(255,255,255,.035);
+      pointer-events:none;
+    }
+    .hero p { color:#f7cf78; }
+    .hero h2 { max-width:720px; text-shadow:0 2px 12px rgba(0,0,0,.34); }
+    .hero h2 span,.score strong { color:#ffd778; }
+    .score { border-color:rgba(244,199,104,.65); background:rgba(3,39,47,.82); box-shadow:0 8px 22px rgba(2,28,34,.28); }
+    .score span { color:#e1efed; }
+
+    .metrics { gap:12px; }
+    .metric {
+      position:relative;
+      overflow:hidden;
+      min-height:92px;
+      padding:20px 15px 13px;
+      border:1px solid rgba(88,111,105,.30);
+      border-radius:6px 6px 13px 13px;
+      box-shadow:0 10px 20px rgba(6,54,61,.10),inset 0 4px rgba(255,255,255,.28);
+    }
+    .metric::before {
+      content:"";
+      position:absolute;
+      top:7px;
+      right:10px;
+      width:30px;
+      height:9px;
+      border-top:3px solid currentColor;
+      border-bottom:3px solid currentColor;
+      opacity:.18;
+    }
+    .metric::after {
+      content:"";
+      position:absolute;
+      right:0;
+      bottom:0;
+      left:0;
+      height:5px;
+      background:repeating-linear-gradient(90deg,rgba(4,92,101,.38) 0 22px,rgba(255,255,255,.25) 22px 30px);
+    }
+    .metric:nth-child(1) { color:#47251d; border-color:#cb735b; background:#e9a087; }
+    .metric:nth-child(2) { color:#29443d; border-color:#b9ad8b; background:#fff3d8; }
+    .metric:nth-child(3) { color:#123f45; border-color:#75bdb9; background:#bfe2dc; }
+    .metric:nth-child(4) { color:#442e18; border-color:#d5a74d; background:#edc873; }
+    .metric span { color:currentColor; opacity:.72; }
+
+    .calendar-card {
+      border:1px solid #83aaa7;
+      border-radius:16px 16px 10px 10px;
+      background:
+        linear-gradient(180deg,rgba(255,250,240,.78),rgba(238,246,241,.88)),
+        url("assets/canal-city-panorama-2026-10-06-v01.png") center 61% / cover no-repeat;
+      box-shadow:0 18px 38px rgba(5,54,62,.15);
+    }
+    .calendar-head {
+      position:relative;
+      border:1px solid rgba(152,128,82,.31);
+      border-radius:12px 12px 7px 7px;
+      background:rgba(255,248,231,.89);
+      box-shadow:inset 0 -4px rgba(13,111,122,.10);
+    }
+    .calendar-head::after {
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:-11px;
+      width:78px;
+      height:18px;
+      border:1px solid rgba(13,111,122,.22);
+      border-bottom:0;
+      border-radius:50px 50px 0 0;
+      transform:translateX(-50%);
+      pointer-events:none;
+    }
+    .month-nav button,.view-buttons button { border-color:#a9c8c4; background:#fffaf0; }
+    .month-nav button:hover,.view-buttons button:hover { border-color:#cf8a56; background:#fff0d4; }
+    .view-buttons button[aria-pressed="true"] { color:#fff; border-color:#0d6f7a; background:#0d6f7a; }
+    .weekdays {
+      color:#fffaf0;
+      border-color:#376f72;
+      background:linear-gradient(90deg,#124f58,#1e7478 55%,#235f68);
+      box-shadow:inset 0 -3px rgba(244,199,104,.35);
+    }
+    .days { border-color:#9cbdb8; background:rgba(29,119,126,.14); }
+    .day { border-color:rgba(111,153,149,.44); background:rgba(255,250,240,.88); }
+    .day:nth-child(7n+1) { background:rgba(255,240,226,.89); }
+    .day:nth-child(7n) { background:rgba(226,244,242,.90); }
+    .day.outside { color:#7e9492; background:rgba(235,239,232,.76); }
+    .day.today { background:rgba(255,225,165,.93); box-shadow:inset 0 0 0 2px #0d7780,inset 0 -7px rgba(13,119,128,.11); }
+    .day:hover { background:rgba(255,250,240,.98); }
+    .event { box-shadow:0 2px 5px rgba(21,61,65,.09); }
+    .event.task,.event.meeting { color:#173e67; background:#e3edff; border-color:#2c67bd; }
+    .event.expense { color:#74301c; background:#ffe3cc; border-color:#cf653d; }
+    .event.certificate { color:#174f42; background:#dff3e6; border-color:#2e8c68; }
+
+    .capture {
+      position:relative;
+      overflow:hidden;
+      border:1px solid #7a4e3c;
+      border-radius:8px 8px 15px 15px;
+      background:
+        linear-gradient(135deg,rgba(103,44,34,.96),rgba(147,62,43,.94)),
+        repeating-linear-gradient(90deg,transparent 0 34px,rgba(255,255,255,.045) 35px);
+      box-shadow:0 15px 28px rgba(72,35,30,.18),inset 0 5px rgba(244,199,104,.26);
+    }
+    .capture::before {
+      content:"";
+      position:absolute;
+      top:15px;
+      right:14px;
+      width:34px;
+      height:54px;
+      border:2px solid rgba(244,199,104,.30);
+      background:repeating-linear-gradient(0deg,rgba(22,71,64,.88) 0 5px,#285b4f 5px 9px);
+      opacity:.52;
+      pointer-events:none;
+    }
+    .capture > * { position:relative; z-index:1; }
+    .capture-head span { color:#45300f; background:var(--lamp); }
+    .capture p { max-width:85%; color:#f0dcd3; }
+    .mode-tabs button { color:#ebf3ec; border-color:#4e796e; background:#285b4f; }
+    .mode-tabs button[aria-pressed="true"] { color:#173b37; border-color:#bce3d2; background:#d8efe4; }
+    .quick-date-field input,textarea { border-color:#d8b99a; background:#fffaf0; }
+    .save-button { color:#15383b; background:#f4c768; box-shadow:0 6px 15px rgba(72,45,20,.18); }
+    .save-button:hover { background:#ffdb89; }
+
+    .recent {
+      position:relative;
+      overflow:hidden;
+      border-color:#b7ab8c;
+      background:
+        linear-gradient(rgba(255,250,240,.96),rgba(250,243,226,.96)),
+        repeating-linear-gradient(90deg,transparent 0 28px,rgba(77,62,38,.045) 29px);
+      box-shadow:0 12px 25px rgba(61,71,59,.11);
+    }
+    .recent::before {
+      content:"";
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      height:6px;
+      background:linear-gradient(90deg,var(--shutter),var(--lamp),var(--terracotta));
+    }
+    .record,.edit-button { background:#fffaf0; }
+    dialog { border-color:#92785a; background:#fffaf0; }
+    .toast { border:1px solid rgba(244,199,104,.44); background:#073641; }
+
+    @media (max-width:1100px) {
+      .workspace { grid-template-columns:1fr; }
+      .side { grid-template-columns:1fr 1fr; }
+      .capture { grid-row:span 2; }
+    }
+    @media (max-width:760px) {
+      .app { display:block; }
+      .rail { position:static; width:auto; height:auto; padding:12px; }
+      .brand { margin:0 0 10px; }
+      .brand small,.rail-summary,.privacy { display:none; }
+      .nav { grid-template-columns:repeat(2,1fr); gap:5px; }
+      .nav-label { grid-column:1/-1; margin:8px 4px 2px; }
+      .nav button,.nav a { min-height:44px; padding:0 9px; font-size:10px; }
+      .filter-nav { margin:10px 0 0; padding-top:10px; }
+      .topbar { padding:10px 12px; }
+      .saved-status { display:none; }
+      .weather-card { grid-template-columns:1fr; margin:12px 12px 0; padding:13px; }
+      .weather-overview { padding:0 0 11px; border-right:0; border-bottom:1px solid #bed8d3; }
+      .weather-rain-head { align-items:flex-start; }
+      .weather-refresh { min-height:44px; }
+      .weather-chip { min-height:34px; }
+      .hero { grid-template-columns:1fr; margin:12px 12px 0; padding:16px; }
+      .score { width:fit-content; }
+      .metrics { grid-template-columns:repeat(2,1fr); padding:12px 12px 0; }
+      .workspace { padding:12px; }
+      .calendar-card { width:100%; max-width:100%; padding:10px; overflow-x:hidden; }
+      .calendar-head { align-items:flex-start; flex-wrap:wrap; gap:8px; }
+      .month-title { width:100%; justify-content:space-between; }
+      .month-title h2 { min-width:0; flex:1; text-align:center; font-size:16px; }
+      .view-buttons { width:100%; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .view-buttons button { width:100%; padding:0 6px; }
+      .weekdays,.days { width:100%; min-width:0; grid-template-columns:repeat(7,minmax(0,1fr)); }
+      .weekdays { padding:7px 0; }
+      .weekdays span { font-size:9px; }
+      .day { min-width:0; min-height:78px; padding:4px 3px; }
+      .day-number { margin-bottom:3px; font-size:10px; }
+      .event { max-width:100%; margin-top:3px; padding:4px 3px; font-size:8px; line-height:1.15; }
+      .empty-day { display:none; }
+      .side { grid-template-columns:1fr; }
+      .capture { grid-row:auto; }
+      .record { grid-template-columns:70px minmax(0,1fr); }
+      .record .edit-button { grid-column:1/-1; }
+      .form-grid { grid-template-columns:1fr; }
+      .field.full { grid-column:auto; }
+      .dialog-actions { align-items:stretch; flex-direction:column; }
+      .dialog-actions > div { display:grid; grid-template-columns:1fr 1fr; }
+      .dialog-actions > button { width:100%; }
+      body {
+        background-attachment:scroll;
+        background-position:54% top;
+      }
+      .hero {
+        background-position:center 60%;
+      }
+    }
+    @media (max-width:420px) {
+      .repeat-grid { grid-template-columns:1fr; }
+      .rail { padding:10px; }
+      .brand { padding:10px 8px 11px 36px; }
+      .metrics { gap:8px; }
+      .metric { min-height:82px; padding:17px 11px 11px; }
+      .calendar-card { padding:8px; }
+      .calendar-head { padding:7px; }
+      .month-nav button { width:42px; }
+      .day { min-height:70px; padding:3px 2px; }
+      .day-number { font-size:9px; }
+      .event { padding:3px 2px; font-size:7px; border-radius:4px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.001ms!important; animation-duration:.001ms!important; }
+    }
+    .account-control { display:flex; align-items:center; gap:6px; }
+    .account-button,.signout-button { min-height:38px; padding:0 11px; border:1px solid #b9d8d2; border-radius:999px; color:#174e4d; background:#f4fbf9; font-size:9px; font-weight:850; }
+    .account-button { max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .signout-button { border-color:#d8c6bf; color:#7c2d12; background:#fff8f4; }
+    .auth-gate { position:fixed; inset:0; z-index:300; display:grid; place-items:center; padding:20px; background:rgba(5,35,42,.82); backdrop-filter:blur(8px); }
+    .auth-gate[hidden] { display:none; }
+    .auth-card { width:min(430px,100%); padding:26px; border:1px solid rgba(255,255,255,.35); border-radius:22px; color:#173238; background:linear-gradient(145deg,#fffdf7,#e2f1ed); box-shadow:0 24px 70px rgba(1,24,29,.38); }
+    .auth-card .auth-eyebrow { margin:0 0 7px; color:#197078; font-size:10px; font-weight:950; letter-spacing:.13em; }
+    .auth-card h2 { margin:0; font-size:26px; letter-spacing:-.04em; }
+    .auth-card > p { margin:10px 0 0; color:#4d6665; font-size:12px; line-height:1.65; }
+    .google-signin { display:flex; align-items:center; justify-content:center; gap:9px; width:100%; min-height:50px; margin-top:20px; border:1px solid #99bdb8; border-radius:11px; color:#173238; background:#fff; font-size:12px; font-weight:900; }
+    .google-signin span { display:grid; place-items:center; width:22px; height:22px; border-radius:50%; color:#fff; background:linear-gradient(135deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75%); font-size:11px; }
+    .google-signin:disabled { cursor:not-allowed; opacity:.55; }
+    .auth-status { min-height:38px; margin-top:12px!important; padding:9px 11px; border-radius:9px; color:#315b58!important; background:#dff1ec; font-size:10px!important; line-height:1.5!important; }
+    .auth-status[data-state="error"] { color:#8a332d!important; background:#fde9e5; }
+    .auth-note { display:block; margin-top:12px; color:#68807d; font-size:9px; line-height:1.5; }
+    .migration-dialog { width:min(470px,calc(100% - 28px)); padding:0; border:0; border-radius:16px; color:#173238; box-shadow:0 25px 70px rgba(2,30,36,.4); }
+    .migration-dialog::backdrop { background:rgba(3,31,38,.7); backdrop-filter:blur(5px); }
+    .migration-content { padding:22px; background:#fffdf8; }
+    .migration-content h2 { margin:0; font-size:19px; }
+    .migration-content p { color:#536d6a; font-size:11px; line-height:1.65; }
+    .migration-summary { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:14px 0; }
+    .migration-summary div { padding:12px; border:1px solid #b9d8d2; border-radius:10px; background:#eaf5f1; }
+    .migration-summary span { display:block; color:#55716e; font-size:9px; }
+    .migration-summary strong { display:block; margin-top:4px; font-size:18px; }
+    .migration-actions { display:grid; grid-template-columns:1fr 1.5fr; gap:8px; }
+    .migration-actions button { border-radius:9px; font-size:10px; font-weight:900; }
+    .start-empty { border:1px solid #d7c9c2; color:#7c2d12; background:#fff; }
+    .import-local { border:0; color:#173238; background:#f4c768; }
+    @media (max-width:760px) {
+      .top-actions { flex-wrap:wrap; justify-content:flex-end; }
+      .account-control { order:3; width:100%; justify-content:flex-end; }
+      .account-button { max-width:145px; }
+    }
+    @media (max-width:420px) {
+      .migration-actions { grid-template-columns:1fr; }
+      .migration-summary { grid-template-columns:1fr; }
+    }
+    .day { cursor:pointer; }
+    button.day-number { width:100%; min-height:28px; padding:0; border:0; color:inherit; background:transparent; text-align:left; }
+    .day-more { display:block; margin-top:5px; color:var(--muted); font-size:10px; }
+    #day-details-dialog { max-height:85vh; max-height:85dvh; overflow:auto; }
+    .day-details-summary { margin:0; padding:12px 18px; color:#315b58; background:#eaf5f1; font-size:12px; line-height:1.6; }
+    .day-details-list { display:grid; gap:10px; padding:16px 18px 20px; }
+    .day-detail { min-width:0; padding:14px; border:1px solid var(--line); border-left:4px solid var(--personal-line); border-radius:10px; background:#fff; }
+    .day-detail.expense { border-left-color:var(--expense-line); }
+    .day-detail.certificate { border-left-color:var(--certificate-line); }
+    .day-detail h3 { margin:6px 0; font-size:15px; overflow-wrap:anywhere; white-space:pre-wrap; }
+    .day-detail p { margin:7px 0; font-size:12px; line-height:1.6; overflow-wrap:anywhere; white-space:pre-wrap; }
+    .day-detail-meta { color:var(--muted); font-size:11px; }
+    .day-detail button { margin-top:6px; }
+  </style>
+  <link rel="stylesheet" href="assets/canal-glass.css">
+  <link rel="stylesheet" href="assets/expense-report.css">
+</head>
+<body>
+  <section class="auth-gate" id="auth-gate" aria-labelledby="auth-title" aria-live="polite">
+    <div class="auth-card">
+      <p class="auth-eyebrow">운하루 · 나만의 공간</p>
+      <h2 id="auth-title">내 Google 계정으로 시작하기</h2>
+      <p>로그인한 계정의 일정·소비·저장 경로만 불러옵니다. 다른 사용자는 회원님의 기록을 볼 수 없습니다.</p>
+      <button class="google-signin" type="button" id="google-signin"><span aria-hidden="true">G</span>Google 계정으로 로그인</button>
+      <p class="auth-status" id="auth-status" role="status">로그인 연결 상태를 확인하고 있습니다.</p>
+      <small class="auth-note">운하루에 나의 하루를 담아보세요. 기록은 로그인한 계정에 저장됩니다.</small>
+    </div>
+  </section>
+  <a class="skip" href="#workspace">본문으로 바로가기</a>
+  <div class="app" hidden inert>
+    <aside class="rail">
+      <div class="brand">운<em>하루</em><small>나의 하루가 흐르는 곳</small></div>
+      <nav class="nav" aria-label="주요 목차">
+        <span class="nav-label">기본</span>
+        <button type="button" id="calendar-menu" aria-pressed="true"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>내 캘린더</button>
+        <span class="nav-label">AI 비서</span>
+        <a id="job-newsletter-link" href="#" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>채용 뉴스레터<span class="nav-badge" id="job-update-count">0</span></a>
+        <button type="button" id="certificate-menu" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-3-7 3V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6"/></svg>자격증 일정</button>
+        <button type="button" id="expense-menu" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg>소비 분석</button>
+      </nav>
+      <div class="filter-nav" aria-label="내 기록 필터">
+        <button type="button" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" data-filter="task" aria-pressed="false">할 일</button>
+        <button type="button" data-filter="expense" aria-pressed="false">소비</button>
+        <button type="button" data-filter="meeting" aria-pressed="false">회의</button>
+        <button type="button" data-filter="review" aria-pressed="false">확인 필요</button>
+      </div>
+      <div class="rail-summary"><span>이번 달 정리 점수</span><strong id="rail-score">78점</strong></div>
+      <p class="privacy" id="privacy-copy">로그인 전에는 브라우저에, 로그인 후에는 내 Supabase 계정에 기록을 저장합니다.</p>
+      <div class="rail-bottom">
+        <a id="saju-site-link" class="saju-site-link" href="https://saju-he7y.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="사주사이트 바로가기 (새 탭)">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-6-1-9 1Z"/></svg>
+          <span>사주사이트 바로가기<small>나의 사주 안내서 · 새 탭</small></span>
+          <svg class="saju-link-arrow" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main" id="workspace">
+      <header class="topbar">
+        <div><h1>업무 캘린더</h1><p id="filter-description">모든 기록을 보고 있습니다.</p></div>
+        <div class="top-actions"><div class="saved-status" id="saved-status">로그인 확인 중</div><div class="account-control"><button class="account-button" type="button" id="auth-account-button" disabled>계정 확인 중</button><button class="signout-button" type="button" id="auth-signout" hidden>로그아웃</button></div><button class="today-button" type="button" id="today-button">오늘 보기</button></div>
+      </header>
+
+      <section class="weather-card" id="seoul-weather" data-state="loading" aria-labelledby="weather-title">
+        <div class="weather-overview">
+          <div class="weather-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.3 8.5 4.75 4.75 0 0 0 7 18Z"/><path d="M9 20v1M13 20v1M17 20v1"/></svg></div>
+          <div><p class="weather-eyebrow" id="weather-title">서울 오늘 날씨</p><div class="weather-mainline"><strong id="weather-temperature">--°</strong><span id="weather-condition">불러오는 중</span></div><p class="weather-range" id="weather-range">최고·최저 기온을 확인하고 있습니다.</p></div>
+        </div>
+        <div class="weather-rain">
+          <div class="weather-rain-head"><div class="weather-rain-title"><strong>비 소식 있는 구</strong><span id="rain-district-count">서울 25개 구 확인 중</span></div><button class="weather-refresh" type="button" id="weather-refresh">날씨 새로고침</button></div>
+          <p class="weather-status" id="weather-status" role="status" aria-live="polite" aria-atomic="true">강수확률이 1%라도 있는 시간이 있는 구를 모두 찾고 있습니다.</p>
+          <div class="weather-districts" id="rain-district-list" aria-label="오늘 비 소식이 있는 서울 지역"><span class="weather-empty">날씨 자료를 불러오고 있습니다.</span></div>
+        </div>
+      </section>
+
+      <section class="hero" aria-label="AI 정리 요약">
+        <div><p>운하루 · 나만의 일상 기록</p><h2>나의 하루가 <span>흐르는 곳</span></h2></div>
+        <div class="score"><strong id="score-value">78</strong><span>오늘의<br>정리 점수</span></div>
+      </section>
+
+      <section class="metrics" aria-label="월간 요약">
+        <div class="metric"><span>남은 할 일</span><strong id="task-count">0개</strong></div>
+        <div class="metric"><span>예정 회의</span><strong id="meeting-count">0건</strong></div>
+        <div class="metric"><span>이번 달 소비</span><strong id="expense-total">0원</strong></div>
+        <div class="metric"><span>확인 필요</span><strong id="review-count">0건</strong></div>
+      </section>
+
+      <div class="workspace">
+        <section class="card calendar-card">
+          <div class="calendar-mode-note" id="certificate-note" hidden><div><strong>자격증 일정 표시 중</strong><span>SQLD · TOEIC · JLPT 공식 일정을 내 일정과 함께 보고 있습니다.</span></div><button type="button" id="hide-certificates">내 일정만 보기</button></div>
+          <div class="expense-category-filter" id="expense-category-filter" aria-label="소비 카테고리 필터" hidden><button type="button" data-expense-category="all" aria-pressed="true">전체</button><button type="button" data-expense-category="식비" aria-pressed="false">식비</button><button type="button" data-expense-category="카페" aria-pressed="false">카페</button><button type="button" data-expense-category="교통" aria-pressed="false">교통</button><button type="button" data-expense-category="쇼핑" aria-pressed="false">쇼핑</button><button type="button" data-expense-category="구독" aria-pressed="false">구독</button><button type="button" data-expense-category="의료" aria-pressed="false">의료</button><button type="button" data-expense-category="기타" aria-pressed="false">기타</button></div>
+          <div class="calendar-head">
+            <div class="month-title"><div class="month-nav"><button type="button" id="prev-month" aria-label="이전 달">‹</button><button type="button" id="next-month" aria-label="다음 달">›</button></div><h2 id="month-label">2026년 10월</h2></div>
+            <div class="view-buttons" aria-label="보기 방식"><button type="button" data-view="month" aria-pressed="true">월간</button><button type="button" data-view="list" aria-pressed="false">목록</button><button type="button" data-view="today" aria-pressed="false">오늘</button></div>
+          </div>
+          <div id="month-view">
+            <div class="weekdays" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+            <div class="days" id="calendar-days"></div>
+          </div>
+          <div class="list-view" id="list-view"><div class="list-header"><h2 id="list-title">기록 목록</h2><span id="list-count"></span></div><div class="record-list" id="record-list"></div></div>
+        </section>
+
+        <aside class="side">
+          <section class="card capture">
+            <div class="capture-head"><h2>일정 추가</h2><span>LOCAL SMART</span></div>
+            <p>일정은 문장으로, 소비는 카테고리와 함께 한 건·하루치·대중교통 경로로 기록할 수 있습니다.</p>
+            <div class="mode-tabs" aria-label="입력 종류"><button type="button" data-mode="auto" aria-pressed="true">자동</button><button type="button" data-mode="task" aria-pressed="false">할 일</button><button type="button" data-mode="expense" aria-pressed="false">소비</button><button type="button" data-mode="meeting" aria-pressed="false">회의</button></div>
+            <div class="expense-entry-options" id="expense-entry-options" aria-label="소비 입력 방식" hidden><button type="button" data-expense-entry="single" aria-pressed="true">결제 직후</button><button type="button" data-expense-entry="batch" aria-pressed="false">하루치</button><button type="button" data-expense-entry="transit" aria-pressed="false">대중교통</button></div>
+            <div class="expense-category-field" id="expense-category-field" hidden><label class="input-label" for="expense-category">소비 카테고리</label><select id="expense-category"><option value="auto" selected>자동 분류</option><option value="식비">식비</option><option value="카페">카페</option><option value="교통">교통</option><option value="쇼핑">쇼핑</option><option value="구독">구독</option><option value="의료">의료</option><option value="기타">기타</option></select><small id="expense-category-help">입력한 결제처와 내용을 보고 자동으로 나눕니다.</small></div>
+            <section class="transit-planner" id="transit-planner" aria-labelledby="transit-title" hidden>
+              <div class="transit-head"><strong id="transit-title">실제로 탄 교통편 기록</strong><span>ODsay</span></div>
+              <p class="trip-guide">① 승하차 지점 검색 → ② 실제 탄 경로 확인 → ③ 전체 교통비 저장<br>출발지는 매번 바꿀 수 있습니다. 집 주소나 집에서 걷는 시간은 입력하지 않아도 됩니다.</p>
+              <section class="saved-routes" id="saved-routes" aria-labelledby="saved-routes-title" hidden>
+                <div class="saved-routes-head"><strong id="saved-routes-title">자주 가는 경로</strong><span id="saved-route-count">0개</span></div>
+                <div class="saved-route-list" id="saved-route-list"></div>
+              </section>
+              <div class="route-fields">
+                <div class="route-field"><label for="transit-origin">처음 탄 역·정류장</label><input id="transit-origin" autocomplete="off" placeholder="승차한 곳 검색"></div>
+                <div class="route-field waypoint-field" id="waypoint-field" hidden><label for="transit-via">경유할 역·정류장 (추가 시 필수)</label><input id="transit-via" autocomplete="off" placeholder="예: 강변역"></div>
+                <div class="route-field"><label for="transit-destination">마지막에 내린 역·정류장</label><input id="transit-destination" autocomplete="off" placeholder="하차한 곳 검색"></div>
+              </div>
+              <button type="button" id="toggle-waypoint" aria-expanded="false" aria-controls="waypoint-field waypoint-settings">+ 경유지 추가</button>
+              <section id="waypoint-settings" hidden aria-label="경유 구간 설정">
+                <p class="trip-guide">경유지 1곳을 거쳐 두 구간을 연결합니다. 경로 조회는 최대 2회 사용됩니다. 지원 경로는 성인 교통카드·환승할인 조건을 가정한 예상 교통비가 자동 입력됩니다. 실제 결제액으로 수정할 수 있습니다.</p>
+                <small>경유 자동 계산: 서울 마을·간선·지선·순환버스 + 수도권 지하철 2~9호선. 다른 지역·별도 요금 노선·거리 정보 누락은 직접 입력으로 안내합니다. 조조·카드사 할인은 미반영하며 예상 금액도 소비 합계에 포함됩니다. <a href="https://news.seoul.go.kr/traffic/traffic_price" target="_blank" rel="noopener noreferrer">서울시 요금 기준</a></small>
+                <label for="waypoint-mode-0">출발 → 경유지 이동수단</label><select id="waypoint-mode-0"><option value="0">버스 + 지하철</option><option value="2">버스만</option><option value="1">지하철만</option></select>
+                <label for="waypoint-line-0">첫 구간에서 꼭 탈 노선 (선택)</label><input id="waypoint-line-0" placeholder="예: 강동01" autocomplete="off">
+                <label for="waypoint-mode-1">경유지 → 도착 이동수단</label><select id="waypoint-mode-1"><option value="0">버스 + 지하철</option><option value="2">버스만</option><option value="1">지하철만</option></select>
+                <label for="waypoint-line-1">둘째 구간에서 꼭 탈 노선 (선택)</label><input id="waypoint-line-1" placeholder="예: 수도권 2호선" autocomplete="off">
+                <small>노선은 검색 결과에 포함된 경우에만 선택됩니다. 못 찾으면 조건을 바꾸도록 안내합니다.</small>
+              </section>
+              <fieldset class="route-preference" id="transit-direct-preference">
+                <legend>검색 결과 정렬 (실제 이용 여부는 아래에서 확인)</legend>
+                <div class="route-preference-options">
+                  <label class="route-choice"><input type="radio" name="transit-preference" value="bus-subway" checked><span><strong>버스 → 지하철 우선</strong><small>버스를 먼저 타고 지하철로 환승</small></span></label>
+                  <label class="route-choice"><input type="radio" name="transit-preference" value="fastest"><span><strong>가장 빠른 경로</strong><small>교통수단 순서와 관계없이 비교</small></span></label>
+                </div>
+              </fieldset>
+              <label class="village-bus-option" for="include-village-bus"><input id="include-village-bus" type="checkbox" checked><strong>마을버스 포함</strong><small>일반버스와 마을버스를 함께 찾아봅니다.</small></label>
+              <button type="button" id="reverse-transit">돌아올 때도 같은 방법 — 역순 설정</button>
+              <p id="transit-return-help" class="trip-guide" role="status"></p>
+              <label for="transit-route-label">자주 가는 경로 이름 (선택)</label><input id="transit-route-label" maxlength="40" placeholder="예: 출근길, 귀가길" autocomplete="off">
+              <div class="route-actions"><button class="transit-save-route" type="button" id="save-transit-route">자주 가는 경로 저장</button><button class="transit-calculate" type="button" id="calculate-transit">경로·요금 확인</button></div>
+              <p class="trip-guide">경로 저장·불러오기·역순 설정은 검색 횟수를 사용하지 않습니다. 출발·경유·도착지와 직접 지정한 노선 조건을 이 브라우저에 저장합니다(최대 20개, 기기 간 자동 동기화 없음). 조회 결과와 확정 요금은 저장하지 않으며, 실제 운행 경로는 다시 확인하세요.</p>
+              <p id="transit-reuse-status" class="trip-guide" role="status">같은 검색은 이 탭에서 5분간 재사용합니다. 중복 클릭은 추가 조회하지 않습니다. 새로고침·로그아웃 후에는 다시 조회해야 합니다.</p>
+              <p class="transit-help">전국 시내버스·마을버스·지하철의 정류장 간 경로를 조회합니다. 검색할 때 이름·좌표가 ODsay로 전송됩니다. 무료 이용 한도가 있어 버튼을 누를 때만 조회합니다. 열차·고속·시외버스 연결 요금은 아직 지원하지 않습니다.</p>
+              <p class="transit-help">현재 조회 시점의 참고 요금입니다. 선택한 기록 날짜의 과거 요금이나 카드 할인·청소년 요금·실시간 운행을 보장하지 않습니다. 실제 결제액이 다르면 저장 전 금액을 수정해 주세요.</p>
+              <p class="transit-status" id="transit-status" role="status" aria-live="polite"></p>
+              <div class="transit-result" id="transit-result" hidden>
+                <div class="transit-route"><strong id="transit-route-name"></strong><span id="transit-fare">연동 후 표시</span></div>
+                <p id="transit-summary">실제 교통 정보 연결을 기다리고 있습니다.</p>
+                <ol class="transit-steps" id="transit-steps" aria-label="이동 구간" hidden></ol>
+                <div id="transit-lane-choices"></div>
+                <label for="transit-trip-time">승차 시각 (선택)</label><input id="transit-trip-time" type="time"><small>비워두면 시간 미정으로 저장합니다. 소요 시간은 조회 경로 기준입니다.</small>
+                <label class="trip-confirm" for="transit-ride-confirm"><input type="checkbox" id="transit-ride-confirm"><span>위 승하차·환승 구간이 실제로 탄 경로와 같습니다.</span></label>
+                <p class="trip-guide">실제 경로가 없으면 비슷한 경로로 저장하지 마세요. 다른 승하차 지점으로 검색하거나 ‘결제 직후’에서 실제 금액을 입력해 주세요.</p>
+                <label for="transit-amount-basis">금액 구분</label><select id="transit-amount-basis"><option value="estimated">예상 요금 — 결제액 확인 전</option><option value="confirmed">실제 결제액 — 직접 확인함</option></select>
+                <label for="transit-save-amount">저장할 전체 교통비 (원)</label><input id="transit-save-amount" type="number" min="0" step="10" inputmode="numeric" readonly aria-describedby="transit-amount-help"><small id="transit-amount-help">환승을 포함한 경로 전체 참고 요금입니다. 버스·지하철 요금을 따로 더하지 않습니다. 예상 금액도 소비 합계에 포함됩니다.</small>
+                <p id="transit-save-preview" class="trip-guide" aria-live="polite"></p>
+                <label class="trip-confirm" for="transit-remember"><input type="checkbox" id="transit-remember"><span>이 경로 조건을 자주 가는 경로로도 저장</span></label>
+                <button class="transit-save" type="button" id="save-transit" disabled>이용 경로·교통비 저장</button>
+              </div>
+              <p class="transit-help"><a href="https://www.odsay.com" target="_blank" rel="noopener noreferrer">powered by ODsay</a></p>
+            </section>
+            <div class="quick-date-field"><label class="input-label" for="quick-date">날짜 선택</label><input id="quick-date" type="date"><small>날짜를 고르면 문장에 적은 날짜보다 우선 적용됩니다.</small></div>
+            <fieldset class="reminder-settings" id="reminder-settings">
+              <label class="reminder-toggle" for="iphone-reminder"><input id="iphone-reminder" type="checkbox" checked><strong>아이폰 알림도 만들기</strong><small>일정 저장 후 캘린더 파일을 한 번 열어 추가하면 사이트를 닫아도 알림이 옵니다.</small></label>
+              <div class="reminder-time"><label for="reminder-minutes">알림 시점</label><select id="reminder-minutes"><option value="10">10분 전</option><option value="30" selected>30분 전</option><option value="60">1시간 전</option></select></div>
+            </fieldset>
+            <fieldset class="repeat-settings" id="repeat-settings">
+              <legend>반복 설정</legend>
+              <div class="repeat-grid">
+                <div class="repeat-field"><label for="repeat-frequency">반복 주기</label><select id="repeat-frequency"><option value="none" selected>반복 안 함</option><option value="weekly">매주</option><option value="monthly">매월</option></select></div>
+                <div class="repeat-field"><label for="repeat-duration">등록 범위</label><select id="repeat-duration" disabled><option value="1">앞으로 1개월</option><option value="3" selected>앞으로 3개월</option><option value="6">앞으로 6개월</option></select></div>
+              </div>
+              <p class="repeat-help" id="repeat-help">반복 안 함 · 한 번만 저장합니다.</p>
+            </fieldset>
+            <label class="input-label" for="quick-input">정리할 내용</label>
+            <textarea id="quick-input" placeholder="예: 10월 8일 오후 2시 주간회의, 보고서 준비"></textarea>
+            <p class="input-hint" id="input-hint">날짜와 시간이 있으면 함께 적어 주세요.</p>
+            <p class="error" id="input-error" role="alert"></p>
+            <button class="save-button" type="button" id="parse-button">분류하고 저장하기</button>
+          </section>
+
+          <section class="card recent"><h2>최근 기록</h2><div class="recent-list" id="recent-list"></div></section>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="expense-report-dialog" aria-labelledby="expense-report-title">
+    <header class="report-head">
+      <div><span class="report-eyebrow">운하루 · MONTHLY LETTER</span><h2 id="expense-report-title">한 달의 소비를 돌아보다</h2></div>
+      <button type="button" id="close-expense-report" aria-label="소비 리포트 닫기">닫기</button>
+    </header>
+    <div class="report-controls" aria-label="리포트 종류">
+      <button type="button" id="report-real-mode" aria-pressed="true">내 소비 비교</button>
+      <button type="button" id="report-demo-mode" aria-pressed="false">가상 비교 미리보기</button>
+    </div>
+    <div id="report-month-controls">
+      <div class="report-month-fields">
+        <label for="report-target-month">살펴볼 달<input type="month" id="report-target-month" min="1900-01" required aria-describedby="report-month-help report-month-error"></label>
+        <label for="report-baseline-month">비교 기준 달<input type="month" id="report-baseline-month" min="1900-01" required aria-describedby="report-month-help report-month-error"></label>
+      </div>
+      <p id="report-month-help" class="report-note">두 달을 고르면 바로 비교합니다. 이번 달이 포함되면 오늘까지 같은 일수로, 끝난 두 달은 월 전체로 비교합니다.</p>
+      <button type="button" id="report-last-month">지난달 리포트 보기</button>
+      <p id="report-month-error" role="alert" class="report-error" hidden></p>
+    </div>
+    <p class="report-note">매달 1일부터 사이트에 접속하면 지난달 리포트를 확인할 수 있어요. 사이트를 닫아둔 동안의 자동 발송 기능은 아닙니다.</p>
+    <div id="expense-report-body" aria-live="polite"></div>
+  </dialog>
+  <dialog id="day-details-dialog" aria-labelledby="day-details-title">
+    <div class="dialog-head"><h2 id="day-details-title">하루 기록</h2><button class="close-button" type="button" id="close-day-details" aria-label="하루 기록 닫기" autofocus>×</button></div>
+    <p class="day-details-summary" id="day-details-summary"></p>
+    <div class="day-details-list" id="day-details-list"></div>
+  </dialog>
+
+  <dialog id="edit-dialog" aria-labelledby="edit-title">
+    <div class="dialog-head"><h2 id="edit-title">기록 수정</h2><button class="close-button" type="button" id="close-dialog" aria-label="수정 창 닫기">×</button></div>
+    <form class="edit-form" id="edit-form">
+      <input type="hidden" id="edit-id">
+      <div class="form-grid">
+        <div class="field"><label for="edit-type">종류</label><select id="edit-type"><option value="task">할 일</option><option value="expense">소비</option><option value="meeting">회의</option></select></div>
+        <div class="field"><label for="edit-title-field">제목</label><input id="edit-title-field" required></div>
+        <div class="field"><label for="edit-date">날짜</label><input id="edit-date" type="date"></div>
+        <div class="field"><label for="edit-time">시간</label><input id="edit-time" type="time"></div>
+        <div class="field"><label for="edit-amount">금액 (10원 단위 입력 가능)</label><input id="edit-amount" type="number" min="0" step="10" placeholder="소비 기록일 때만"></div>
+        <div class="field" id="edit-category-field"><label for="edit-category">소비 카테고리</label><select id="edit-category"><option value="식비">식비</option><option value="카페">카페</option><option value="교통">교통</option><option value="쇼핑">쇼핑</option><option value="구독">구독</option><option value="의료">의료</option><option value="기타">기타</option></select></div>
+        <div class="field" id="edit-reminder-field"><label for="edit-reminder">아이폰 알림</label><select id="edit-reminder"><option value="10">10분 전</option><option value="30">30분 전</option><option value="60">1시간 전</option></select></div>
+        <div class="field review-box"><input id="edit-review" type="checkbox"><label for="edit-review">사람 확인 필요</label></div>
+        <div class="field full" id="edit-trip-field" hidden><div id="edit-trip-detail"></div><label for="edit-trip-basis">교통비 금액 구분</label><select id="edit-trip-basis"><option value="estimated">예상 요금 — 결제액 확인 전</option><option value="confirmed">실제 결제액 — 직접 확인함</option></select><small>실제 금액을 확인했다면 위 금액을 고치고 ‘실제 결제액’을 선택해 주세요.</small></div>
+        <div class="field full"><label for="edit-notes">메모</label><textarea id="edit-notes"></textarea></div>
+      </div>
+      <div class="dialog-actions"><button class="calendar-export-button" type="button" id="export-calendar-button">아이폰 캘린더에 추가</button><div><button class="delete-button" type="button" id="delete-button">삭제</button><button class="cancel-button" type="button" id="cancel-button">취소</button><button class="update-button" type="submit">수정 저장</button></div></div>
+    </form>
+  </dialog>
+
+  <dialog class="migration-dialog" id="cloud-migration-dialog" aria-labelledby="migration-title">
+    <div class="migration-content">
+      <h2 id="migration-title">기존 기록을 내 계정으로 옮길까요?</h2>
+      <p>이 브라우저에 남아 있는 기존 운하루 기록을 발견했습니다. 가져오면 다음부터 Google 로그인 후 다른 기기에서도 같은 기록을 불러올 수 있습니다.</p>
+      <div class="migration-summary"><div><span>일정·소비 기록</span><strong id="migration-item-count">0건</strong></div><div><span>저장한 교통 경로</span><strong id="migration-route-count">0개</strong></div></div>
+      <p class="auth-status" id="migration-status" role="status">아직 계정에는 저장하지 않았습니다.</p>
+      <div class="migration-actions"><button class="start-empty" type="button" id="start-empty-cloud">빈 계정으로 시작</button><button class="import-local" type="button" id="import-local-cloud">기존 기록 가져오기</button></div>
+    </div>
+  </dialog>
+
+  <div class="toast" role="status" aria-live="polite"><strong id="toast-title"></strong><span id="toast-copy"></span></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="data/job-feed-current.js"></script>
+  <script src="data/certificate-feed.js"></script>
+  <script>
+    // 기능 시험 기록과 참가자가 직접 입력할 기록을 분리합니다.
+    const IS_TEST_MODE = ['localhost','127.0.0.1','[::1]'].includes(window.location.hostname) && new URLSearchParams(window.location.search).has('test');
+    const STORAGE_KEY = IS_TEST_MODE ? 'dayflow-calendar-flex-expense-v11-test' : 'dayflow-calendar-flex-expense-v11';
+    const ROUTE_STORAGE_KEY = IS_TEST_MODE ? 'dayflow-saved-transit-routes-v1-test' : 'dayflow-saved-transit-routes-v1';
+    const WEATHER_CACHE_KEY = 'dayflow-seoul-weather-v1';
+    const LEGACY_STORAGE_KEYS = ['dayflow-calendar-colors-v09-final','dayflow-calendar-main-v08-final'];
+    const todayValue = new Date();
+    const TODAY = `${todayValue.getFullYear()}-${String(todayValue.getMonth()+1).padStart(2,'0')}-${String(todayValue.getDate()).padStart(2,'0')}`;
+    const typeLabels = { task:'할 일', expense:'소비', meeting:'회의', certificate:'자격증' };
+    const calendarLabels = { task:'나의 일정', meeting:'나의 일정', expense:'생활비', certificate:'자격증' };
+    const detailLabels = { task:'할 일', meeting:'회의', expense:'소비', certificate:'자격증 일정' };
+    const SEOUL_DISTRICTS = [
+      ['종로구',37.5735,126.9790],['중구',37.5641,126.9979],['용산구',37.5326,126.9905],['성동구',37.5633,127.0371],['광진구',37.5385,127.0823],
+      ['동대문구',37.5744,127.0396],['중랑구',37.6063,127.0927],['성북구',37.5894,127.0167],['강북구',37.6396,127.0257],['도봉구',37.6688,127.0471],
+      ['노원구',37.6542,127.0568],['은평구',37.6027,126.9291],['서대문구',37.5791,126.9368],['마포구',37.5663,126.9014],['양천구',37.5170,126.8666],
+      ['강서구',37.5509,126.8495],['구로구',37.4955,126.8877],['금천구',37.4569,126.8955],['영등포구',37.5264,126.8963],['동작구',37.5124,126.9393],
+      ['관악구',37.4784,126.9516],['서초구',37.4837,127.0324],['강남구',37.5172,127.0473],['송파구',37.5145,127.1060],['강동구',37.5301,127.1238]
+    ];
+    const jobFeed = window.DAYFLOW_JOB_FEED || { sourcePath:'#', newCount:0 };
+    const certFeed = window.DAYFLOW_CERT_FEED || { certificates:[] };
+    const certificateItems = certFeed.certificates.flatMap((certificate) => certificate.events.map((event) => ({
+      ...event,
+      id:`certificate-${event.id}`,
+      type:'certificate',
+      review:false,
+      amount:null,
+      notes:`${certificate.label} · ${event.kind} · ${event.detail}`,
+      raw:event.title,
+      createdAt:`${event.date}T${event.time && event.time !== '24:00' ? event.time : '00:00'}:00`,
+      officialUrl:certificate.officialUrl,
+      certificateLabel:certificate.label
+    })));
+    let items = loadItems();
+    let activeFilter = 'all';
+    let expenseCategoryFilter = 'all';
+    let inputMode = 'auto';
+    let expenseEntryMode = 'single';
+    let viewMode = 'month';
+    let viewDate = new Date(`${TODAY.slice(0,7)}-01T00:00:00`);
+    let showCertificates = false;
+    let transitQuote = null;
+    let savedRoutesReadFailed = false;
+    let savedTransitRoutes = loadSavedTransitRoutes();
+    const TRANSIT_DEMO_ENABLED = IS_TEST_MODE && new URLSearchParams(window.location.search).get('test') === 'transit';
+    const transitProvider = window.DAYFLOW_TRANSIT_PROVIDER || (TRANSIT_DEMO_ENABLED ? async ({ origin, destination, preference, includeVillageBus }) => ({
+      origin,
+      destination,
+      fare:1550,
+      duration:32,
+      preference,
+      includeVillageBus,
+      summary:preference === 'bus-subway' ? `${includeVillageBus ? '마을버스 또는 일반버스' : '일반버스'}에서 지하철로 환승하는 시험 경로 · 실제 요금이 아닙니다.` : '가장 빠른 시험 경로 · 실제 요금이 아닙니다.',
+      steps:preference === 'bus-subway' ? [
+        { mode:'walk', label:'출발지에서 버스 정류장까지 이동' },
+        { mode:includeVillageBus ? 'villageBus' : 'bus', label:includeVillageBus ? '마을버스 또는 일반버스 탑승' : '일반버스 탑승' },
+        { mode:'walk', label:'지하철역에서 환승' },
+        { mode:'subway', label:'지하철 탑승' },
+        { mode:'walk', label:'도착지까지 이동' }
+      ] : [
+        { mode:'subway', label:'가장 빠른 대중교통 경로 이용' },
+        { mode:'walk', label:'도착지까지 이동' }
+      ]
+    }) : null);
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const pad = (value) => String(value).padStart(2,'0');
+    const formatMoney = (value) => `${Number(value || 0).toLocaleString('ko-KR')}원`;
+    const dateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+    const escapeHtml = (text='') => text.replace(/[&<>"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));
+
+    function addMonthsClamped(dateString, monthOffset) {
+      const [year,month,day] = dateString.split('-').map(Number);
+      const target = new Date(year, month - 1 + monthOffset, 1, 12);
+      const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0, 12).getDate();
+      target.setDate(Math.min(day,lastDay));
+      return dateKey(target);
+    }
+
+    function expandRecurringItem(baseItem, frequency='none', durationMonths=3) {
+      if (frequency === 'none') return [baseItem];
+      const seriesId = `repeat-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+      const dates = [baseItem.date];
+      const endDate = new Date(`${addMonthsClamped(baseItem.date,durationMonths)}T12:00:00`);
+      if (frequency === 'weekly') {
+        const nextDate = new Date(`${baseItem.date}T12:00:00`);
+        nextDate.setDate(nextDate.getDate()+7);
+        while (nextDate <= endDate) {
+          dates.push(dateKey(nextDate));
+          nextDate.setDate(nextDate.getDate()+7);
+        }
+      } else if (frequency === 'monthly') {
+        for (let monthOffset=1; monthOffset<=durationMonths; monthOffset+=1) dates.push(addMonthsClamped(baseItem.date,monthOffset));
+      }
+      return dates.map((date,sequence) => ({
+        ...baseItem,
+        id:`${seriesId}-${sequence}`,
+        date,
+        createdAt:new Date(Date.now()+sequence).toISOString(),
+        recurrence:{ frequency, durationMonths, seriesId, sequence, count:dates.length }
+      }));
+    }
+
+    function loadItems() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved).filter((item) => !String(item.id || '').startsWith('seed-'));
+        for (const key of LEGACY_STORAGE_KEYS) {
+          const legacy = localStorage.getItem(key);
+          if (legacy) return JSON.parse(legacy).filter((item) => !String(item.id || '').startsWith('seed-'));
+        }
+        return [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function loadSavedTransitRoutes() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(ROUTE_STORAGE_KEY) || '[]');
+        if (!Array.isArray(saved)){savedRoutesReadFailed=true;return [];}
+        return saved.filter((route) => route && route.origin && route.destination);
+      } catch (error) {
+        savedRoutesReadFailed=true;
+        return [];
+      }
+    }
+
+    function persistSavedTransitRoutes(message='') {
+      try {
+        if(savedRoutesReadFailed)throw new Error('Existing route data could not be read');
+        localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(savedTransitRoutes));
+        renderSavedTransitRoutes();
+        if (message) showToast('경로 저장', message);
+        return true;
+      } catch (error) {
+        $('#transit-status').textContent = savedRoutesReadFailed ? '기존 저장 경로를 읽지 못해 덮어쓰기를 중단했습니다. 기존 자료 확인이 필요합니다.' : '경로를 저장하지 못했습니다. 브라우저 저장 허용 상태를 확인해 주세요.';
+        $('#transit-status').dataset.state = 'error';
+        return false;
+      }
+    }
+
+    function persist(message='변경 내용을 브라우저에 저장했습니다.') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      $('#saved-status').textContent = '브라우저에 저장됨';
+      showToast('저장 완료', message);
+    }
+
+    function showToast(title, copy) {
+      $('#toast-title').textContent = title;
+      $('#toast-copy').textContent = copy;
+      $('.toast').classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => $('.toast').classList.remove('show'), 4200);
+    }
+
+    function weatherCodeLabel(code) {
+      if (code === 0) return '맑음';
+      if ([1,2].includes(code)) return '대체로 맑음';
+      if (code === 3) return '흐림';
+      if ([45,48].includes(code)) return '안개';
+      if (code >= 51 && code <= 57) return '이슬비';
+      if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return '비';
+      if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return '눈';
+      if (code >= 95) return '뇌우';
+      return '날씨 확인';
+    }
+
+    function rainForecastForDistrict(data, districtName) {
+      const times = data?.hourly?.time || [];
+      const probabilities = data?.hourly?.precipitation_probability || [];
+      const amounts = data?.hourly?.precipitation || [];
+      const rainyIndexes = times.map((_,index) => index).filter((index) => Number(probabilities[index] || 0) > 0 || Number(amounts[index] || 0) > 0);
+      if (!rainyIndexes.length) return null;
+      const maxProbability = Math.max(...rainyIndexes.map((index) => Number(probabilities[index] || 0)));
+      const firstHour = times[rainyIndexes[0]]?.slice(11,16) || '';
+      const lastHour = times[rainyIndexes.at(-1)]?.slice(11,16) || firstHour;
+      return { name:districtName, maxProbability, time:firstHour === lastHour ? firstHour : `${firstHour}~${lastHour}` };
+    }
+
+    function renderSeoulWeather(rawResults, { stale=false, fetchedAt=Date.now() }={}) {
+      const results = Array.isArray(rawResults) ? rawResults : [rawResults];
+      if (results.length !== SEOUL_DISTRICTS.length) throw new Error('서울 25개 구 자료 수가 맞지 않습니다.');
+      const center = results[0];
+      const currentTemperature = Math.round(Number(center?.current?.temperature_2m));
+      const maxTemperature = Math.round(Number(center?.daily?.temperature_2m_max?.[0]));
+      const minTemperature = Math.round(Number(center?.daily?.temperature_2m_min?.[0]));
+      if (![currentTemperature,maxTemperature,minTemperature].every(Number.isFinite)) throw new Error('서울 현재 날씨 값이 없습니다.');
+      $('#weather-temperature').textContent = `${currentTemperature}°`;
+      $('#weather-condition').textContent = weatherCodeLabel(Number(center?.current?.weather_code));
+      $('#weather-range').textContent = `최고 ${maxTemperature}° · 최저 ${minTemperature}° · 구청 인근 대표 좌표 기준`;
+
+      const rainyDistricts = results.map((data,index) => rainForecastForDistrict(data,SEOUL_DISTRICTS[index][0])).filter(Boolean).sort((a,b) => b.maxProbability - a.maxProbability || a.name.localeCompare(b.name,'ko'));
+      const list = $('#rain-district-list');
+      list.innerHTML = '';
+      if (!rainyDistricts.length) {
+        list.innerHTML = '<span class="weather-empty">오늘 비 소식이 있는 구가 없습니다.</span>';
+      } else {
+        rainyDistricts.forEach((district) => {
+          const chip = document.createElement('span');
+          chip.className = 'weather-chip';
+          chip.textContent = `${district.name} · 최고 ${district.maxProbability}% · ${district.time}`;
+          list.appendChild(chip);
+        });
+      }
+      $('#rain-district-count').textContent = rainyDistricts.length ? `${rainyDistricts.length}개 구` : '비 예보 없음';
+      const checkedAt = new Date(fetchedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+      $('#weather-status').textContent = stale ? `연결이 원활하지 않아 ${checkedAt}에 저장한 자료를 표시합니다.` : `오늘 강수확률이 1% 이상인 구를 모두 표시했습니다. ${checkedAt} 확인 · Open-Meteo`;
+      $('#seoul-weather').dataset.state = stale ? 'stale' : 'ready';
+    }
+
+    async function loadSeoulWeather() {
+      const weatherCard = $('#seoul-weather');
+      const refreshButton = $('#weather-refresh');
+      let cached = null;
+      try {
+        cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || 'null');
+        if (cached?.results) renderSeoulWeather(cached.results,{stale:true,fetchedAt:cached.fetchedAt});
+      } catch (error) {
+        cached = null;
+      }
+      refreshButton.disabled = true;
+      refreshButton.textContent = '확인 중…';
+      if (!cached) {
+        weatherCard.dataset.state = 'loading';
+        $('#weather-status').textContent = '서울 25개 구의 오늘 날씨를 확인하고 있습니다.';
+      }
+      try {
+        const latitude = SEOUL_DISTRICTS.map((district) => district[1]).join(',');
+        const longitude = SEOUL_DISTRICTS.map((district) => district[2]).join(',');
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,weather_code&hourly=precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1`;
+        const response = await fetch(weatherUrl,{headers:{Accept:'application/json'}});
+        if (!response.ok) throw new Error(`날씨 응답 오류 ${response.status}`);
+        const results = await response.json();
+        const fetchedAt = Date.now();
+        renderSeoulWeather(results,{fetchedAt});
+        localStorage.setItem(WEATHER_CACHE_KEY,JSON.stringify({fetchedAt,results}));
+      } catch (error) {
+        if (!cached) {
+          weatherCard.dataset.state = 'error';
+          $('#weather-temperature').textContent = '--°';
+          $('#weather-condition').textContent = '연결 확인 필요';
+          $('#weather-range').textContent = '인터넷 연결 후 다시 시도해 주세요.';
+          $('#rain-district-count').textContent = '확인하지 못함';
+          $('#weather-status').textContent = '날씨 자료를 불러오지 못했습니다. 새로고침 버튼을 눌러 다시 확인할 수 있습니다.';
+          $('#rain-district-list').innerHTML = '<span class="weather-empty">날씨 자료를 확인하지 못했습니다.</span>';
+        }
+      } finally {
+        refreshButton.disabled = false;
+        refreshButton.textContent = '날씨 새로고침';
+      }
+    }
+
+    function escapeCalendarText(text='') {
+      return String(text).replaceAll('\\','\\\\').replaceAll('\n','\\n').replaceAll(',','\\,').replaceAll(';','\\;');
+    }
+
+    function calendarTimestamp(date=new Date()) {
+      return date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+    }
+
+    function downloadCalendarEvent(item, reminderMinutes=30) {
+      if (!item.date || !item.time) {
+        showToast('아이폰 알림을 만들지 못했어요', '날짜와 시간을 모두 입력하면 캘린더 알림 파일을 만들 수 있습니다.');
+        return false;
+      }
+      const minutes = Number(reminderMinutes) || 30;
+      const start = `${item.date.replaceAll('-','')}T${item.time.replace(':','')}00`;
+      const uid = `${item.id || `dayflow-${Date.now()}`}@dayflow.local`;
+      const recurrenceRule = item.recurrence?.sequence === 0 && item.recurrence.count > 1
+        ? `RRULE:FREQ=${item.recurrence.frequency === 'weekly' ? 'WEEKLY' : 'MONTHLY'};COUNT=${item.recurrence.count}`
+        : '';
+      const calendar = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//DAYFLOW//Personal Calendar//KO',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${escapeCalendarText(uid)}`,
+        `DTSTAMP:${calendarTimestamp()}`,
+        `DTSTART;TZID=Asia/Seoul:${start}`,
+        'DURATION:PT1H',
+        ...(recurrenceRule ? [recurrenceRule] : []),
+        `SUMMARY:${escapeCalendarText(item.title || '운하루 일정')}`,
+        `DESCRIPTION:${escapeCalendarText(item.notes || item.raw || '운하루에서 추가한 일정')}`,
+        'BEGIN:VALARM',
+        `TRIGGER:-PT${minutes}M`,
+        'ACTION:DISPLAY',
+        `DESCRIPTION:${escapeCalendarText(`${item.title || '일정'} 시작 ${minutes}분 전입니다.`)}`,
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+      const blob = new Blob([calendar], { type:'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const safeTitle = (item.title || '운하루-일정').replace(/[\\/:*?"<>|]/g,'-').slice(0,40);
+      link.href = url;
+      link.download = `${safeTitle}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast('아이폰 알림 준비 완료', `${minutes}분 전 알림 파일을 만들었습니다. 아이폰에서 파일을 열고 “추가”를 눌러 주세요.`);
+      return true;
+    }
+
+    function classify(text, forced='auto') {
+      if (forced !== 'auto') return forced;
+      if (/(원|만원|결제|구매|지출|교통|점심|저녁|아침|구독|카페|택시|버스|지하철|편의점|마트)/.test(text)) return 'expense';
+      if (/(회의|미팅|논의|면담|브리핑|회고)/.test(text)) return 'meeting';
+      return 'task';
+    }
+
+    function parseDate(text) {
+      const iso = text.match(/(20\d{2})[-./년\s]+(\d{1,2})[-./월\s]+(\d{1,2})일?/);
+      if (iso) return `${iso[1]}-${pad(iso[2])}-${pad(iso[3])}`;
+      const monthDay = text.match(/(\d{1,2})월\s*(\d{1,2})일/);
+      if (monthDay) return `2026-${pad(monthDay[1])}-${pad(monthDay[2])}`;
+      if (/내일/.test(text)) return '2026-10-07';
+      if (/오늘/.test(text)) return TODAY;
+      return '';
+    }
+
+    function parseTime(text) {
+      const kor = text.match(/(오전|오후)?\s*(\d{1,2})시(?:\s*(\d{1,2})분)?/);
+      if (kor) {
+        let hour = Number(kor[2]);
+        if (kor[1] === '오후' && hour < 12) hour += 12;
+        if (kor[1] === '오전' && hour === 12) hour = 0;
+        return `${pad(hour)}:${pad(kor[3] || 0)}`;
+      }
+      const clock = text.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+      return clock ? `${pad(clock[1])}:${clock[2]}` : '';
+    }
+
+    function parseAmount(text) {
+      const tenThousand = text.match(/([\d.]+)\s*만원/);
+      if (tenThousand) return Math.round(Number(tenThousand[1]) * 10000);
+      const won = text.match(/([\d,]+)\s*원/);
+      if (won) return Number(won[1].replaceAll(',',''));
+      const candidates = [...text.matchAll(/[\d,]+/g)].filter((match) => {
+        const value = Number(match[0].replaceAll(',',''));
+        const following = text.slice(match.index + match[0].length).trimStart();
+        return value >= 10 && !/^(년|월|일|시|분)/.test(following);
+      });
+      return candidates.length ? Number(candidates.at(-1)[0].replaceAll(',','')) : null;
+    }
+
+    function expenseCategory(text) {
+      if (/(버스|지하철|택시|교통|기차|철도|KTX|주차)/i.test(text)) return '교통';
+      if (/(카페|커피|스타벅스|메가커피|컴포즈|투썸|빽다방)/i.test(text)) return '카페';
+      if (/(점심|저녁|아침|식사|배달|음식|식당|치킨|피자|버거)/i.test(text)) return '식비';
+      if (/(편의점|마트|쇼핑|쿠팡|올리브영|백화점)/i.test(text)) return '쇼핑';
+      if (/(구독|넷플릭스|유튜브|멜론|왓챠|티빙)/i.test(text)) return '구독';
+      if (/(병원|약국|의원|치과)/i.test(text)) return '의료';
+      return '기타';
+    }
+
+    function itemExpenseCategory(item) {
+      if (item.type !== 'expense') return '';
+      return item.category || expenseCategory(`${item.raw || ''} ${item.title || ''} ${item.notes || ''}`);
+    }
+
+    function makeTitle(text, type) {
+      let title = text
+        .replace(/20\d{2}[-./년\s]+\d{1,2}[-./월\s]+\d{1,2}일?/g,'')
+        .replace(/\d{1,2}월\s*\d{1,2}일/g,'')
+        .replace(/(오늘|내일|오전|오후)\s*/g,'')
+        .replace(/\d{1,2}시(?:\s*\d{1,2}분)?/g,'')
+        .replace(/\b([01]?\d|2[0-3]):[0-5]\d\b/g,'')
+        .replace(/[\d,.]+\s*(만원|원)/g,'')
+        .replace(/(^|\s)[\d,]{3,}(?=\s|$)/g,' ')
+        .replace(/[,:·]+/g,' ')
+        .replace(/\s+/g,' ')
+        .trim();
+      if (title.length > 34) title = `${title.slice(0,34)}…`;
+      return title || `${typeLabels[type]} 기록`;
+    }
+
+    function parseInput(text, forced, defaults={}) {
+      const type = classify(text, forced);
+      const parsedDate = parseDate(text);
+      const date = defaults.preferDate && defaults.date ? defaults.date : parsedDate || defaults.date || '';
+      const time = parseTime(text) || defaults.time || '';
+      const amount = type === 'expense' ? parseAmount(text) : null;
+      const category = type === 'expense' ? defaults.category && defaults.category !== 'auto' ? defaults.category : expenseCategory(text) : '';
+      const reviewReasons = [];
+      if (!date) reviewReasons.push('날짜');
+      if (type === 'expense' && amount === null) reviewReasons.push('금액');
+      if (type === 'meeting' && !/(담당|님|팀장|매니저|대표|팀)/.test(text)) reviewReasons.push('담당자');
+      return {
+        id:`item-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+        type,
+        title:makeTitle(text,type),
+        date,
+        time,
+        amount,
+        category,
+        notes: reviewReasons.length ? `${reviewReasons.join('·')} 확인 필요` : type === 'expense' ? category : '자동 분류됨',
+        reminderMinutes:type === 'expense' ? 0 : Number(defaults.reminderMinutes || 0),
+        review:reviewReasons.length > 0,
+        raw:text,
+        createdAt:new Date().toISOString()
+      };
+    }
+
+    function filteredItems() {
+      const visibleItems = showCertificates ? [...items, ...certificateItems] : items;
+      if (activeFilter === 'all') return [...visibleItems,...(window.DAYFLOW_SHARING?.received()||[])];
+      if (activeFilter === 'review') return items.filter((item) => item.review);
+      const typeItems = items.filter((item) => item.type === activeFilter);
+      if (activeFilter !== 'expense' || expenseCategoryFilter === 'all') return typeItems;
+      return typeItems.filter((item) => itemExpenseCategory(item) === expenseCategoryFilter);
+    }
+
+    function renderCalendar() {
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+      $('#month-label').textContent = `${year}년 ${month+1}월`;
+      const first = new Date(year, month, 1);
+      const start = new Date(year, month, 1-first.getDay());
+      const visible = filteredItems();
+      const root = $('#calendar-days');
+      root.innerHTML = '';
+      for (let index=0; index<42; index++) {
+        const current = new Date(start);
+        current.setDate(start.getDate()+index);
+        const key = dateKey(current);
+        const cell = document.createElement('div');
+        cell.className = `day${current.getMonth() !== month ? ' outside' : ''}${key === TODAY ? ' today' : ''}`;
+        cell.dataset.date = key;
+        cell.addEventListener('click', () => openDayDetails(key));
+        const number = document.createElement('button');
+        number.type = 'button';
+        number.setAttribute('aria-label', `${key} 하루 기록 전체 보기`);
+        number.className = 'day-number';
+        number.textContent = current.getDate();
+        cell.append(number);
+        visible.filter((item) => item.date === key).slice(0,3).forEach((item) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `event ${item.type}`;
+          if (item.type === 'certificate') {
+            button.textContent = `자격증 · ${item.title}`;
+          } else if (item.type === 'expense') {
+            button.textContent = `${item.time ? `${item.time} ` : ''}${item.title}${item.amount !== null ? ` · ${formatMoney(item.amount)}` : ''}`;
+          } else {
+            button.textContent = `${item.time ? `${item.time} ` : ''}${item.title}`;
+          }
+          button.setAttribute('aria-label', `${key} ${item.title}, 하루 기록 전체 보기`);
+          cell.append(button);
+        });
+        const dayCount = visible.filter((item) => item.date === key).length;
+        if (dayCount > 3) {
+          const more = document.createElement('span');
+          more.className = 'day-more';
+          more.textContent = `+${dayCount - 3}건 더 보기`;
+          cell.append(more);
+        }
+        root.append(cell);
+      }
+    }
+
+    function openDayDetails(key) {
+      $('#day-details-dialog').dataset.date=key;
+      const dayItems = [...items, ...(showCertificates ? certificateItems : []),...(window.DAYFLOW_SHARING?.received()||[])]
+        .filter((item) => item.date === key)
+        .sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+      const date = new Date(`${key}T00:00:00`);
+      $('#day-details-title').textContent = date.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
+      const expenseSum = dayItems.filter((item) => item.type === 'expense').reduce((sum,item) => sum + Number(item.amount || 0), 0);
+      $('#day-details-summary').textContent = `전체 ${dayItems.length}건 · 소비 합계 ${formatMoney(expenseSum)} · 필터와 관계없이 이 날짜의 모든 기록입니다.`;
+      const root = $('#day-details-list');
+      root.replaceChildren();
+      if (!dayItems.length) {
+        const empty = document.createElement('p');
+        empty.className = 'empty';
+        empty.textContent = '이 날짜에 등록된 기록이 없습니다.';
+        root.append(empty);
+      }
+      dayItems.forEach((item) => {
+        const row = document.createElement('article');
+        row.className = `day-detail ${item.type}`;
+        const meta = document.createElement('div');
+        meta.className = 'day-detail-meta';
+        meta.textContent = `${item.time || '시간 미정'} · ${detailLabels[item.type] || '기록'}${item.type === 'expense' ? ` · ${itemExpenseCategory(item)}` : ''}${item.recurrence ? ' · 반복' : ''}${item.review ? ' · 확인 필요' : ''}`;
+        const title = document.createElement('h3');
+        title.textContent = item.title;
+        row.append(meta, title);
+        if (item.type === 'expense' && item.amount != null) {
+          const amount = document.createElement('strong');
+          amount.textContent = formatMoney(item.amount);
+          if (item.transit && window.DAYFLOW_TRANSIT) amount.textContent += ` · ${window.DAYFLOW_TRANSIT.basisLabel(item.transit.amountBasis)}`;
+          row.append(amount);
+        }
+        window.DAYFLOW_TRANSIT?.appendDetails(row,item);
+        if (item.notes) {
+          const notes = document.createElement('p');
+          notes.textContent = item.notes;
+          row.append(notes);
+        }
+        if(item.type==='shared'){root.append(row);return;}
+        if(['task','meeting'].includes(item.type)&&window.DAYFLOW_SHARING){
+          const share=document.createElement('button');share.type='button';share.className='edit-button';share.textContent='공유 설정';
+          share.addEventListener('click',()=>{$('#day-details-dialog').close();window.DAYFLOW_SHARING.open(item.id);});row.append(share);
+        }
+        const action = document.createElement('button');
+        action.type = 'button';
+        action.className = 'edit-button';
+        action.textContent = item.type === 'certificate' ? '공식 안내' : '수정';
+        action.addEventListener('click', () => {
+          if (item.type === 'certificate') window.open(item.officialUrl, '_blank', 'noopener');
+          else { $('#day-details-dialog').close(); openEdit(item.id); }
+        });
+        row.append(action);
+        root.append(row);
+      });
+      if (!$('#day-details-dialog').open) $('#day-details-dialog').showModal();
+    }
+
+    $('#close-day-details').addEventListener('click', () => $('#day-details-dialog').close());
+
+    function renderList(mode=viewMode) {
+      let list = [...filteredItems()];
+      if (mode === 'today') list = list.filter((item) => item.date === TODAY);
+      else {
+        const prefix = `${viewDate.getFullYear()}-${pad(viewDate.getMonth()+1)}`;
+        list = list.filter((item) => !item.date || item.date.startsWith(prefix));
+      }
+      list.sort((a,b) => `${a.date || '9999'} ${a.time || '99:99'}`.localeCompare(`${b.date || '9999'} ${b.time || '99:99'}`));
+      $('#list-title').textContent = mode === 'today' ? '오늘 기록' : '월간 기록 목록';
+      $('#list-count').textContent = `${list.length}건`;
+      const root = $('#record-list');
+      root.innerHTML = '';
+      if (!list.length) {
+        root.innerHTML = '<div class="empty">조건에 맞는 기록이 없습니다.</div>';
+        return;
+      }
+      list.forEach((item) => {
+        const row = document.createElement('article');
+        row.className = 'record';
+        const dateText = item.date ? item.date.slice(5).replace('-','.') : '날짜 미정';
+        row.innerHTML = `<time>${dateText}${item.time ? `<br>${item.time}` : ''}</time><div><strong>${escapeHtml(item.title)}</strong><span class="badge ${item.type}">${detailLabels[item.type]}</span>${item.type === 'expense' ? `<span class="badge category-mark">${escapeHtml(itemExpenseCategory(item))}</span>` : ''}${item.recurrence ? '<span class="badge repeat-mark">반복</span>' : ''}${item.review ? '<span class="badge review-mark">확인 필요</span>' : ''}<br><span>${item.type === 'expense' && item.amount !== null ? formatMoney(item.amount) : escapeHtml(item.notes || '')}</span></div>`;
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'edit-button';
+        edit.textContent = item.type === 'shared'?'공유 · 읽기 전용':item.type === 'certificate' ? '공식 안내' : '수정';
+        edit.addEventListener('click', () => item.type === 'shared'?openDayDetails(item.date):item.type === 'certificate' ? window.open(item.officialUrl,'_blank','noopener') : openEdit(item.id));
+        row.append(edit);
+        root.append(row);
+      });
+    }
+
+    function renderMetrics() {
+      const prefix = `${viewDate.getFullYear()}-${pad(viewDate.getMonth()+1)}`;
+      const monthItems = items.filter((item) => item.date && item.date.startsWith(prefix));
+      const taskCount = monthItems.filter((item) => item.type === 'task').length;
+      const meetingCount = monthItems.filter((item) => item.type === 'meeting').length;
+      const expense = monthItems.filter((item) => item.type === 'expense').reduce((sum,item) => sum + Number(item.amount || 0),0);
+      const review = items.filter((item) => item.review).length;
+      const score = Math.max(35, 100 - review*7 - Math.max(0, taskCount-10)*2);
+      $('#task-count').textContent = `${taskCount}개`;
+      $('#meeting-count').textContent = `${meetingCount}건`;
+      $('#expense-total').textContent = formatMoney(expense);
+      $('#review-count').textContent = `${review}건`;
+      $('#score-value').textContent = score;
+      $('#rail-score').textContent = `${score}점`;
+    }
+
+    function renderRecent() {
+      const recent = [...items].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,4);
+      const root = $('#recent-list');
+      root.innerHTML = '';
+      if (!recent.length) {
+        root.innerHTML = '<div class="empty">아직 입력한 기록이 없습니다.</div>';
+        return;
+      }
+      recent.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'recent-item';
+        row.innerHTML = `<time>${item.date ? item.date.slice(5).replace('-','.') : '미정'}</time><div><strong>${escapeHtml(item.title)}</strong><span>${detailLabels[item.type]}${item.type === 'expense' ? ` · ${escapeHtml(itemExpenseCategory(item))}` : ''}${item.recurrence ? ' · 반복' : ''}${item.review ? ' · 확인 필요' : ''}</span></div>`;
+        const edit = document.createElement('button');
+        edit.type='button'; edit.textContent='수정'; edit.addEventListener('click',()=>openEdit(item.id));
+        row.append(edit); root.append(row);
+      });
+    }
+
+    function renderView() {
+      const monthActive = viewMode === 'month';
+      const expenseFilterVisible = activeFilter === 'expense';
+      $('#month-view').style.display = monthActive ? 'block' : 'none';
+      $('#list-view').classList.toggle('active', !monthActive);
+      $('#expense-category-filter').hidden = !expenseFilterVisible;
+      $$('#expense-category-filter button').forEach((button) => button.setAttribute('aria-pressed',String(button.dataset.expenseCategory === expenseCategoryFilter)));
+      $$('.view-buttons button').forEach((button) => button.setAttribute('aria-pressed',String(button.dataset.view===viewMode)));
+      renderCalendar();
+      renderList(viewMode);
+      renderMetrics();
+      renderRecent();
+      window.UnharuReports?.refresh();
+    }
+
+    function openEdit(id) {
+      const item = items.find((entry) => entry.id === id);
+      if (!item) return;
+      $('#edit-id').value = item.id;
+      $('#edit-type').value = item.type;
+      $('#edit-title-field').value = item.title;
+      $('#edit-date').value = item.date || '';
+      $('#edit-time').value = item.time || '';
+      $('#edit-amount').value = item.amount ?? '';
+      $('#edit-category').value = itemExpenseCategory(item) || '기타';
+      $('#edit-reminder').value = String(item.reminderMinutes || 30);
+      $('#edit-review').checked = item.review;
+      $('#edit-notes').value = item.notes || '';
+      $('#edit-amount').setCustomValidity('');
+      $('#edit-trip-basis').value = item.transit?.amountBasis === 'confirmed' ? 'confirmed' : 'estimated';
+      $('#edit-trip-detail').replaceChildren();
+      window.DAYFLOW_TRANSIT?.appendDetails($('#edit-trip-detail'),item);
+      updateEditReminderVisibility();
+      $('#edit-dialog').showModal();
+    }
+
+    function updateEditReminderVisibility() {
+      const available = $('#edit-type').value !== 'expense';
+      $('#edit-reminder-field').hidden = !available;
+      $('#export-calendar-button').hidden = !available;
+      $('#edit-category-field').hidden = available;
+      $('#edit-trip-field').hidden = available || !items.find(entry=>entry.id===$('#edit-id').value)?.transit;
+    }
+
+    function closeEdit() { $('#edit-dialog').close(); }
+
+    $$('.filter-nav button').forEach((button) => button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter;
+      expenseCategoryFilter = 'all';
+      showCertificates = false;
+      setPrimaryMenu('calendar');
+      $('#certificate-note').hidden = true;
+      $$('.filter-nav button').forEach((item) => item.setAttribute('aria-pressed',String(item===button)));
+      const descriptions = {all:'모든 기록을 보고 있습니다.',task:'할 일만 보고 있습니다.',expense:'소비 기록만 보고 있습니다.',meeting:'회의 기록만 보고 있습니다.',review:'사람이 확인해야 할 기록만 보고 있습니다.'};
+      $('#filter-description').textContent = descriptions[activeFilter];
+      renderView();
+    }));
+
+    $$('#expense-category-filter button').forEach((button) => button.addEventListener('click', () => {
+      expenseCategoryFilter = button.dataset.expenseCategory;
+      $('#filter-description').textContent = expenseCategoryFilter === 'all' ? '이번 달 모든 소비 기록을 보고 있습니다.' : `이번 달 ${expenseCategoryFilter} 소비만 보고 있습니다.`;
+      renderView();
+    }));
+
+    function setPrimaryMenu(target) {
+      $('#calendar-menu').setAttribute('aria-pressed', String(target === 'calendar'));
+      $('#certificate-menu').setAttribute('aria-pressed', String(target === 'certificate'));
+      $('#expense-menu').setAttribute('aria-pressed', String(target === 'expense'));
+    }
+
+    function showMyCalendar() {
+      showCertificates = false;
+      activeFilter = 'all';
+      expenseCategoryFilter = 'all';
+      viewMode = 'month';
+      setPrimaryMenu('calendar');
+      $$('.filter-nav button').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.filter === 'all')));
+      $('#certificate-note').hidden = true;
+      $('#filter-description').textContent = '내가 입력한 모든 기록을 보고 있습니다.';
+      renderView();
+    }
+
+    $('#calendar-menu').addEventListener('click', showMyCalendar);
+    $('#hide-certificates').addEventListener('click', showMyCalendar);
+    $('#certificate-menu').addEventListener('click', () => {
+      showCertificates = true;
+      activeFilter = 'all';
+      expenseCategoryFilter = 'all';
+      viewMode = 'month';
+      setPrimaryMenu('certificate');
+      $$('.filter-nav button').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.filter === 'all')));
+      $('#certificate-note').hidden = false;
+      $('#filter-description').textContent = '내 일정 위에 SQLD·TOEIC·JLPT 일정을 함께 표시하고 있습니다.';
+      renderView();
+    });
+    $('#expense-menu').addEventListener('click', () => {
+      showCertificates = false;
+      activeFilter = 'expense';
+      expenseCategoryFilter = 'all';
+      setPrimaryMenu('expense');
+      $$('.filter-nav button').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.filter === 'expense')));
+      $('#certificate-note').hidden = true;
+      $('#filter-description').textContent = '이번 달 소비 기록과 합계를 보고 있습니다.';
+      viewMode = 'list';
+      renderView();
+    });
+
+    $('#job-newsletter-link').href = jobFeed.sourcePath || '#';
+    $('#job-update-count').textContent = String(jobFeed.newCount || 0);
+    $('#job-update-count').hidden = !jobFeed.newCount;
+
+    function updateInputGuide() {
+      window.DAYFLOW_INLINE_SHARING?.modeChanged();
+      const expenseMode = inputMode === 'expense';
+      const transitMode = expenseMode && expenseEntryMode === 'transit';
+      const repeatAvailable = !expenseMode || expenseEntryMode === 'single';
+      $('#expense-entry-options').hidden = !expenseMode;
+      $('#expense-category-field').hidden = !expenseMode;
+      $('#transit-planner').hidden = !transitMode;
+      $('#reminder-settings').hidden = expenseMode;
+      $('#repeat-settings').hidden = !repeatAvailable;
+      if (!repeatAvailable) $('#repeat-frequency').value = 'none';
+      updateRepeatControls();
+      $('#parse-button').hidden = transitMode;
+      const wasTransitLocked = $('#expense-category').disabled;
+      if (transitMode) {
+        $('#expense-category').value = '교통';
+        $('#expense-category').disabled = true;
+      } else {
+        $('#expense-category').disabled = false;
+        if (wasTransitLocked) $('#expense-category').value = 'auto';
+      }
+      updateExpenseCategoryHelp();
+      if (!expenseMode) {
+        $('#quick-input').placeholder = '예: 10월 8일 오후 2시 주간회의, 보고서 준비';
+        $('#input-hint').textContent = '날짜와 시간이 있으면 함께 적어 주세요.';
+        $('#parse-button').textContent = '분류하고 저장하기';
+        return;
+      }
+      if (transitMode) {
+        $('#quick-input').placeholder = '예: 출근 교통비, 외근 이동';
+        $('#input-hint').textContent = '정리할 내용은 선택 사항입니다. 계산된 경로와 금액에 메모로 함께 저장됩니다.';
+        return;
+      }
+      if (expenseEntryMode === 'batch') {
+        $('#quick-input').placeholder = '점심 9,000\n카페 4,500\n버스 1,500';
+        $('#input-hint').textContent = '한 줄에 한 건씩, 금액은 10원 단위까지 적을 수 있습니다. 날짜를 생략하면 오늘로 저장합니다.';
+        $('#parse-button').textContent = '하루치 소비 저장하기';
+      } else {
+        $('#quick-input').placeholder = '예: 스타벅스 5,500';
+        $('#input-hint').textContent = '금액을 10원 단위까지 함께 적으면 오늘 날짜와 현재 시각으로 저장합니다.';
+        $('#parse-button').textContent = '소비 한 건 저장하기';
+      }
+    }
+
+    function updateExpenseCategoryHelp() {
+      const value = $('#expense-category').value;
+      if ($('#expense-category').disabled) {
+        $('#expense-category-help').textContent = '대중교통 경로로 저장하면 교통 카테고리가 자동 적용됩니다.';
+      } else if (value === 'auto') {
+        $('#expense-category-help').textContent = expenseEntryMode === 'batch' ? '각 줄의 결제처와 내용을 따로 읽어 자동 분류합니다.' : '입력한 결제처와 내용을 보고 자동으로 나눕니다.';
+      } else {
+        $('#expense-category-help').textContent = expenseEntryMode === 'batch' ? `모든 줄을 ${value} 카테고리로 저장합니다.` : `${value} 카테고리로 저장합니다.`;
+      }
+    }
+
+    function updateRepeatControls() {
+      const frequency = $('#repeat-frequency').value;
+      const repeating = frequency !== 'none';
+      $('#repeat-duration').disabled = !repeating;
+      if (!repeating) {
+        $('#repeat-help').textContent = '반복 안 함 · 한 번만 저장합니다.';
+        return;
+      }
+      const frequencyLabel = frequency === 'weekly' ? '매주' : '매월';
+      const duration = $('#repeat-duration').value;
+      $('#repeat-help').textContent = `${frequencyLabel} 같은 일정으로 ${duration}개월 범위에 자동 등록합니다. 각 날짜는 개별 수정·삭제됩니다.`;
+    }
+
+    $$('.mode-tabs button').forEach((button) => button.addEventListener('click', () => {
+      inputMode = button.dataset.mode;
+      $$('.mode-tabs button').forEach((item) => item.setAttribute('aria-pressed',String(item===button)));
+      $('#input-error').textContent='';
+      updateInputGuide();
+      (inputMode === 'expense' && expenseEntryMode === 'transit' ? $('#transit-origin') : $('#quick-input')).focus();
+    }));
+
+    $$('#expense-entry-options button').forEach((button) => button.addEventListener('click', () => {
+      expenseEntryMode = button.dataset.expenseEntry;
+      $$('#expense-entry-options button').forEach((item) => item.setAttribute('aria-pressed',String(item===button)));
+      $('#input-error').textContent='';
+      updateInputGuide();
+      (expenseEntryMode === 'transit' ? $('#transit-origin') : $('#quick-input')).focus();
+    }));
+
+    $('#repeat-frequency').addEventListener('change',updateRepeatControls);
+    $('#repeat-duration').addEventListener('change',updateRepeatControls);
+    $('#expense-category').addEventListener('change',updateExpenseCategoryHelp);
+
+    $$('.view-buttons button').forEach((button) => button.addEventListener('click', () => { viewMode=button.dataset.view; renderView(); }));
+    $('#prev-month').addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth()-1); renderView(); });
+    $('#next-month').addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth()+1); renderView(); });
+    $('#today-button').addEventListener('click', () => { viewDate=new Date(`${TODAY.slice(0,7)}-01T00:00:00`); viewMode='today'; renderView(); });
+
+    function splitExpenseEntries(text) {
+      const lineEntries = text.split(/\n|;/).map((entry) => entry.trim()).filter(Boolean);
+      if (lineEntries.length > 1) return lineEntries;
+      return text.split(/,\s+(?=[가-힣A-Za-z])/).map((entry) => entry.trim()).filter(Boolean);
+    }
+
+    function currentTime() {
+      const now = new Date();
+      return `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function resetTransitResult() {
+      window.DAYFLOW_TRANSIT?.invalidate();
+      transitQuote = null;
+      $('#transit-result').hidden = true;
+      $('#transit-steps').hidden = true;
+      $('#transit-steps').innerHTML = '';
+      $('#save-transit').disabled = true;
+      $('#transit-status').textContent = '';
+      $('#transit-status').dataset.state = '';
+    }
+
+    function selectedTransitPreference() {
+      return $('input[name="transit-preference"]:checked')?.value || 'bus-subway';
+    }
+
+    function transitPreferenceLabel(value) {
+      return value === 'bus-subway' ? '버스 → 지하철 우선' : '가장 빠른 경로';
+    }
+
+    function transitConditionLabel(preference, includeVillageBus) {
+      const busLabel = includeVillageBus ? '마을버스 포함' : '마을버스 제외';
+      return `${transitPreferenceLabel(preference)} · ${busLabel}`;
+    }
+
+    function routeSignature(route) {
+      return `${route.origin}|${route.via || ''}|${route.destination}|${route.stations?.origin?.stationID || ''}|${route.stations?.via?.stationID || ''}|${route.stations?.destination?.stationID || ''}|${JSON.stringify(route.viaSettings || null)}|${route.preference}|${route.includeVillageBus !== false}`.replace(/\s+/g,' ').toLowerCase();
+    }
+
+    function renderSavedTransitRoutes() {
+      const section = $('#saved-routes');
+      const root = $('#saved-route-list');
+      section.hidden = savedTransitRoutes.length === 0;
+      $('#saved-route-count').textContent = `${savedTransitRoutes.length}개`;
+      root.innerHTML = '';
+      savedTransitRoutes.forEach((route) => {
+        const row = document.createElement('div');
+        row.className = 'saved-route-item';
+        const useButton = document.createElement('button');
+        useButton.type = 'button';
+        useButton.className = 'saved-route-use';
+        const title = document.createElement('strong');
+        title.textContent = (route.name ? route.name+' · ' : '')+[route.origin,route.via,route.destination].filter(Boolean).join(' → ');
+        const condition = document.createElement('small');
+        condition.textContent = route.via
+          ? '경유 1곳 · ' + (route.viaSettings || []).map(s => s.line || ({'0':'버스 + 지하철','1':'지하철','2':'버스'}[s.mode] || '전체')).join(' → ')
+          : transitConditionLabel(route.preference || 'bus-subway', route.includeVillageBus !== false);
+        useButton.append(title,condition);
+        const loadRoute = () => {
+          $('#transit-origin').value = route.origin;
+          $('#transit-destination').value = route.destination;
+          const preference = $$('input[name="transit-preference"]').find((input) => input.value === route.preference) || $('input[name="transit-preference"][value="bus-subway"]');
+          preference.checked = true;
+          $('#include-village-bus').checked = route.includeVillageBus !== false;
+          resetTransitResult();
+          window.DAYFLOW_TRANSIT?.restore(route);
+          $('#transit-status').textContent = '저장한 경로 조건을 불러왔습니다(새 조회 0회). 경로·요금을 확인해 주세요.';
+          $('#calculate-transit').focus();
+        };
+        useButton.addEventListener('click',loadRoute);
+        const reverseButton=document.createElement('button');reverseButton.type='button';reverseButton.className='saved-route-return';reverseButton.textContent='귀가 설정';
+        reverseButton.setAttribute('aria-label',`${route.name||route.origin+' → '+route.destination} 역순으로 귀가 설정`);
+        reverseButton.addEventListener('click',()=>{loadRoute();window.DAYFLOW_TRANSIT?.reverse();});
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'saved-route-delete';
+        deleteButton.textContent = '삭제';
+        deleteButton.setAttribute('aria-label', `${route.origin}에서 ${route.destination} 저장 경로 삭제`);
+        deleteButton.addEventListener('click', () => {
+          if (!confirm(`“${route.origin} → ${route.destination}” 저장 경로를 삭제할까요?`)) return;
+          const previous=savedTransitRoutes;
+          savedTransitRoutes = savedTransitRoutes.filter((entry) => entry.id !== route.id);
+          if(!persistSavedTransitRoutes('저장한 경로를 삭제했습니다.'))savedTransitRoutes=previous;
+        });
+        row.append(useButton,reverseButton,deleteButton);
+        root.append(row);
+      });
+    }
+
+    function saveCurrentTransitRoute({ silent=false }={}) {
+      const origin = $('#transit-origin').value.trim();
+      const destination = $('#transit-destination').value.trim();
+      if (window.DAYFLOW_TRANSIT?.prepareFavorite && !window.DAYFLOW_TRANSIT.prepareFavorite()) return null;
+      if (!origin || !destination) {
+        if (!silent) {
+          $('#transit-status').textContent = '저장하려면 출발지와 도착지를 모두 입력해 주세요.';
+          $('#transit-status').dataset.state = 'error';
+          (!origin ? $('#transit-origin') : $('#transit-destination')).focus();
+        }
+        return null;
+      }
+      const route = {
+        id:`route-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+        origin,
+        destination,
+        preference:selectedTransitPreference(),
+        includeVillageBus:$('#include-village-bus').checked,
+        stations:window.DAYFLOW_TRANSIT?.selection(),
+        ...window.DAYFLOW_TRANSIT?.waypointData?.(),
+        ...window.DAYFLOW_TRANSIT?.favoriteData?.(),
+        createdAt:new Date().toISOString()
+      };
+      const signature = routeSignature(route);
+      const existing = savedTransitRoutes.find((entry) => routeSignature(entry) === signature || (
+        routeSignature({...entry,stations:{}})===routeSignature({...route,stations:{}}) &&
+        ['origin','via','destination'].every(side=>{
+          const a=entry.stations?.[side],b=route.stations?.[side];
+          return !a||!b||(a.stationClass===b.stationClass&&String(a.stationID)===String(b.stationID)&&Number(a.x)===Number(b.x)&&Number(a.y)===Number(b.y));
+        })
+      ));
+      if(!existing&&savedTransitRoutes.length>=20){$('#transit-status').textContent='자주 가는 경로는 20개까지 저장할 수 있습니다. 필요 없는 경로를 직접 삭제한 후 저장해 주세요.';return null;}
+      if (existing) route.id = existing.id;
+      const previous=savedTransitRoutes;
+      savedTransitRoutes = [route, ...savedTransitRoutes.filter((entry) => entry.id !== route.id)];
+      const saved = persistSavedTransitRoutes(silent ? '' : existing ? '이미 저장된 경로를 목록 위로 옮겼습니다.' : '경로를 저장했습니다. 다음에는 목록에서 바로 불러올 수 있습니다.');
+      if(!saved)savedTransitRoutes=previous;
+      return saved ? route : null;
+    }
+
+    function renderTransitSteps(steps=[]) {
+      const root = $('#transit-steps');
+      root.innerHTML = '';
+      const validModes = { walk:'도보', bus:'버스', villageBus:'마을버스', subway:'지하철' };
+      steps.filter((step) => step && step.label).forEach((step) => {
+        const row = document.createElement('li');
+        row.className = 'transit-step';
+        const mode = document.createElement('span');
+        mode.className = step.mode === 'villageBus' ? 'village-bus' : validModes[step.mode] ? step.mode : 'walk';
+        mode.textContent = validModes[step.mode] || '이동';
+        const label = document.createElement('strong');
+        label.textContent = step.label;
+        row.append(mode,label);
+        root.append(row);
+      });
+      root.hidden = root.children.length === 0;
+    }
+
+    async function calculateTransitRoute() {
+      if (window.DAYFLOW_TRANSIT) return window.DAYFLOW_TRANSIT.calculate();
+      const origin = $('#transit-origin').value.trim();
+      const destination = $('#transit-destination').value.trim();
+      const preference = selectedTransitPreference();
+      const includeVillageBus = $('#include-village-bus').checked;
+      if (!origin || !destination) {
+        $('#transit-status').textContent = '출발지와 도착지를 모두 입력해 주세요.';
+        $('#transit-status').dataset.state = 'error';
+        (!origin ? $('#transit-origin') : $('#transit-destination')).focus();
+        return;
+      }
+      $('#transit-status').textContent = '경로를 확인하고 있습니다.';
+      $('#transit-status').dataset.state = 'loading';
+      $('#calculate-transit').disabled = true;
+      $('#calculate-transit').textContent = '확인 중…';
+      $('#transit-route-name').textContent = `${origin} → ${destination}`;
+      $('#transit-result').hidden = false;
+      try {
+        if (!transitProvider) {
+          transitQuote = null;
+          $('#transit-fare').textContent = '연동 후 표시';
+          renderTransitSteps();
+          $('#transit-summary').textContent = `${transitConditionLabel(preference, includeVillageBus)} 조건이 준비되었습니다. 교통 정보 서비스를 연결하면 실제 환승 구간과 요금이 이곳에 표시됩니다.`;
+          $('#save-transit').disabled = true;
+          $('#transit-status').textContent = '현재는 실제 요금을 불러오지 않으므로 소비 기록에 저장하지 않습니다.';
+          $('#transit-status').dataset.state = '';
+          return;
+        }
+        const result = await transitProvider({ origin, destination, date:$('#quick-date').value || TODAY, preference, includeVillageBus });
+        if (!result || !Number.isFinite(Number(result.fare)) || Number(result.fare) < 0) throw new Error('요금 결과가 올바르지 않습니다.');
+        transitQuote = { ...result, origin, destination, preference, includeVillageBus, fare:Number(result.fare) };
+        $('#transit-fare').textContent = formatMoney(transitQuote.fare);
+        $('#transit-summary').textContent = `${transitQuote.summary || '추천 대중교통 경로'}${transitQuote.duration ? ` · 약 ${transitQuote.duration}분` : ''}`;
+        renderTransitSteps(Array.isArray(transitQuote.steps) ? transitQuote.steps : []);
+        $('#save-transit').disabled = false;
+        $('#transit-status').textContent = '경로와 요금을 확인했습니다. 저장 전 내용을 확인해 주세요.';
+        $('#transit-status').dataset.state = '';
+      } catch (error) {
+        transitQuote = null;
+        $('#transit-fare').textContent = '확인 실패';
+        $('#transit-summary').textContent = '잠시 후 다시 시도해 주세요.';
+        renderTransitSteps();
+        $('#save-transit').disabled = true;
+        $('#transit-status').textContent = error.message || '교통 정보를 불러오지 못했습니다.';
+        $('#transit-status').dataset.state = 'error';
+      } finally {
+        $('#calculate-transit').disabled = false;
+        $('#calculate-transit').textContent = '경로·요금 확인';
+      }
+    }
+
+    function saveTransitExpense() {
+      if (!transitQuote) return;
+      if (window.DAYFLOW_TRANSIT && !window.DAYFLOW_TRANSIT.prepareSave()) return;
+      const selectedDate = $('#quick-date').value;
+      const memo = $('#quick-input').value.trim();
+      const item = {
+        id:`item-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+        type:'expense',
+        title:[transitQuote.origin,transitQuote.via,transitQuote.destination].filter(Boolean).join(' → '),
+        date:selectedDate || TODAY,
+        time:$('#transit-trip-time').value,
+        amount:transitQuote.fare,
+        category:'교통',
+        notes:memo,
+        transit:window.DAYFLOW_TRANSIT?.record(),
+        review:false,
+        raw:`${[transitQuote.origin,transitQuote.via,transitQuote.destination].filter(Boolean).join(' → ')} ${transitQuote.fare}원 ${memo}`.trim(),
+        createdAt:new Date().toISOString()
+      };
+      items.push(item);
+      if ($('#transit-remember').checked) saveCurrentTransitRoute({ silent:true });
+      viewDate = new Date(`${item.date.slice(0,7)}-01T00:00:00`);
+      $('#transit-origin').value = '';
+      $('#transit-destination').value = '';
+      window.DAYFLOW_TRANSIT?.restore({});
+      $('#transit-trip-time').value = '';
+      $('#quick-input').value = '';
+      $('#quick-date').value = '';
+      resetTransitResult();
+      persist(`${item.title} 이용 경로와 ${window.DAYFLOW_TRANSIT?.basisLabel(item.transit?.amountBasis) || '교통비'} ${formatMoney(item.amount)}을 저장했습니다.`);
+      renderView();
+    }
+
+    $('#calculate-transit').addEventListener('click', calculateTransitRoute);
+    $('#save-transit-route').addEventListener('click', () => saveCurrentTransitRoute());
+    $('#save-transit').addEventListener('click', saveTransitExpense);
+    $$('#transit-origin, #transit-destination').forEach((input) => input.addEventListener('input', resetTransitResult));
+    $$('input[name="transit-preference"]').forEach((input) => input.addEventListener('change', resetTransitResult));
+    $('#include-village-bus').addEventListener('change', resetTransitResult);
+
+    let quickInputSaving = false;
+    async function saveQuickInput() {
+      if (quickInputSaving) return;
+      const text = $('#quick-input').value.trim();
+      const selectedDate = $('#quick-date').value;
+      const repeatFrequency = $('#repeat-settings').hidden ? 'none' : $('#repeat-frequency').value;
+      const repeatDuration = Number($('#repeat-duration').value || 3);
+      const selectedCategory = $('#expense-category').value;
+      if (inputMode === 'expense' && expenseEntryMode === 'transit') { calculateTransitRoute(); return; }
+      if (!text) { $('#input-error').textContent='정리할 내용을 한 줄 이상 입력해 주세요.'; $('#quick-input').focus(); return; }
+      if (repeatFrequency !== 'none' && !selectedDate && !parseDate(text)) {
+        $('#input-error').textContent='반복을 시작할 날짜를 먼저 선택해 주세요.';
+        $('#quick-date').focus();
+        return;
+      }
+      $('#input-error').textContent='';
+      if (inputMode === 'expense') {
+        const entries = expenseEntryMode === 'batch' ? splitExpenseEntries(text) : [text];
+        const missingAmountIndex = entries.findIndex((entry) => parseAmount(entry) === null);
+        if (missingAmountIndex >= 0) {
+          $('#input-error').textContent = `${missingAmountIndex + 1}번째 소비에 금액을 함께 적어 주세요.`;
+          $('#quick-input').focus();
+          return;
+        }
+        const baseItems = entries.map((entry) => parseInput(entry,'expense',{
+          date:selectedDate || TODAY,
+          preferDate:Boolean(selectedDate),
+          time:expenseEntryMode === 'single' ? currentTime() : '',
+          category:selectedCategory
+        }));
+        const savedItems = baseItems.flatMap((item) => expandRecurringItem(item,repeatFrequency,repeatDuration));
+        items.push(...savedItems);
+        viewDate = new Date(`${savedItems[0].date.slice(0,7)}-01T00:00:00`);
+        $('#quick-input').value='';
+        $('#quick-date').value='';
+        const savedDateText = selectedDate ? `${Number(selectedDate.slice(5,7))}월 ${Number(selectedDate.slice(8,10))}일` : '오늘';
+        persist(repeatFrequency !== 'none' ? `${repeatFrequency === 'weekly' ? '매주' : '매월'} 소비 ${savedItems.length}건을 ${repeatDuration}개월 범위로 등록했습니다.` : savedItems.length === 1 ? `${savedItems[0].title} ${formatMoney(savedItems[0].amount)}을 생활비로 저장했습니다.` : `${savedDateText} 소비 ${savedItems.length}건을 한꺼번에 저장했습니다.`);
+        renderView();
+        return;
+      }
+      const item = parseInput(text,inputMode,{date:selectedDate,preferDate:Boolean(selectedDate)});
+      item.reminderMinutes = item.type === 'expense' || !$('#iphone-reminder').checked ? 0 : Number($('#reminder-minutes').value);
+      const savedItems = expandRecurringItem(item,repeatFrequency,repeatDuration);
+      const shareRequest=window.DAYFLOW_INLINE_SHARING?.prepare(savedItems) ?? null;
+      if(shareRequest===false)return;
+      quickInputSaving=true;
+      const captureControls=[...document.querySelectorAll('.capture input,.capture textarea,.capture select,.capture button')].map(el=>[el,el.disabled]);
+      captureControls.forEach(([el])=>el.disabled=true);
+      try {
+      items.push(...savedItems);
+      if (savedItems[0].date) viewDate = new Date(`${savedItems[0].date.slice(0,7)}-01T00:00:00`);
+      $('#quick-input').value='';
+      $('#quick-date').value='';
+      persist(repeatFrequency !== 'none' ? `${repeatFrequency === 'weekly' ? '매주' : '매월'} 일정 ${savedItems.length}건을 ${repeatDuration}개월 범위로 등록했습니다.` : `${typeLabels[item.type]}로 분류해 저장했습니다${item.review ? '. 확인할 정보가 있습니다.' : '.'}`);
+      renderView();
+      if (item.type !== 'expense' && $('#iphone-reminder').checked) downloadCalendarEvent(savedItems[0],item.reminderMinutes);
+      await window.DAYFLOW_INLINE_SHARING?.complete(shareRequest);
+      } finally {
+        quickInputSaving=false;
+        captureControls.forEach(([el,disabled])=>el.disabled=disabled);
+      }
+    }
+
+    $('#parse-button').addEventListener('click', saveQuickInput);
+    $('#quick-input').addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        saveQuickInput();
+      }
+    });
+
+    $('#edit-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const id=$('#edit-id').value;
+      const item=items.find((entry)=>entry.id===id);
+      if(!item) return;
+      if (window.DAYFLOW_TRANSIT && !window.DAYFLOW_TRANSIT.prepareEdit(item)) return;
+      item.type=$('#edit-type').value;
+      item.title=$('#edit-title-field').value.trim() || `${typeLabels[item.type]} 기록`;
+      item.date=$('#edit-date').value;
+      item.time=$('#edit-time').value;
+      item.amount=$('#edit-amount').value === '' ? null : Number($('#edit-amount').value);
+      item.category=item.type === 'expense' ? $('#edit-category').value : '';
+      item.reminderMinutes=item.type === 'expense' ? 0 : Number($('#edit-reminder').value || 0);
+      item.review=$('#edit-review').checked;
+      item.notes=$('#edit-notes').value.trim();
+      closeEdit();
+      persist('수정한 기록을 저장했습니다.');
+      renderView();
+    });
+
+    $('#edit-type').addEventListener('change',updateEditReminderVisibility);
+    $('#iphone-reminder').addEventListener('change', () => {
+      $('#reminder-minutes').disabled = !$('#iphone-reminder').checked;
+    });
+    $('#export-calendar-button').addEventListener('click', () => {
+      downloadCalendarEvent({
+        id:$('#edit-id').value,
+        type:$('#edit-type').value,
+        title:$('#edit-title-field').value.trim() || '운하루 일정',
+        date:$('#edit-date').value,
+        time:$('#edit-time').value,
+        notes:$('#edit-notes').value.trim()
+      },Number($('#edit-reminder').value || 30));
+    });
+
+    $('#weather-refresh').addEventListener('click',loadSeoulWeather);
+
+    $('#delete-button').addEventListener('click', () => {
+      const id=$('#edit-id').value;
+      const item=items.find((entry)=>entry.id===id);
+      if(!item) return;
+      if(!confirm(`“${item.title}” 기록을 삭제할까요?`)) return;
+      items=items.filter((entry)=>entry.id!==id);
+      closeEdit();
+      persist('기록을 삭제했습니다.');
+      renderView();
+    });
+    $('#close-dialog').addEventListener('click',closeEdit);
+    $('#cancel-button').addEventListener('click',closeEdit);
+
+    renderSavedTransitRoutes();
+    updateInputGuide();
+    renderView();
+    loadSeoulWeather();
+  </script>
+  <script src="assets/expense-report.js"></script>
+  <script src="assets/dayflow-auth.js"></script>
+  <link rel="stylesheet" href="assets/transit.css">
+  <script src="assets/transit-core.js"></script>
+  <script src="assets/transit-reuse.js"></script>
+  <script src="assets/transit.js"></script>
+  <script src="assets/sharing-core.js"></script>
+  <script src="assets/email-sharing.js"></script>
+  <script src="assets/email-publish.js"></script>
+  <link rel="stylesheet" href="assets/sharing.css">
+</body>
+</html>

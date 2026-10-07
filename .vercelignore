@@ -1,0 +1,12 @@
+.git/
+tests/
+docs/
+supabase/
+README.md
+.env*
+node_modules/
+assets/sharing.js
+assets/inline-sharing.js
+backups/
+exports/
+private-data/

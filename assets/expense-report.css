@@ -1,0 +1,50 @@
+#expense-report-dialog { --report-ink:#173e45; --report-muted:#4c6468; --report-line:#c8d9d7; --report-paper:#fffdf8; --report-teal:#236b70; --report-demo:#ae7043; width:min(880px,calc(100vw - 24px)); max-width:880px; max-height:90vh; max-height:90dvh; padding:28px; overflow:auto; box-sizing:border-box; background:var(--report-paper); color:var(--report-ink); border:1px solid var(--report-line); border-radius:20px; font-size:15px; line-height:1.65; }
+#expense-report-dialog::backdrop { background:rgba(9,34,39,.65); backdrop-filter:blur(5px); }
+#expense-report-dialog * { box-sizing:border-box; min-width:0; }
+#expense-report-dialog button { min-height:44px; padding:10px 16px; border:1px solid var(--report-line); border-radius:10px; background:white; color:var(--report-ink); font:inherit; cursor:pointer; }
+#expense-report-dialog button:hover { background:#e8f2ef; }
+#expense-report-dialog button:focus-visible { outline:3px solid var(--report-teal); outline-offset:3px; }
+#expense-report-dialog h2 { font-size:26px; margin:4px 0; }
+#expense-report-dialog h3 { font-size:18px; margin:22px 0 10px; }
+.report-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.report-eyebrow { font-size:12px; letter-spacing:.12em; color:var(--report-muted); }
+.report-controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+.report-month-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:18px; }
+.report-month-fields label { display:grid; gap:6px; font-weight:700; }
+#expense-report-dialog input[type="month"] { width:100%; min-height:44px; border:1px solid var(--report-line); border-radius:10px; padding:10px; background:white; color:var(--report-ink); font:inherit; }
+#expense-report-dialog input:focus-visible { outline:3px solid var(--report-teal); outline-offset:2px; }
+.report-error { color:#923c29; font-weight:700; }
+.report-change { margin:8px 0 0; font-size:13px; color:var(--report-muted); }
+#expense-report-dialog button[aria-pressed="true"], #expense-report-dialog button[aria-pressed="true"]:hover { background:var(--report-teal); color:white; border-color:var(--report-teal); }
+.report-note { color:var(--report-muted); font-size:13px; }
+.report-disclaimer { background:#fff1d9; border:1px solid #e6c48c; border-radius:12px; padding:14px 16px; margin:16px 0; color:#62401c; }
+.report-period { margin:12px 0; font-weight:700; }
+.report-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.report-stat { padding:18px; border:1px solid var(--report-line); background:#eef5f1; border-radius:14px; }
+.report-stat strong { display:block; font-size:26px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.report-stat span,.report-stat small { display:block; color:var(--report-muted); }
+.report-stat.sample { background:#faf0e4; }
+.report-categories { list-style:none; padding:0; margin:0; }
+.report-category { padding:14px 0; border-bottom:1px solid var(--report-line); }
+.report-category-head { display:flex; justify-content:space-between; gap:12px; }
+.report-bar-row { display:grid; grid-template-columns:110px minmax(20px,1fr) 95px; align-items:center; gap:8px; margin-top:5px; font-size:13px; }
+.report-track { height:8px; background:#e0e7e3; border-radius:8px; overflow:hidden; }
+.report-bar { height:100%; background:var(--report-teal); border-radius:8px; }
+.report-bar.sample { background:var(--report-demo); }
+.report-bar-row>span:last-child { text-align:right; font-variant-numeric:tabular-nums; }
+.report-observations { background:#edf3f0; padding:16px 16px 16px 34px; border-radius:12px; }
+.report-observations li+li { margin-top:8px; }
+.report-records { border:1px solid var(--report-line); border-radius:12px; padding:12px 16px; margin-top:16px; }
+.report-records summary { cursor:pointer; min-height:44px; padding-top:9px; font-weight:700; }
+.report-records ul { padding-left:20px; overflow-wrap:anywhere; }
+.report-records li { padding:5px 0; }
+.report-badge { background:#f2cd88; color:#243e40; border-radius:8px; padding:2px 6px; margin-left:auto; font-size:11px; }
+@media(max-width:680px) {
+  #expense-report-dialog { padding:18px 14px; }
+  #expense-report-dialog h2 { font-size:21px; }
+  .report-stats { grid-template-columns:1fr; gap:8px; }
+  .report-stat { padding:12px 16px; }
+  .report-stat strong { font-size:25px; }
+  .report-bar-row { grid-template-columns:90px minmax(12px,1fr) 85px; gap:5px; }
+}
+@media(max-width:400px) { .report-month-fields { grid-template-columns:1fr; gap:10px; } }

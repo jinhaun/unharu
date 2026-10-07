@@ -1,0 +1,154 @@
+/* A continuous canal landscape, with readable surfaces only where text needs them. */
+:root {
+  --glass-line:rgba(255,243,219,.35);
+  --evening-ink:#0c3039;
+  --warm-paper:#fff6e6;
+}
+body {
+  background-color:#173e48;
+  background-image:linear-gradient(180deg,rgba(7,32,44,.30),rgba(6,37,45,.42)),url('canal-city-panorama-2026-10-06-v01.png');
+  background-size:cover;
+  background-position:center center;
+  background-attachment:fixed;
+}
+.main { background:transparent; }
+.app[hidden] { display:none !important; }
+.rail {
+  background:linear-gradient(180deg,rgba(7,33,42,.91),rgba(8,47,54,.84));
+  border-right:1px solid var(--glass-line);
+  backdrop-filter:blur(12px);
+}
+.brand { border-radius:14px; border-color:rgba(247,210,147,.32); box-shadow:none; }
+.nav button[aria-pressed="true"] { background:rgba(232,190,121,.17); box-shadow:inset 3px 0 #f4c768; }
+.rail::after,.hero::before,.calendar-head::after,.metric::before,.metric::after,.capture::before,.recent::before { display:none; }
+.rail .privacy { position:static; margin:24px 8px 0; }
+.rail { display:flex; flex-direction:column; overflow-y:auto; }
+.rail > * { flex-shrink:0; }
+.rail-bottom { margin-top:auto; padding-top:24px; }
+.saju-site-link { display:flex; align-items:center; gap:10px; width:100%; min-height:58px; padding:12px; border:1px solid rgba(244,199,104,.55); border-radius:12px; color:#fff2d5; background:rgba(244,199,104,.12); text-decoration:none; font-size:12px; font-weight:750; transition:background 160ms ease; }
+.saju-site-link:hover { background:rgba(244,199,104,.23); }
+.saju-site-link:focus-visible { outline:3px solid #f4c768; outline-offset:3px; }
+.saju-site-link svg { width:22px; height:22px; flex:none; }
+.saju-site-link span { min-width:0; }
+.saju-site-link small { display:block; margin-top:4px; font-size:11px; font-weight:400; color:#cfdfdb; }
+.saju-site-link .saju-link-arrow { width:16px; height:16px; margin-left:auto; }
+@media(max-width:760px) { .rail-bottom { padding-top:12px; } }
+@media(prefers-reduced-motion:reduce) { .saju-site-link { transition:none; } }
+.topbar { background:rgba(255,248,230,.93); border-color:rgba(255,255,255,.50); box-shadow:none; }
+.topbar::after { opacity:.45; height:2px; bottom:-2px; }
+.weather-card { background:rgba(250,250,235,.94); border-color:var(--glass-line); border-radius:16px; }
+.hero {
+  min-height:156px;
+  background:linear-gradient(90deg,rgba(5,31,43,.79),rgba(5,31,43,.16)),url('canal-city-panorama-2026-10-06-v01.png') center 48% / cover;
+  border:1px solid var(--glass-line);
+  border-radius:20px;
+  box-shadow:0 14px 35px rgba(0,20,31,.18);
+}
+.hero h2 { font-size:clamp(21px,2.5vw,32px); line-height:1.5; }
+.hero p { letter-spacing:.18em; }
+.score { border-radius:14px; background:rgba(6,35,43,.76); box-shadow:none; }
+.metric { min-height:84px; padding:16px; border-radius:16px; box-shadow:0 8px 20px rgba(4,30,36,.1); }
+.metric:nth-child(1),.metric:nth-child(2),.metric:nth-child(3),.metric:nth-child(4) {
+  color:#143a40; background:rgba(255,247,229,.94); border-color:var(--glass-line);
+}
+.metric:nth-child(3) { background:rgba(222,245,236,.95); }
+.metric span { opacity:1; color:#526965; font-size:11px; }
+.metric strong { font-size:22px; }
+.calendar-card {
+  align-self:start;
+  padding:16px;
+  border:1px solid rgba(255,244,218,.6);
+  border-radius:22px;
+  background:rgba(9,42,49,.68);
+  box-shadow:0 18px 48px rgba(1,23,32,.30),inset 0 1px rgba(255,255,255,.2);
+}
+.calendar-head {
+  padding:12px;
+  margin-bottom:12px;
+  border:1px solid var(--glass-line);
+  border-radius:14px;
+  background:rgba(255,247,231,.96);
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.month-title h2 { color:#133c43; }
+.weekdays {
+  padding:12px 0;
+  color:#fff6e6;
+  background:rgba(7,41,48,.95);
+  border-color:var(--glass-line);
+  border-radius:12px 12px 0 0;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.weekdays span { font-size:12px; }
+.days {
+  overflow:hidden;
+  border:1px solid var(--glass-line);
+  border-top:0;
+  border-radius:0 0 12px 12px;
+  background:linear-gradient(180deg,rgba(12,34,47,.08),rgba(6,42,49,.13)),url('canal-city-panorama-2026-10-06-v01.png') center center / cover no-repeat;
+}
+.day,.day:nth-child(7n+1),.day:nth-child(7n) {
+  min-height:114px;
+  padding:8px;
+  background:rgba(255,245,226,.05);
+  border-color:rgba(255,250,232,.38);
+  transition:background-color 150ms ease;
+}
+.day.outside { background:rgba(6,31,45,.27); color:#143a40; }
+.day.today { background:rgba(242,211,146,.16); box-shadow:inset 0 0 0 2px #ffe0a0; }
+.day:hover { background:rgba(255,247,224,.22); }
+button.day-number {
+  display:block;
+  width:32px;
+  min-height:28px;
+  padding:4px 0;
+  margin:0 0 8px;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:9px;
+  color:#153c45;
+  background:#fff5e5;
+  text-align:center;
+  font-size:12px;
+  box-shadow:0 2px 8px rgba(6,33,44,.16);
+}
+.day.outside button.day-number { background:#d6dfdf; color:#38585e; }
+.day.today button.day-number { background:#ffdc8f; color:#45300f; border-color:#ffecc0; }
+.day .event { padding:7px 6px; min-height:26px; font-size:10px; box-shadow:0 2px 8px rgba(8,30,40,.22); }
+.day .event.task,.day .event.meeting { background:#e3edff; color:#173e67; }
+.day .event.expense { background:#ffe3cc; color:#74301c; }
+.day .event.certificate { background:#dff3e6; color:#174f42; }
+.day-more { width:fit-content; padding:4px 6px; border-radius:6px; color:#153c45; background:#fff5e5; font-weight:800; }
+.list-view { padding:16px; border-radius:12px; background:rgba(255,250,239,.97); }
+.capture {
+  border-color:rgba(246,220,175,.45);
+  border-radius:20px;
+  background:linear-gradient(145deg,rgba(13,58,62,.97),rgba(8,43,51,.95));
+  box-shadow:0 14px 32px rgba(2,28,35,.23);
+}
+.capture p { max-width:100%; color:#d6e7e1; }
+.capture h2 { font-size:16px; }
+.repeat-settings,.reminder-settings,.expense-entry-options { background:#173f46; border-color:#64827c; }
+.mode-tabs button { background:rgba(255,255,255,.08); border-color:#63887f; }
+.mode-tabs button[aria-pressed="true"] { color:#143a40; background:#f4d49b; border-color:#f4d49b; }
+.recent { border-radius:20px; background:rgba(255,250,239,.96); }
+dialog { border:1px solid #d6c499; border-radius:20px; background:#fffaf0; }
+dialog::backdrop { background:rgba(3,28,37,.62); backdrop-filter:blur(5px); }
+.day-details-summary { background:#e8f1e9; }
+.auth-gate { background:linear-gradient(rgba(3,27,39,.42),rgba(3,27,39,.55)),url('canal-city-panorama-2026-10-06-v01.png') center / cover; backdrop-filter:none; }
+@media (max-width:760px) {
+  body { background-attachment:scroll; }
+  .rail { background:rgba(5,36,44,.94); }
+  .calendar-card { padding:8px; border-radius:16px; }
+  .calendar-head { padding:9px; }
+  .days { background-position:46% center; }
+  .day,.day:nth-child(7n+1),.day:nth-child(7n) { min-height:88px; padding:4px 2px; }
+  button.day-number { width:28px; min-height:28px; margin-bottom:6px; font-size:11px; }
+  .day .event { min-height:24px; padding:5px 2px; font-size:9px; }
+  .day-more { font-size:9px; padding:3px 2px; }
+  .hero { min-height:174px; background-position:center 50%; }
+  .hero h2 { max-width:22ch; }
+  .metric { padding:14px; min-height:82px; }
+  .list-view { padding:10px; }
+}
