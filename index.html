@@ -39,9 +39,6 @@
     .filter-nav { display:flex; flex-wrap:wrap; gap:5px; margin:18px 8px 0; padding-top:16px; border-top:1px solid #30283e; }
     .filter-nav button { min-height:32px; padding:0 9px; border:1px solid #3c334a; border-radius:999px; color:#a9a0b5; background:transparent; font-size:9px; font-weight:800; }
     .filter-nav button[aria-pressed="true"] { color:#fff; border-color:#7651c8; background:#38236e; }
-    .rail-summary { margin:28px 8px 0; padding-top:18px; border-top:1px solid #30283e; }
-    .rail-summary span { color:#958ca4; font-size:10px; }
-    .rail-summary strong { display:block; margin-top:5px; color:var(--lime); font-size:24px; }
     .privacy { position:absolute; right:20px; bottom:22px; left:20px; color:#91899e; font-size:9px; line-height:1.5; }
     .main { min-width:0; }
     .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:70px; padding:11px 22px; border-bottom:1px solid var(--line); background:#fff; }
@@ -76,9 +73,6 @@
     .hero p { margin:0 0 4px; color:#c4b5fd; font-size:9px; font-weight:900; letter-spacing:.14em; }
     .hero h2 { margin:0; font-size:clamp(20px,2.5vw,30px); letter-spacing:-.035em; }
     .hero h2 span { color:var(--lime); }
-    .score { display:flex; align-items:center; gap:9px; min-width:145px; padding:10px 13px; border:1px solid #65567e; border-radius:10px; background:#1b1628; }
-    .score strong { color:var(--lime); font-size:27px; }
-    .score span { color:#d8d1e5; font-size:9px; line-height:1.35; }
     .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 16px 0; }
     .metric { padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 1px 2px rgba(15,23,42,.04); }
     .metric:first-child { background:var(--lime); border-color:#b5df53; }
@@ -288,12 +282,12 @@
         var(--bg);
     }
     .rail { background:linear-gradient(180deg,#0b252c 0%,#123940 58%,#0d2c32 100%); }
-    .brand em,.rail-summary strong { color:var(--lime); }
-    .brand small,.nav-label,.rail-summary span,.privacy { color:#9db7b8; }
+    .brand em { color:var(--lime); }
+    .brand small,.nav-label,.privacy { color:#9db7b8; }
     .nav button,.nav a { color:#d5e3e2; }
     .nav button:hover,.nav a:hover { background:#17444a; }
     .nav button[aria-pressed="true"] { color:#fff; background:#1b5960; box-shadow:inset 3px 0 var(--lime); }
-    .filter-nav,.rail-summary { border-color:#2c5559; }
+    .filter-nav { border-color:#2c5559; }
     .filter-nav button { color:#b9cdcc; border-color:#41666a; }
     .filter-nav button[aria-pressed="true"] { color:#102a2d; border-color:#f0c36f; background:#f0c36f; }
     .topbar { background:#fffdf8; }
@@ -321,9 +315,7 @@
     }
     .hero > * { position:relative; z-index:1; }
     .hero p { color:#f3d49a; }
-    .hero h2 span,.score strong { color:#f0c36f; }
-    .score { border-color:#4e7d81; background:rgba(8,38,43,.72); }
-    .score span { color:#d8e8e7; }
+    .hero h2 span { color:#f0c36f; }
     .metric { background:#fffdf8; }
     .metric:first-child { color:#2e2b20; border-color:#e3b65e; background:#f4ce84; }
     .metric:last-child { border-color:#bfdedb; background:#dfeeed; }
@@ -509,8 +501,8 @@
       background:rgba(244,199,104,.13);
       box-shadow:0 0 16px rgba(244,199,104,.35);
     }
-    .brand em,.rail-summary strong { color:var(--lamp); }
-    .brand small,.nav-label,.rail-summary span,.privacy { color:#abc5c2; }
+    .brand em { color:var(--lamp); }
+    .brand small,.nav-label,.privacy { color:#abc5c2; }
     .nav button,.nav a { color:#e0ece9; border:1px solid transparent; }
     .nav button:hover,.nav a:hover { border-color:rgba(244,199,104,.22); background:rgba(39,101,103,.64); }
     .nav button[aria-pressed="true"] {
@@ -520,7 +512,7 @@
       box-shadow:inset 4px 0 var(--lamp),0 7px 18px rgba(2,27,34,.22);
     }
     .nav-badge { color:#402b10; background:var(--lamp); }
-    .filter-nav,.rail-summary { border-color:rgba(169,200,196,.25); }
+    .filter-nav { border-color:rgba(169,200,196,.25); }
     .filter-nav button { color:#c5d7d4; border-color:rgba(169,200,196,.28); background:rgba(3,37,44,.30); }
     .filter-nav button[aria-pressed="true"] { color:#213234; border-color:var(--lamp); background:var(--lamp); }
 
@@ -572,9 +564,7 @@
     }
     .hero p { color:#f7cf78; }
     .hero h2 { max-width:720px; text-shadow:0 2px 12px rgba(0,0,0,.34); }
-    .hero h2 span,.score strong { color:#ffd778; }
-    .score { border-color:rgba(244,199,104,.65); background:rgba(3,39,47,.82); box-shadow:0 8px 22px rgba(2,28,34,.28); }
-    .score span { color:#e1efed; }
+    .hero h2 span { color:#ffd778; }
 
     .metrics { gap:12px; }
     .metric {
@@ -723,7 +713,7 @@
       .app { display:block; }
       .rail { position:static; width:auto; height:auto; padding:12px; }
       .brand { margin:0 0 10px; }
-      .brand small,.rail-summary,.privacy { display:none; }
+      .brand small,.privacy { display:none; }
       .nav { grid-template-columns:repeat(2,1fr); gap:5px; }
       .nav-label { grid-column:1/-1; margin:8px 4px 2px; }
       .nav button,.nav a { min-height:44px; padding:0 9px; font-size:10px; }
@@ -736,7 +726,6 @@
       .weather-refresh { min-height:44px; }
       .weather-chip { min-height:34px; }
       .hero { grid-template-columns:1fr; margin:12px 12px 0; padding:16px; }
-      .score { width:fit-content; }
       .metrics { grid-template-columns:repeat(2,1fr); padding:12px 12px 0; }
       .workspace { padding:12px; }
       .calendar-card { width:100%; max-width:100%; padding:10px; overflow-x:hidden; }
@@ -870,7 +859,6 @@
         <button type="button" data-filter="meeting" aria-pressed="false">회의</button>
         <button type="button" data-filter="review" aria-pressed="false">확인 필요</button>
       </div>
-      <div class="rail-summary"><span>이번 달 정리 점수</span><strong id="rail-score">78점</strong></div>
       <p class="privacy" id="privacy-copy">로그인 전에는 브라우저에, 로그인 후에는 내 Supabase 계정에 기록을 저장합니다.</p>
       <div class="rail-bottom">
         <a id="saju-site-link" class="saju-site-link" href="https://saju-he7y.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="사주사이트 바로가기 (새 탭)">
@@ -901,7 +889,6 @@
 
       <section class="hero" aria-label="AI 정리 요약">
         <div><p>운하루 · 나만의 일상 기록</p><h2>나의 하루가 <span>흐르는 곳</span></h2></div>
-        <div class="score"><strong id="score-value">78</strong><span>오늘의<br>정리 점수</span></div>
       </section>
 
       <section class="metrics" aria-label="월간 요약">
@@ -1640,13 +1627,10 @@
       const meetingCount = monthItems.filter((item) => item.type === 'meeting').length;
       const expense = monthItems.filter((item) => item.type === 'expense').reduce((sum,item) => sum + Number(item.amount || 0),0);
       const review = items.filter((item) => item.review).length;
-      const score = Math.max(35, 100 - review*7 - Math.max(0, taskCount-10)*2);
       $('#task-count').textContent = `${taskCount}개`;
       $('#meeting-count').textContent = `${meetingCount}건`;
       $('#expense-total').textContent = formatMoney(expense);
       $('#review-count').textContent = `${review}건`;
-      $('#score-value').textContent = score;
-      $('#rail-score').textContent = `${score}점`;
     }
 
     function renderRecent() {

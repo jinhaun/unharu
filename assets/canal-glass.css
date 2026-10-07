@@ -46,7 +46,6 @@ body {
 }
 .hero h2 { font-size:clamp(21px,2.5vw,32px); line-height:1.5; }
 .hero p { letter-spacing:.18em; }
-.score { border-radius:14px; background:rgba(6,35,43,.76); box-shadow:none; }
 .metric { min-height:84px; padding:16px; border-radius:16px; box-shadow:0 8px 20px rgba(4,30,36,.1); }
 .metric:nth-child(1),.metric:nth-child(2),.metric:nth-child(3),.metric:nth-child(4) {
   color:#143a40; background:rgba(255,247,229,.94); border-color:var(--glass-line);
