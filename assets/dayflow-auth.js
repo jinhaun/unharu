@@ -172,7 +172,7 @@
     cloudReady = false;
     setGateVisible(true);
     setAccount(session);
-    setAuthStatus('내 운하루 기록을 불러오고 있습니다.');
+    setAuthStatus('내 나다운하루 기록을 불러오고 있습니다.');
     setSavedStatus('내 계정 확인 중…');
 
     const previousOwner = localStorage.getItem(cacheOwnerKey);
@@ -187,7 +187,7 @@
     if (generation !== sessionGeneration || activeSession?.user.id !== session.user.id) return;
 
     if (error) {
-      setAuthStatus('운하루 저장소 연결이 아직 끝나지 않았습니다. 연결 설정을 확인해 주세요.', 'error');
+      setAuthStatus('나다운하루 저장소 연결이 아직 끝나지 않았습니다. 연결 설정을 확인해 주세요.', 'error');
       setSavedStatus('연결 설정 필요');
       console.error('DAYFLOW cloud load failed', error);
       setGateVisible(true);
@@ -214,7 +214,7 @@
     const created = await createEmptyCloudState();
     if (generation !== sessionGeneration || activeSession?.user.id !== session.user.id) return;
     if (!created) {
-      setAuthStatus('빈 운하루 공간을 만들지 못했습니다. 잠시 후 다시 로그인해 주세요.', 'error');
+      setAuthStatus('빈 나다운하루 공간을 만들지 못했습니다. 잠시 후 다시 로그인해 주세요.', 'error');
       setGateVisible(true);
     }
   }
@@ -260,10 +260,10 @@
   });
 
   emptyButton.addEventListener('click', async () => {
-    if (!window.confirm('이 브라우저의 기존 운하루 기록을 비우고 새 계정으로 시작할까요?')) return;
+    if (!window.confirm('이 브라우저의 기존 나다운하루 기록을 비우고 새 계정으로 시작할까요?')) return;
     importButton.disabled = true;
     emptyButton.disabled = true;
-    migrationStatus.textContent = '빈 운하루 공간을 만들고 있습니다…';
+    migrationStatus.textContent = '빈 나다운하루 공간을 만들고 있습니다…';
     clearLocalSnapshot();
     localStorage.setItem(cacheOwnerKey, activeSession.user.id);
     const created = await createEmptyCloudState();
@@ -275,7 +275,7 @@
       return;
     }
     migrationDialog.close();
-    showToast('새 계정 준비 완료', '빈 운하루 캘린더로 시작합니다.');
+    showToast('새 계정 준비 완료', '빈 나다운하루 캘린더로 시작합니다.');
   });
 
   loginButton.addEventListener('click', async () => {

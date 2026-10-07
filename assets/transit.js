@@ -74,7 +74,7 @@
     if(signal.aborted) throw new DOMException('Aborted','AbortError');
     let keyReply;
     try {keyReply=await fetch('/api/transit-key',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token},cache:'no-store',signal});}
-    catch(e){if(e.name==='AbortError')throw e;fail('운하루 서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.');}
+    catch(e){if(e.name==='AbortError')throw e;fail('나다운하루 서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.');}
     if(!keyReply.ok) fail(keyReply.status===403?'이 교통 조회 기능은 등록된 본인 계정만 사용할 수 있습니다.':keyReply.status===401?'로그인이 만료되었습니다. 다시 로그인해 주세요.':'교통 서비스 설정을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
     const credential=await keyReply.json();
     if(typeof credential.apiKey!=='string'||!credential.apiKey) fail('교통 서비스 키 설정을 확인해 주세요.');

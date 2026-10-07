@@ -8,13 +8,13 @@
  managerButton.type=lookupButton.type='button';managerButton.id='sharing-menu';lookupButton.id='sharing-inbox-menu';q('calendar-menu').after(managerButton,lookupButton);
  const manager=make('dialog');manager.id='sharing-dialog';manager.setAttribute('aria-labelledby','sharing-title');
  manager.innerHTML=`<div class="dialog-head"><h2 id="sharing-title">내 일정 공유 설정</h2><button id="sharing-close" type="button" class="close-button" aria-label="공유 설정 닫기">×</button></div><div class="sharing-body">
- <p>공유한 일정은 <strong>운하루에 Google 로그인한 사람이 내 이메일을 입력하면 누구나</strong> 볼 수 있습니다. 공유하지 않은 일정·소비·교통·입력 원문은 보이지 않습니다.</p>
+ <p>공유한 일정은 <strong>나다운하루에 Google 로그인한 사람이 내 이메일을 입력하면 누구나</strong> 볼 수 있습니다. 공유하지 않은 일정·소비·교통·입력 원문은 보이지 않습니다.</p>
  <label for="publication-event">공유 여부를 바꿀 내 일정</label><select id="publication-event"></select><div id="publication-preview" class="sharing-preview"></div>
  <label class="publication-toggle"><input id="publication-enabled" type="checkbox"> 이 일정 공유</label><p>제목·날짜·시간·메모를 읽기 전용으로 보여줍니다. 공유 중 내용을 수정하면 바뀐 내용도 보입니다. 반복 일정은 선택한 날짜의 한 건만 적용합니다.</p>
  <button id="publication-save" type="button" disabled>공유 설정 저장</button><p id="publication-status" role="status"></p><button id="publication-refresh" type="button">공유 상태 새로고침</button></div>`;
  const lookup=make('dialog');lookup.id='sharing-inbox';lookup.setAttribute('aria-labelledby','lookup-title');
  lookup.innerHTML=`<div class="dialog-head"><h2 id="lookup-title">다른 사람 일정</h2><button id="lookup-close" type="button" class="close-button" aria-label="다른 사람 일정 닫기">×</button></div><div class="sharing-body">
- <p>운하루를 이용한 사람의 Google 이메일을 입력하세요. 상대방이 ‘공유’를 선택한 일정만 볼 수 있습니다. 사람 등록이나 승인 요청은 필요하지 않습니다.</p>
+ <p>나다운하루를 이용한 사람의 Google 이메일을 입력하세요. 상대방이 ‘공유’를 선택한 일정만 볼 수 있습니다. 사람 등록이나 승인 요청은 필요하지 않습니다.</p>
  <form id="lookup-form"><label for="lookup-email">보고 싶은 사람의 이메일</label><input id="lookup-email" type="email" required maxlength="320" autocomplete="off" placeholder="person@gmail.com"><button id="lookup-submit" type="submit">공유 일정 보기</button></form>
  <p id="lookup-status" role="status" aria-live="polite"></p><div id="lookup-results"></div><button id="lookup-refresh" type="button" disabled>다시 확인</button><button id="lookup-clear" type="button">보기 종료</button>
  <p class="sharing-hint">조회된 일정은 내 캘린더의 ‘전체’ 보기에도 함께 표시되며 내 소비 합계에는 포함되지 않습니다. 화면 복귀·1분 간격으로 다시 확인합니다. 공유 해제 후 새 조회에서는 보이지 않지만 이미 읽거나 복사한 내용은 회수할 수 없습니다.</p></div>`;
@@ -38,7 +38,7 @@
  managerButton.addEventListener('click',()=>open());q('sharing-close').addEventListener('click',()=>manager.close());q('publication-event').addEventListener('change',renderSelection);q('publication-refresh').addEventListener('click',()=>loadMine(q('publication-event').value));
  q('publication-save').addEventListener('click',async()=>{
   const item=selected(),shared=q('publication-enabled').checked,version=epoch;if(!item||!ready||busy)return;
-  if(!confirm(shared?`운하루에 로그인하고 내 이메일을 아는 누구나 아래 내용을 볼 수 있습니다.\n\n${item.title}\n${item.date||'날짜 미정'} ${item.time||'시간 미정'}\n${item.notes||'메모 없음'}\n\n이 일정을 공유할까요?`:`“${item.title}”의 이메일 조회 공유를 해제할까요?`))return;
+  if(!confirm(shared?`나다운하루에 로그인하고 내 이메일을 아는 누구나 아래 내용을 볼 수 있습니다.\n\n${item.title}\n${item.date||'날짜 미정'} ${item.time||'시간 미정'}\n${item.notes||'메모 없음'}\n\n이 일정을 공유할까요?`:`“${item.title}”의 이메일 조회 공유를 해제할까요?`))return;
   setBusy(true);note('공유 설정을 저장하고 있습니다…');
   try{if(shared&&!await window.DAYFLOW_CLOUD.flush())throw Error('Save not confirmed');if(version!==epoch)return;const result=await client().rpc('dayflow_set_event_published',{p_event_id:item.id,p_shared:shared});if(version!==epoch)return;if(result.error)throw result.error;await loadMine(item.id);if(version===epoch&&ready)note(shared?'이 일정을 이메일로 조회할 수 있도록 공유했습니다.':'공유를 해제했습니다. 다음 조회부터 보이지 않습니다.');}
   catch(error){if(version===epoch){ready=false;note('공유 설정 완료를 확인하지 못했습니다. 새로고침으로 현재 상태를 확인해 주세요.',true);}}
