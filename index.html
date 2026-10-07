@@ -900,7 +900,7 @@
 
       <div class="workspace">
         <section class="card calendar-card">
-          <div class="calendar-mode-note" id="certificate-note" hidden><div><strong>자격증 일정 표시 중</strong><span>SQLD · TOEIC · JLPT 공식 일정을 내 일정과 함께 보고 있습니다.</span></div><button type="button" id="hide-certificates">내 일정만 보기</button></div>
+          <div class="calendar-mode-note" id="certificate-note" hidden><div><strong>선택한 시험 일정</strong><span id="certificate-summary"></span><div id="certificate-notices"></div></div><div class="certificate-actions"><button type="button" id="certificate-settings-button">시험 설정</button><button type="button" id="hide-certificates">내 일정만 보기</button></div></div>
           <div class="expense-category-filter" id="expense-category-filter" aria-label="소비 카테고리 필터" hidden><button type="button" data-expense-category="all" aria-pressed="true">전체</button><button type="button" data-expense-category="식비" aria-pressed="false">식비</button><button type="button" data-expense-category="카페" aria-pressed="false">카페</button><button type="button" data-expense-category="교통" aria-pressed="false">교통</button><button type="button" data-expense-category="쇼핑" aria-pressed="false">쇼핑</button><button type="button" data-expense-category="구독" aria-pressed="false">구독</button><button type="button" data-expense-category="의료" aria-pressed="false">의료</button><button type="button" data-expense-category="기타" aria-pressed="false">기타</button></div>
           <div class="calendar-head">
             <div class="month-title"><div class="month-nav"><button type="button" id="prev-month" aria-label="이전 달">‹</button><button type="button" id="next-month" aria-label="다음 달">›</button></div><h2 id="month-label">2026년 10월</h2></div>
@@ -1089,6 +1089,7 @@
       ...event,
       id:`certificate-${event.id}`,
       type:'certificate',
+      certificateId:certificate.id,
       review:false,
       amount:null,
       notes:`${certificate.label} · ${event.kind} · ${event.detail}`,
@@ -1105,6 +1106,10 @@
     let viewMode = 'month';
     let viewDate = new Date(`${TODAY.slice(0,7)}-01T00:00:00`);
     let showCertificates = false;
+    function selectedCertificateItems() {
+      const selected = new Set(window.DAYFLOW_CERT_SETTINGS?.selected() || []);
+      return certificateItems.filter(item => selected.has(item.certificateId));
+    }
     let transitQuote = null;
     let savedRoutesReadFailed = false;
     let savedTransitRoutes = loadSavedTransitRoutes();
@@ -1474,7 +1479,7 @@
     }
 
     function filteredItems() {
-      const visibleItems = showCertificates ? [...items, ...certificateItems] : items;
+      const visibleItems = showCertificates ? [...items, ...selectedCertificateItems()] : items;
       if (activeFilter === 'all') return [...visibleItems,...(window.DAYFLOW_SHARING?.received()||[])];
       if (activeFilter === 'review') return items.filter((item) => item.review);
       const typeItems = items.filter((item) => item.type === activeFilter);
@@ -1548,8 +1553,9 @@
     }
 
     function openDayDetails(key) {
+      window.DAYFLOW_DATE_ENTRY?.open(key);
       $('#day-details-dialog').dataset.date=key;
-      const dayItems = [...items, ...(showCertificates ? certificateItems : []),...(window.DAYFLOW_SHARING?.received()||[])]
+      const dayItems = [...items, ...(showCertificates ? selectedCertificateItems() : []),...(window.DAYFLOW_SHARING?.received()||[])]
         .filter((item) => item.date === key)
         .sort(compareDayItems);
       const date = new Date(`${key}T00:00:00`);
@@ -1752,7 +1758,7 @@
 
     $('#calendar-menu').addEventListener('click', showMyCalendar);
     $('#hide-certificates').addEventListener('click', showMyCalendar);
-    $('#certificate-menu').addEventListener('click', () => {
+    function showSelectedCertificates() {
       showCertificates = true;
       activeFilter = 'all';
       expenseCategoryFilter = 'all';
@@ -1760,9 +1766,11 @@
       setPrimaryMenu('certificate');
       $$('.filter-nav button').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.filter === 'all')));
       $('#certificate-note').hidden = false;
-      $('#filter-description').textContent = '내 일정 위에 SQLD·TOEIC·JLPT 일정을 함께 표시하고 있습니다.';
+      $('#filter-description').textContent = '내 일정과 설정에서 선택한 시험만 표시합니다.';
       renderView();
-    });
+    }
+    $('#certificate-menu').addEventListener('click', () => window.DAYFLOW_CERT_SETTINGS?.open());
+    $('#certificate-settings-button').addEventListener('click', () => window.DAYFLOW_CERT_SETTINGS?.open());
     $('#expense-menu').addEventListener('click', () => {
       showCertificates = false;
       activeFilter = 'expense';
@@ -2102,6 +2110,7 @@
       resetTransitResult();
       persist(`${item.title} 이용 경로와 ${window.DAYFLOW_TRANSIT?.basisLabel(item.transit?.amountBasis) || '교통비'} ${formatMoney(item.amount)}을 저장했습니다.`);
       renderView();
+      window.DAYFLOW_DATE_ENTRY?.saved(item.date);
     }
 
     $('#calculate-transit').addEventListener('click', calculateTransitRoute);
@@ -2149,6 +2158,7 @@
         const savedDateText = selectedDate ? `${Number(selectedDate.slice(5,7))}월 ${Number(selectedDate.slice(8,10))}일` : '오늘';
         persist(repeatFrequency !== 'none' ? `${repeatFrequency === 'weekly' ? '매주' : '매월'} 소비 ${savedItems.length}건을 ${repeatDuration}개월 범위로 등록했습니다.` : savedItems.length === 1 ? `${savedItems[0].title} ${formatMoney(savedItems[0].amount)}을 생활비로 저장했습니다.` : `${savedDateText} 소비 ${savedItems.length}건을 한꺼번에 저장했습니다.`);
         renderView();
+        window.DAYFLOW_DATE_ENTRY?.saved(savedItems[0].date);
         return;
       }
       const item = parseInput(text,inputMode,{date:selectedDate,preferDate:Boolean(selectedDate)});
@@ -2168,6 +2178,7 @@
       renderView();
       if (item.type !== 'expense' && $('#iphone-reminder').checked) downloadCalendarEvent(savedItems[0],item.reminderMinutes);
       await window.DAYFLOW_INLINE_SHARING?.complete(shareRequest);
+      window.DAYFLOW_DATE_ENTRY?.saved(savedItems[0].date);
       } finally {
         quickInputSaving=false;
         captureControls.forEach(([el,disabled])=>el.disabled=disabled);
@@ -2245,7 +2256,13 @@
   <script src="assets/transit.js"></script>
   <script src="assets/sharing-core.js"></script>
   <script src="assets/email-sharing.js"></script>
+  <script src="assets/sharing-favorites.js"></script>
+  <link rel="stylesheet" href="assets/date-entry.css">
+  <script src="assets/date-entry.js"></script>
   <script src="assets/email-publish.js"></script>
   <link rel="stylesheet" href="assets/sharing.css">
+  <link rel="stylesheet" href="assets/certificate-settings.css">
+  <script src="assets/certificate-core.js"></script>
+  <script src="assets/certificate-settings.js"></script>
 </body>
 </html>

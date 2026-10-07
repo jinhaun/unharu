@@ -14,7 +14,8 @@ function harness(){
  const calls=[],handlers={},docHandlers={};let authHandler,flushOK=true,confirmOK=true,replyError=null,lookupReply=[],delay=null,saveDelay=null;
  const window={setTimeout:fn=>fn(),setInterval:()=>{},addEventListener:(name,fn)=>handlers[name]=fn,dispatchEvent:event=>handlers[event.type]?.(),DAYFLOW_CLOUD:{ready:()=>true,flush:async()=>{calls.push('flush');return saveDelay?saveDelay():flushOK;}},DAYFLOW_SUPABASE_CLIENT:{auth:{onAuthStateChange:fn=>authHandler=fn,getSession:async()=>({data:{session:{user:{id:'owner'}}}})},from:()=>{const query={select:()=>query,eq:async()=>({data:[]})};return query;},rpc:async(name,args)=>{calls.push({name,args});return name==='dayflow_lookup_calendar'?(delay?delay(args):{data:lookupReply,error:replyError}):{data:true,error:replyError};}}};
  const document={hidden:false,getElementById:q,body:new Element(),createElement:()=>new Element(),addEventListener:(name,fn)=>docHandlers[name]=fn,querySelectorAll:()=>[]};
- const ctx=vm.createContext({window,document,Event:class{constructor(type){this.type=type;}},Option:class{constructor(text,value){this.text=text;this.value=value;}},items:[{...item}],detailLabels:{},inputMode:'task',renderView:()=>{},openDayDetails:()=>{},showToast:()=>{},confirm:()=>confirmOK});
+ const FixedDate=class extends Date{constructor(...args){super(...(args.length?args:['2026-10-07T06:00:00Z']));}};
+ const ctx=vm.createContext({window,document,Date:FixedDate,Event:class{constructor(type){this.type=type;}},Option:class{constructor(text,value){this.text=text;this.value=value;}},items:[{...item}],detailLabels:{},inputMode:'task',renderView:()=>{},openDayDetails:()=>{},showToast:()=>{},confirm:()=>confirmOK});
  for(const file of ['sharing-core.js','email-sharing.js','email-publish.js'])vm.runInContext(fs.readFileSync(new URL('../assets/'+file,import.meta.url),'utf8'),ctx);
  return {q,ctx,calls,window,api:window.DAYFLOW_INLINE_SHARING, async ready(){await new Promise(r=>setImmediate(r));},login:id=>authHandler('SIGNED_IN',id?{user:{id}}:null),failSave:()=>flushOK=false,cancel:()=>confirmOK=false,failRPC:()=>replyError={code:'42501'},rows:value=>lookupReply=value,delay:fn=>delay=fn,delaySave:fn=>saveDelay=fn,async search(email){q('lookup-email').value=email;await q('lookup-form').fire('submit');},hide(){document.hidden=true;docHandlers.visibilitychange();}};
 }
@@ -47,4 +48,33 @@ test('account change during private save cannot publish for next account',async(
 test('runtime loads only new email sharing UI, auth and private storage unchanged',()=>{
  const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.ok(html.includes('src="assets/email-sharing.js"'));assert.ok(!html.includes('src="assets/sharing.js"'));assert.ok(!html.includes('src="assets/inline-sharing.js"'));
  assert.equal(fs.readFileSync(new URL('../assets/dayflow-auth.js',import.meta.url),'utf8').replaceAll('나다운하루','운하루'),fs.readFileSync(new URL('./baselines/v44/dayflow-auth.js',import.meta.url),'utf8'));
+});
+
+test('shared list groups this and next week, shows weekdays, excludes outside dates without mutating rows',async()=>{
+ const h=harness();await h.ready();
+ const dates=['2026-10-04','2026-10-05','2026-10-11','2026-10-12','2026-10-18','2026-10-19',''];
+ const rows=dates.map((date,i)=>({owner_id:'fixture-owner',event_id:String(i),date,time:'18:00',title:'가상 일정 '+i,notes:'공유 메모'}));
+ const original=JSON.stringify(rows);h.rows(rows);await h.search('fixture@example.invalid');
+ assert.equal(JSON.stringify(rows),original);
+ assert.deepEqual(Array.from(h.window.DAYFLOW_SHARING.received(),r=>r.date),dates.slice(1,5));
+ const text=el=>[el.textContent||'',...el.children.map(text)].join(' ');
+ assert.match(text(h.q('lookup-results')),/2026년 10월 5일 \(월\) · 18:00/);
+ assert.match(text(h.q('lookup-results')),/2026년 10월 18일 \(일\) · 18:00/);
+ assert.doesNotMatch(text(h.q('lookup-results')),/가상 일정 (0|5|6)/);
+ assert.equal(h.q('lookup-results').children.length,2);
+ assert.match(h.q('lookup-range').textContent,/월요일 시작/);
+ assert.match(h.q('lookup-status').textContent,/공유 일정 4건/);
+});
+
+test('weekday formatting and Korean two-week boundaries include Sunday and roll Monday across years',()=>{
+ const h=harness(),core=h.window.UNHARU_SHARING_CORE;
+ assert.equal(core.formatDate('2026-10-08'),'2026년 10월 8일 (목)');
+ assert.equal(core.formatDate('2024-02-29'),'2024년 2월 29일 (목)');
+ for(const invalid of ['',null,'2026-02-30','2026-13-01','not-a-date'])assert.equal(core.formatDate(invalid),'날짜 미정');
+ let r=core.twoWeekRange(new Date('2026-10-11T14:59:59Z'));
+ assert.equal(r.today,'2026-10-11');assert.equal(r.start,'2026-10-05');assert.equal(r.end,'2026-10-18');
+ r=core.twoWeekRange(new Date('2026-10-11T15:00:00Z'));
+ assert.equal(r.today,'2026-10-12');assert.equal(r.start,'2026-10-12');assert.equal(r.end,'2026-10-25');
+ r=core.twoWeekRange(new Date('2026-12-31T06:00:00Z'));
+ assert.equal(r.start,'2026-12-28');assert.equal(r.end,'2027-01-10');
 });

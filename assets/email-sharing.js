@@ -2,7 +2,7 @@
  'use strict';
  const q=id=>document.getElementById(id),core=window.UNHARU_SHARING_CORE,client=()=>window.DAYFLOW_SUPABASE_CLIENT;
  const make=(tag,text)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el;};
- let owner='',epoch=0,mineSequence=0,lookupSequence=0,lookupEmail='',incoming=[],published=new Set(),ready=false,busy=false;
+ let owner='',epoch=0,mineSequence=0,lookupSequence=0,lookupEmail='',incoming=[],published=new Set(),ready=false,busy=false,lookupLoaded=false;
  detailLabels.shared='다른 사람 일정 · 읽기 전용';
  const managerButton=make('button','내 일정 공유 설정'),lookupButton=make('button','다른 사람 일정');
  managerButton.type=lookupButton.type='button';managerButton.id='sharing-menu';lookupButton.id='sharing-inbox-menu';q('calendar-menu').after(managerButton,lookupButton);
@@ -16,7 +16,7 @@
  lookup.innerHTML=`<div class="dialog-head"><h2 id="lookup-title">다른 사람 일정</h2><button id="lookup-close" type="button" class="close-button" aria-label="다른 사람 일정 닫기">×</button></div><div class="sharing-body">
  <p>나다운하루를 이용한 사람의 Google 이메일을 입력하세요. 상대방이 ‘공유’를 선택한 일정만 볼 수 있습니다. 사람 등록이나 승인 요청은 필요하지 않습니다.</p>
  <form id="lookup-form"><label for="lookup-email">보고 싶은 사람의 이메일</label><input id="lookup-email" type="email" required maxlength="320" autocomplete="off" placeholder="person@gmail.com"><button id="lookup-submit" type="submit">공유 일정 보기</button></form>
- <p id="lookup-status" role="status" aria-live="polite"></p><div id="lookup-results"></div><button id="lookup-refresh" type="button" disabled>다시 확인</button><button id="lookup-clear" type="button">보기 종료</button>
+ <p id="lookup-range" class="sharing-range"></p><p id="lookup-status" role="status" aria-live="polite"></p><div id="lookup-results"></div><button id="lookup-refresh" type="button" disabled>다시 확인</button><button id="lookup-clear" type="button">보기 종료</button>
  <p class="sharing-hint">조회된 일정은 내 캘린더의 ‘전체’ 보기에도 함께 표시되며 내 소비 합계에는 포함되지 않습니다. 화면 복귀·1분 간격으로 다시 확인합니다. 공유 해제 후 새 조회에서는 보이지 않지만 이미 읽거나 복사한 내용은 회수할 수 없습니다.</p></div>`;
  document.body.append(manager,lookup);
  const note=(text,error=false)=>{q('publication-status').textContent=text;q('publication-status').dataset.error=String(error);};
@@ -44,23 +44,40 @@
   catch(error){if(version===epoch){ready=false;note('공유 설정 완료를 확인하지 못했습니다. 새로고침으로 현재 상태를 확인해 주세요.',true);}}
   finally{if(version===epoch)setBusy(false);}
  });
- function renderResults(){const root=q('lookup-results');root.replaceChildren();incoming.forEach(item=>{const card=make('article');card.className='shared-card';card.append(make('h3',item.title),make('p',`${item.date||'날짜 미정'} · ${item.time||'시간 미정'} · 읽기 전용`),make('p',item.notes||'메모 없음'));root.append(card);});lookupButton.textContent=incoming.length?`다른 사람 일정 · ${incoming.length}건`:'다른 사람 일정';display();}
- function clearResults(){lookupSequence++;lookupEmail='';incoming=[];q('lookup-submit').disabled=false;q('lookup-refresh').disabled=true;renderResults();}
+ function renderResults(){
+  const root=q('lookup-results'),range=core.twoWeekRange(),visible=core.inTwoWeeks(incoming,range);root.replaceChildren();
+  q('lookup-range').textContent=`이번 주 + 다음 주 · ${core.formatDate(range.start)} ~ ${core.formatDate(range.end)}\n오늘: ${core.formatDate(range.today)} · 대한민국 시간 · 월요일 시작`;
+  if(lookupEmail&&lookupLoaded){
+   for(const [label,start,end] of [['이번 주',range.start,range.thisEnd],['다음 주',range.nextStart,range.end]]){
+    const group=make('section');group.className='shared-week';group.append(make('h3',label),make('p',`${core.formatDate(start)} ~ ${core.formatDate(end)}`));
+    const rows=visible.filter(item=>item.date>=start&&item.date<=end);
+    if(!rows.length)group.append(make('p','이 주에 조회된 공유 일정이 없습니다.'));
+    rows.forEach(item=>{
+     const card=make('article');card.className='shared-card';
+     const when=make('p',`${core.formatDate(item.date)} · ${item.time||'시간 미정'}`);when.className='shared-when';
+     card.append(when,make('h4',item.title),make('p',item.notes||'메모 없음'),make('small','읽기 전용'));group.append(card);
+    });root.append(group);
+   }
+  }
+  lookupButton.textContent=visible.length?`다른 사람 일정 · ${visible.length}건`:'다른 사람 일정';display();
+ }
+ function clearResults(){lookupSequence++;lookupEmail='';incoming=[];lookupLoaded=false;q('lookup-submit').disabled=false;q('lookup-refresh').disabled=true;renderResults();}
  async function search(email=lookupEmail){
   if(!owner||!window.DAYFLOW_CLOUD?.ready()){clearResults();q('lookup-status').textContent='Google 로그인 후 내 기록을 불러온 다음 이용해 주세요.';return;}
   const clean=core.email(email);if(!clean){clearResults();q('lookup-status').textContent='조회할 Google 이메일을 정확히 입력해 주세요.';return;}
-  const version=epoch,sequence=++lookupSequence;lookupEmail=clean;incoming=[];renderResults();q('lookup-submit').disabled=true;q('lookup-refresh').disabled=true;q('lookup-status').textContent='공유된 일정만 확인하고 있습니다…';
+  const version=epoch,sequence=++lookupSequence;lookupEmail=clean;incoming=[];lookupLoaded=false;renderResults();q('lookup-submit').disabled=true;q('lookup-refresh').disabled=true;q('lookup-status').textContent='공유된 일정만 확인하고 있습니다…';
   try{const result=await client().rpc('dayflow_lookup_calendar',{p_email:clean});if(version!==epoch||sequence!==lookupSequence)return;if(result.error)throw result.error;
-   incoming=(result.data||[]).map(core.normalize).filter(Boolean).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));renderResults();
-   q('lookup-status').textContent=incoming.length?`${clean} · 공유 일정 ${incoming.length}건`:'조회할 공유 일정이 없습니다. 상대방의 이메일과 공유 여부를 확인해 주세요.';
+   incoming=(result.data||[]).map(core.normalize).filter(Boolean).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));lookupLoaded=true;renderResults();
+   const count=core.inTwoWeeks(incoming).length;
+   q('lookup-status').textContent=count?`${clean} · 이번 주·다음 주 공유 일정 ${count}건`:'이번 주·다음 주에 조회할 공유 일정이 없습니다. 이메일·공유 여부·일정 날짜를 확인해 주세요.';
   }catch(error){if(version===epoch&&sequence===lookupSequence){incoming=[];renderResults();q('lookup-status').textContent='공유 일정을 확인하지 못했습니다. 연결과 로그인 상태를 확인한 뒤 다시 시도해 주세요.';}}
   finally{if(version===epoch&&sequence===lookupSequence){q('lookup-submit').disabled=false;q('lookup-refresh').disabled=!lookupEmail;}}
  }
  q('lookup-form').addEventListener('submit',event=>{event.preventDefault();search(q('lookup-email').value);});q('lookup-email').addEventListener('input',()=>{clearResults();q('lookup-status').textContent='이메일을 입력한 뒤 공유 일정 보기를 눌러 주세요.';});
  q('lookup-refresh').addEventListener('click',()=>search());q('lookup-clear').addEventListener('click',()=>{clearResults();q('lookup-email').value='';q('lookup-status').textContent='다른 사람 일정 보기를 종료했습니다.';});
- lookupButton.addEventListener('click',()=>{if(!lookup.open)lookup.showModal();q('lookup-email').focus();});q('lookup-close').addEventListener('click',()=>lookup.close());
+ lookupButton.addEventListener('click',()=>{renderResults();if(!lookup.open)lookup.showModal();q('lookup-email').focus();});q('lookup-close').addEventListener('click',()=>lookup.close());
  function sessionChanged(session){const next=session?.user?.id||'';if(next===owner)return;epoch++;mineSequence++;owner=next;ready=false;published.clear();clearResults();manager.close();lookup.close();q('lookup-email').value='';q('lookup-status').textContent='';q('publication-event').replaceChildren();q('publication-preview').replaceChildren();note('');setBusy(false);window.dispatchEvent(new Event('dayflow-sharing-account-change'));}
  const api=client();if(api){api.auth.onAuthStateChange((_event,session)=>window.setTimeout(()=>sessionChanged(session),0));const initialEpoch=epoch;api.auth.getSession().then(({data})=>{if(initialEpoch===epoch)sessionChanged(data?.session);}).catch(()=>{if(initialEpoch===epoch)sessionChanged(null);});}
  window.addEventListener('focus',()=>{if(lookupEmail)search();});document.addEventListener('visibilitychange',()=>{if(document.hidden){lookupSequence++;incoming=[];renderResults();q('lookup-submit').disabled=false;q('lookup-refresh').disabled=!lookupEmail;}else if(lookupEmail)search();});window.setInterval(()=>{if(lookupEmail&&owner&&!document.hidden)search();},60000);
- window.DAYFLOW_SHARING={received:()=>incoming,open,account:()=>owner,refresh:()=>search()};
+ window.DAYFLOW_SHARING={received:()=>core.inTwoWeeks(incoming),open,account:()=>owner,refresh:()=>search(),lookup(email){q('lookup-email').value=email;return search(email);}};
 })();

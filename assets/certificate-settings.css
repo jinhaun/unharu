@@ -1,0 +1,27 @@
+#certificate-settings-dialog{width:min(680px,calc(100% - 24px));max-height:90vh;max-height:90dvh;padding:24px;box-sizing:border-box;border:1px solid #a8c6c9;border-radius:20px;background:#f8fcfb;color:#173d43;box-shadow:0 24px 80px #0b303b55;overflow-y:auto}
+#certificate-settings-dialog::backdrop{background:#102e3caa}
+#certificate-settings-dialog h2{margin:0;font-size:23px}
+#certificate-settings-dialog p{font-size:14px;line-height:1.6;margin:10px 0;color:#3e5e63}
+#certificate-settings-dialog input[type=search]{width:100%;box-sizing:border-box;min-height:46px;border:1px solid #688e93;border-radius:10px;padding:10px 12px;font:inherit;background:white;color:#173d43}
+#certificate-settings-dialog label[for=exam-search]{display:block;font-weight:700;margin:18px 0 8px}
+.exam-heading,.exam-footer,.certificate-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#certificate-settings-dialog button,.certificate-actions button{min-height:44px;padding:9px 14px;border:1px solid #688e93;border-radius:10px;background:white;color:#173d43;cursor:pointer;font:inherit;font-weight:700}
+#certificate-settings-dialog button:hover,.certificate-actions button:hover{background:#e2f1ee}
+#certificate-settings-dialog #exam-save{background:#164e59;color:white;border-color:#164e59}
+#certificate-settings-dialog :focus-visible,.certificate-actions :focus-visible{outline:3px solid #b26922;outline-offset:3px}
+#exam-results{display:grid;gap:10px;margin:14px 0}
+.exam-option{padding:14px;border:1px solid #b9d0ce;border-radius:12px;background:white;min-width:0}
+.exam-option:has(input:checked){border-color:#226757;background:#e8f5ee}
+.exam-option label{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-weight:700}
+.exam-option input{width:20px;height:20px;accent-color:#226757;flex-shrink:0}
+.exam-option small{display:block;margin-top:6px;font-size:13px;color:#496169;line-height:1.6}
+.exam-option a,#certificate-notices a{display:inline-block;color:#155269;text-decoration:underline;text-underline-offset:3px;padding:8px 0;min-height:24px}
+.exam-status{font-size:12px;border-radius:6px;background:#e9efed;padding:3px 7px;display:inline-block;margin:4px 0}
+#exam-selection-summary,#exam-feedback{overflow-wrap:anywhere}
+#exam-feedback{color:#993321!important}
+#exam-empty{padding:16px;background:#edf3f2;border-radius:10px}
+.exam-footer{border-top:1px solid #cadcda;padding-top:16px;margin-top:16px}
+#certificate-notices{font-size:13px;line-height:1.6;margin-top:8px}
+#certificate-note{align-items:flex-start}
+#certificate-note>div:first-child{min-width:0;flex:1;overflow-wrap:anywhere}
+@media(max-width:540px){#certificate-settings-dialog{padding:16px}.exam-footer button{flex:1}.exam-heading h2{font-size:20px}.certificate-actions{width:100%;justify-content:flex-start}}

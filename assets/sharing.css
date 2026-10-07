@@ -31,3 +31,12 @@
 .publication-toggle {display:flex;align-items:center;gap:10px;min-height:44px;font-size:16px}
 .publication-toggle input {width:20px;height:20px;accent-color:#164954}
 #publication-status[data-error=true] {color:#a22630}
+.sharing-range{padding:12px;border:1px solid #bdd0cf;border-radius:10px;background:#e7f3f2;font-weight:700}
+.shared-week .shared-card{margin:12px 0 0}
+.shared-week .shared-card h4{font-size:17px;line-height:1.6;margin:6px 0}
+.shared-week .shared-when{font-size:16px;font-weight:800;color:#512c5b}
+.shared-week small{font-size:13px;color:#466460}
+.favorite-row{display:flex;gap:8px;align-items:center;min-width:0}
+.sharing-body .favorite-email{flex:1;text-align:left;overflow-wrap:anywhere;min-width:0}
+.favorite-row button:last-child{flex:none}
+#favorite-status[data-error=true]{color:#a22630}
