@@ -1,0 +1,40 @@
+#seoul-weather { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+#seoul-weather .weather-overview { border-right:0; min-width:0; }
+#seoul-weather .weather-rain { grid-column:1 / -1; border-top:1px solid #bed8d3; padding-top:12px; }
+#today-guide-summary { display:grid; gap:5px; text-align:left; min-width:0; padding:12px 16px; border:1px solid #b1cec6; border-radius:12px; background:#e4f1eb; color:#163c3d; height:auto; cursor:pointer; overflow-wrap:anywhere; }
+#today-guide-summary span,#today-guide-summary small { font-size:12px; }
+#today-guide-summary strong { font-size:16px; line-height:1.4; }
+#today-guide-dialog { width:min(680px,calc(100vw - 32px)); max-height:85dvh; padding:24px; box-sizing:border-box; border:1px solid #a9c9c2; border-radius:20px; background:#fffaf0; color:#163c3d; overflow-y:auto; }
+#today-guide-dialog::backdrop { background:rgba(7,30,35,.65); }
+#today-guide-dialog * { box-sizing:border-box; }
+#today-guide-dialog button { min-height:44px; padding:8px 12px; border:1px solid #8caaa4; border-radius:8px; background:#fffdf8; color:#163c3d; font:inherit; cursor:pointer; }
+#today-guide-dialog button:hover,#today-guide-summary:hover { background:#d7eae2; }
+#today-guide-dialog button:focus-visible,#today-guide-summary:focus-visible { outline:3px solid #126874; outline-offset:3px; }
+#today-guide-dialog button:disabled { opacity:.55; cursor:default; }
+#today-guide-dialog .guide-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+#today-guide-dialog h2 { margin:4px 0; font-size:24px; }
+#today-guide-dialog p { line-height:1.6; font-size:14px; }
+#today-guide-dialog .guide-heading p { margin:0; }
+#today-guide-dialog .guide-controls { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+#today-guide-dialog fieldset { min-width:0; margin:0; padding:12px; border:1px solid #bdd0c8; border-radius:12px; }
+#today-guide-dialog legend { padding:0 4px; font-size:14px; font-weight:700; }
+#today-guide-dialog fieldset div { display:flex; flex-wrap:wrap; gap:8px; }
+#today-guide-dialog [aria-pressed=true],#today-guide-dialog #guide-start { background:#14555b; color:white; }
+#today-guide-dialog .guide-recommendation { margin:16px 0; padding:16px; background:#e7f1eb; border-radius:12px; overflow-wrap:anywhere; }
+#today-guide-dialog h3 { font-size:21px; margin:8px 0; }
+#today-guide-dialog .guide-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+#today-guide-dialog [hidden] { display:none!important; }
+#today-guide-dialog .guide-next { border-top:1px solid #bdd0c8; margin-top:16px; }
+#today-guide-dialog .guide-next span { display:block; overflow-wrap:anywhere; }
+#guide-completed { margin-top:16px; }
+#guide-completed summary { min-height:44px; cursor:pointer; padding:12px 0; }
+#guide-completed-list>div { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; }
+#guide-completed-list span { min-width:0; overflow-wrap:anywhere; }
+#guide-completed-list button { flex-shrink:0; }
+.guide-done { font-size:12px; font-weight:700; color:#215844; margin-left:6px; }
+.day-detail.selected-record { outline:3px solid #176e75; outline-offset:-3px; background:#e8f4ed; }
+.day-heading { display:flex; flex-wrap:wrap; align-items:center; gap:3px 6px; margin-bottom:6px; min-width:0; }
+.day-heading button.day-number { flex:0 0 auto; margin-bottom:0; }
+.day-expense-total { display:block; max-width:100%; padding:3px 4px; border-radius:5px; background:#fff0dc; color:#723615; font-size:11px; font-weight:800; line-height:1.4; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+#guide-defer-confirmation { padding:12px; border:1px solid #bd8e36; background:#fff0d2; border-radius:10px; }
+@media(max-width:540px){#seoul-weather { grid-template-columns:minmax(0,1fr); }#today-guide-dialog { padding:16px; }#today-guide-dialog .guide-controls { grid-template-columns:minmax(0,1fr); }}

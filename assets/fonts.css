@@ -1,0 +1,32 @@
+/* NAVER NanumSquare, unmodified official fonts. See fonts/OFL.txt. */
+@font-face {
+  font-family: "NanumSquare";
+  src: url("./fonts/NanumSquareL.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("./fonts/NanumSquareR.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("./fonts/NanumSquareB.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("./fonts/NanumSquareEB.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+:root {
+  --app-font: "NanumSquare", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+}

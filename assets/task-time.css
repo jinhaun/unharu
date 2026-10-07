@@ -1,0 +1,14 @@
+.task-times{min-width:0;margin:12px 0;padding:14px;border:1px solid #739b9d;border-radius:12px;background:#f4faf8;color:#173b40}
+.task-times[hidden]{display:none!important}
+.task-times legend{font-weight:700;font-size:14px;padding:2px 6px;color:#173b40!important;background:#f4faf8;border-radius:4px}
+.task-time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.task-times label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.task-times input[type=time]{width:100%;min-width:0;min-height:44px;padding:8px;border:1px solid #739b9d;border-radius:8px;background:#fff;color:#173b40;font:inherit;color-scheme:light}
+.task-times input:disabled{background:#e2eae8;color:#506663}
+.task-times .unknown-time{display:flex;align-items:center;gap:8px;min-height:44px;margin:8px 0 0;cursor:pointer}
+.task-times input[type=checkbox]{width:20px;height:20px;accent-color:#164047}
+.task-times small{display:block;font-size:12px;line-height:1.6}
+.task-times .time-error{color:#9a251d;font-size:13px;line-height:1.5;margin:6px 0 0}
+.task-times :focus-visible{outline:3px solid #ae6c13;outline-offset:2px}
+#edit-task-times{grid-column:1/-1}
+@media(max-width:380px){.task-time-grid{grid-template-columns:1fr}}

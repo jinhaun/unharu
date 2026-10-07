@@ -40,3 +40,11 @@
 .sharing-body .favorite-email{flex:1;text-align:left;overflow-wrap:anywhere;min-width:0}
 .favorite-row button:last-child{flex:none}
 #favorite-status[data-error=true]{color:#a22630}
+#sharing-favorites>label{display:block;font-size:14px;font-weight:700;margin-top:12px}
+#favorite-name{width:100%;min-width:0;min-height:44px;margin-top:6px;padding:10px;border:1px solid #78989c;border-radius:8px;font:inherit;background:#fff;color:#173b40;box-sizing:border-box}
+#favorite-name-help{display:block;font-size:12px;line-height:1.6;margin:6px 0 12px;color:#466460}
+.favorite-row{margin-top:10px;flex-wrap:wrap}
+.favorite-row button{min-height:44px}
+.favorite-row .favorite-email{flex:1 1 170px;font-weight:700}
+.favorite-email small{display:block;font-size:12px;font-weight:400;line-height:1.5;margin-top:4px;overflow-wrap:anywhere;color:inherit}
+#favorite-name:focus-visible{outline:3px solid #ae6c13;outline-offset:2px}

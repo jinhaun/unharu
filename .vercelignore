@@ -10,3 +10,6 @@ assets/inline-sharing.js
 backups/
 exports/
 private-data/
+newsletter.html
+newsletter-v10-assets/
+data/job-feed-current.js

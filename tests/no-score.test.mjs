@@ -10,10 +10,12 @@ test('score markup, updates and unused styles are removed',()=>{
 test('remaining metrics render correctly without any score DOM nodes',()=>{
   const source=html.match(/function renderMetrics\(\) \{[\s\S]*?\n    \}/)?.[0];
   assert.ok(source);
-  const nodes=Object.fromEntries(['task-count','meeting-count','expense-total','review-count'].map(id=>['#'+id,{textContent:''}]));
+  class FixedDate extends Date { constructor(...args){super(...(args.length?args:['2026-10-07T00:00:00Z']));} }
+  const nodes=Object.fromEntries(['task-count','meeting-count','expense-total','expense-average'].map(id=>['#'+id,{textContent:''}]));
   const ctx={items:[{type:'task',date:'2026-10-07'},{type:'meeting',date:'2026-10-07'},{type:'expense',date:'2026-10-07',amount:1230,review:true},{type:'expense',date:'2026-09-07',amount:9000}],viewDate:new Date(2026,9,7),pad:n=>String(n).padStart(2,'0'),formatMoney:n=>n.toLocaleString('ko-KR')+'원',$:selector=>{assert.ok(nodes[selector]);return nodes[selector];}};
+  ctx.Date=FixedDate;
   vm.runInNewContext(source+';renderMetrics();',ctx);
-  assert.deepEqual(Object.values(nodes).map(n=>n.textContent),['1개','1건','1,230원','1건']);
+  assert.deepEqual(Object.values(nodes).map(n=>n.textContent),['1개','1건','1,230원','176원']);
   ctx.items=[];vm.runInNewContext(source+';renderMetrics();',ctx);
-  assert.deepEqual(Object.values(nodes).map(n=>n.textContent),['0개','0건','0원','0건']);
+  assert.deepEqual(Object.values(nodes).map(n=>n.textContent),['0개','0건','0원','0원']);
 });

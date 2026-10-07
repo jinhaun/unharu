@@ -1,0 +1,12 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const source=html.slice(html.indexOf('function openDayDetails('),html.indexOf("$('#close-day-details').addEventListener"));
+function harness(){
+ class Node{constructor(){this.children=[];this.attributes={};this.className='';this.classList={add:x=>{this.className+=' '+x;}};}setAttribute(k,v){this.attributes[k]=v;}append(...n){this.children.push(...n);}replaceChildren(){this.children=[];}addEventListener(){}showModal(){this.open=true;}click(){this.clicked=true;}focus(){this.focused=true;}querySelector(selector){return this.children.find(x=>x.className.includes(selector.slice(1)));}}
+ const nodes=new Map(),q=sel=>{if(!nodes.has(sel))nodes.set(sel,new Node());return nodes.get(sel);};q('#day-details-dialog').dataset={};
+ const context={$:q,document:{createElement:()=>new Node()},window:{DAYFLOW_DATE_ENTRY:{open(key){context.openDate=key;}}},showCertificates:false,items:[{id:'a',type:'task',date:'2026-10-07',title:'A',time:'08:00'},{id:'b',type:'expense',date:'2026-10-07',title:'B',time:'09:00',amount:1000}],compareDayItems:(a,b)=>a.time.localeCompare(b.time),detailLabels:{task:'할 일',expense:'소비'},itemExpenseCategory:()=>'',formatMoney:x=>x+'원'};
+ vm.createContext(context);vm.runInContext(source,context);return{context,q};
+}
+test('clicking event stops date-cell handler and carries exact record id',()=>{assert.match(html,/event\.stopPropagation\(\); openDayDetails\(key,item.id\)/);assert.match(html,/cell.addEventListener\('click', \(\) => openDayDetails\(key\)\)/);});
+test('selected record appears first, record tab activates and focus follows without mutation',()=>{const {context,q}=harness(),before=JSON.stringify(context.items);context.openDayDetails('2026-10-07','b');const rows=q('#day-details-list').children;assert.equal(rows[0].attributes['aria-label'],'선택한 기록: B');assert.equal(rows[0].focused,true);assert.equal(q('#day-entry-records').clicked,true);assert.equal(rows.length,2);assert.equal(JSON.stringify(context.items),before);});
+test('date-only click preserves ordinary order and add-mode behavior; stale id does not select unrelated record',()=>{for(const id of [null,'missing']){const {context,q}=harness();context.openDayDetails('2026-10-07',id);assert.equal(q('#day-entry-records').clicked,undefined);assert.equal(q('#day-details-list').children[0].className,'day-detail task');assert.equal(context.openDate,'2026-10-07');}});
