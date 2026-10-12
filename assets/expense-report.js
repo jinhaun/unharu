@@ -1,7 +1,7 @@
 /* Report calculations only read records. Demonstration data never enters the store. */
 (function () {
   'use strict';
-  const categories = ['식비','카페','교통','쇼핑','구독','의료','기타'];
+  const categories = ['식비','간식','카페','교통','쇼핑','구독','의료','기타'];
   const pad = n => String(n).padStart(2,'0');
   const localDate = (d = new Date()) => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   function shiftMonth(month, delta) {
@@ -122,6 +122,7 @@
       stat(monthLabel(prior)+(mode==='demo'?' · 가상':' · 실제'),baseline.count?money(baseline.total):'기록 없음',baseline.count+'건'+(mode==='demo'?' · 예시일 뿐이에요':''),mode==='demo'),
       stat(mode==='demo'?'가상 기준과의 차이':'기준 달 대비 차이',difference,canCompare?Math.abs(diff.percent).toFixed(1)+'% '+(diff.delta===0?'동일':diff.delta>0?'높음':'낮음'):'기록 없음은 무소비를 뜻하지 않아요'));
     body.append(stats);
+    window.UnharuHabits?.render(body,real,baseline,{target,prior,days:range.targetEnd,priorDays:range.priorEnd,demo:mode==='demo'});
     if (!real.count) body.append(node('p','이 기간에 집계할 수 있는 실제 소비 기록이 없어요. 가상 비교 미리보기에서 이번 달 기록으로 화면을 확인할 수 있습니다.','report-disclaimer'));
     else if(!baseline.count) body.append(node('p','비교 기준 달에 소비 기록이 없어요. 기록이 쌓이면 실제 증감액과 증감률을 확인할 수 있습니다. 지금은 가상 비교 미리보기로 살펴보세요.','report-disclaimer'));
     body.append(node('h3','카테고리별 소비'));

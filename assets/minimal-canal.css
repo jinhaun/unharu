@@ -1,0 +1,75 @@
+/* Presentation only. No data, account, event, or storage behavior changes. */
+:root{--ink:#172c32;--muted:#52646a;--line:#d7dfdd;--purple:#087780;--purple-dark:#065e65;--purple-soft:#e5f1ef;--focus:#087780;--shadow:none}
+body{background-image:linear-gradient(rgba(255,249,236,.22),rgba(255,249,236,.22)),url('canal-city-panorama-2026-10-06-v01.png');background-position:center;background-size:cover;background-color:#e8efeb}
+.app{grid-template-columns:232px minmax(0,1fr)}
+.main{background:transparent}
+.rail{background:rgba(255,254,250,.97);color:var(--ink);border-right:1px solid #dce3e0;box-shadow:none;backdrop-filter:none;padding:24px 16px;overflow-y:auto}
+.rail::before,.rail::after,.topbar::after,.brand::before{display:none}
+.brand{padding:6px 8px;margin:0 0 24px;border:0;background:none;box-shadow:none;color:#172c32;font-size:22px;letter-spacing:-.05em}
+.brand em{color:#087780}.brand small{color:#52646a;font-size:11px;letter-spacing:0;margin-top:8px}
+.nav{gap:6px}.nav-label{color:#647579;font-size:11px;letter-spacing:0}
+.nav button,.nav a{color:#35474e;font-size:14px;min-height:46px;padding:10px 12px;border:1px solid transparent;border-radius:8px}
+.nav button:hover,.nav a:hover{background:#eff5f3;border-color:#d4e2df}
+.nav button[aria-pressed=true]{color:#07636b;background:#e5f1ef;border-color:transparent;box-shadow:none}
+.nav svg{width:20px;height:20px}.nav-badge{color:#07636b;background:#d8efeb}
+.filter-nav{border-color:#dce3e0;margin:20px 0 0;padding-top:16px;gap:6px}
+.filter-nav button{color:#4b5c62;border-color:#d7dfdd;background:#fff;font-size:11px;min-height:36px}
+.filter-nav button[aria-pressed=true]{color:#fff;background:#087780;border-color:#087780}
+.rail .privacy{color:#5b6b70;font-size:11px;line-height:1.7;margin:18px 6px}
+.saju-site-link{color:#35474e;background:#f5f7f3;border-color:#d7dfdd;border-radius:8px;font-size:12px}
+.saju-site-link small{color:#52646a}.saju-site-link:hover{background:#e6f1ee}
+.topbar{margin:20px 24px 0;padding:16px 20px;background:rgba(255,254,250,.95);border:1px solid #e0e5df;border-radius:12px;box-shadow:none;flex-wrap:wrap}
+.topbar h1{font-size:24px;color:#172c32}.topbar p{font-size:12px}
+.top-actions{flex-wrap:wrap;max-width:100%}.account-control{min-width:0;max-width:100%}.account-button{overflow-wrap:anywhere;max-width:100%}
+.saved-status{background:#ecf5f2;border-color:#d7e7e1;color:#31534d}
+.today-button,.month-nav button,.view-buttons button{color:#35474e;background:#fffefa;border-color:#cad7d4;border-radius:8px}
+.weather-card{margin:12px 24px 0;padding:16px 20px;background:rgba(255,254,248,.95);border:1px solid #dce4df;border-radius:12px;box-shadow:none}
+.weather-symbol{background:#e5f1ef;color:#087780}.weather-range,.weather-status{font-size:11px!important}
+.weather-empty{background:#f5f8f3;border-style:solid;border-color:#d7e4df}
+#today-guide-summary{background:#eef5f0;border-color:#d4e2db;border-radius:8px}
+.hero{display:none}
+.metrics{padding:12px 24px 0;gap:0}
+.metric:nth-child(n){min-height:78px;padding:16px 20px;color:#172c32;background:rgba(255,254,248,.95);border:1px solid #dce4df;border-right:0;border-radius:0;box-shadow:none}
+.metric:first-child{border-radius:10px 0 0 10px}.metric:last-child{border-right:1px solid #dce4df;border-radius:0 10px 10px 0}
+.metric span{color:#53646a;font-size:12px}.metric strong{font-size:23px;font-variant-numeric:tabular-nums}
+.workspace{grid-template-columns:minmax(0,1fr);gap:18px;padding:18px 24px 28px}
+.side{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.calendar-card{padding:0;background:transparent;border:0;border-radius:10px;box-shadow:none}
+.calendar-head{padding:12px 14px;background:rgba(255,254,250,.96);border:1px solid #dce4df;border-radius:10px;box-shadow:none;gap:12px}
+.month-title h2{font-size:22px;color:#172c32;min-width:0}.view-buttons button{font-size:12px}
+.view-buttons button[aria-pressed=true]{background:#087780;border-color:#087780;color:#fff}
+.calendar-entry-hint{width:fit-content;max-width:100%;padding:6px 10px;border-radius:6px;background:rgba(255,254,250,.95);color:#40575a;font-size:12px}
+.weekdays{padding:14px 0;background:rgba(255,254,248,.96);border-color:#d3ded8;border-radius:10px 10px 0 0;color:#344b50;box-shadow:none}
+.weekdays span:first-child{color:#b43637}.weekdays span:last-child{color:#2461a1}
+.days{border-color:#d3ded8;border-radius:0 0 10px 10px;background:linear-gradient(rgba(255,254,248,.60),rgba(255,254,248,.60)),url('canal-city-panorama-2026-10-06-v01.png') center 57%/cover no-repeat}
+.day,.day:nth-child(7n+1),.day:nth-child(7n){background:transparent;border-color:rgba(104,131,128,.28);min-height:112px;padding:9px}
+.day.outside{background:rgba(255,254,248,.30);color:#6a7b80}
+.day.today{background:rgba(229,246,241,.18);box-shadow:none}
+.day:hover{background:rgba(255,255,255,.36)}
+button.day-number{background:rgba(255,254,248,.92);color:#203a40;border:0;box-shadow:none;border-radius:50%;width:32px;min-height:32px;font-size:13px}
+.day.outside button.day-number{background:rgba(255,254,248,.92);color:#52646a}
+.day.today button.day-number{background:#087780;color:#fff;border-color:transparent}
+.day.sunday button.day-number,.day.holiday button.day-number{color:#b43637}
+.day.saturday button.day-number{color:#2461a1}
+.day.holiday button.day-number{background:rgba(255,226,226,.94);box-shadow:inset 0 0 0 1px #d98b8b}
+.holiday-label{color:#b43637}
+.day .event{box-shadow:none;border-radius:5px;font-size:11px;min-height:28px;font-weight:700}
+.day .event.task,.day .event.meeting{background:#e6f1ff;color:#163f70}
+.day .event.expense{background:#fff0e5;color:#76391d}.day .event.certificate{background:#e4f4e8;color:#205b37}
+.day-expense-total{background:#fff3e9;color:#753b21;font-size:10px}.day-more{background:#fffdf7;color:#345353}
+.card.capture-shell,.card.recent{background:rgba(255,254,250,.97);border:1px solid #dce4df;border-radius:12px;box-shadow:none;color:#172c32}
+.capture{background:#f7faf7;color:#172c32;border:1px solid #d2ded8;border-radius:10px;box-shadow:none}
+.capture p,.capture small,.capture .input-hint{color:#4b6563}
+.capture-head span{background:#e6f1ed;color:#315954}
+.capture .mode-tabs button{color:#355752;background:#fff;border-color:#c8d9d2}
+.capture .mode-tabs button[aria-pressed=true]{background:#dceee7;color:#174c44;border-color:#8fb6aa}
+.capture .repeat-settings,.capture .reminder-settings,.capture .expense-entry-options{background:#edf4ef;color:#244d44;border-color:#bacfc4}
+.capture .expense-entry-options button{color:#30564d}.capture label{color:#244d44}
+.capture input,.capture textarea,.capture select{color:#172c32;background:#fffefa;border-color:#bccfc6}
+.save-button{color:#fff;background:#087780;box-shadow:none}.save-button:hover{background:#065e65}
+.save-button:disabled{opacity:.5}.list-view,dialog{background:#fffefa;border-color:#d3ded8;border-radius:12px;box-shadow:none}
+.record,.edit-button{background:#fffefa;border-color:#dce4df}.recent::before{display:none}
+@media(min-width:761px){.rail{height:100dvh}}
+@media(max-width:1000px){.app{grid-template-columns:200px minmax(0,1fr)}.topbar,.weather-card{margin-left:16px;margin-right:16px}.metrics{padding-left:16px;padding-right:16px}.workspace{padding-left:16px;padding-right:16px}.metric:nth-child(n){padding:12px}.metric strong{font-size:20px}}
+@media(max-width:760px){.app{display:block}.rail{position:static;height:auto;padding:14px;background:rgba(255,254,250,.98)}.brand{margin-bottom:8px}.rail .privacy{margin:8px 6px}.rail-bottom{padding-top:10px}.nav button,.nav a{font-size:12px}.topbar{margin:12px 10px 0;padding:14px}.topbar h1{font-size:21px}.weather-card{margin:10px 10px 0;padding:14px}.metrics{padding:10px 10px 0;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px}.metric:nth-child(n){border:1px solid #dce4df;border-radius:8px;min-height:70px;padding:12px}.workspace{padding:12px 10px 24px}.side{grid-template-columns:minmax(0,1fr)}.calendar-head{padding:10px}.month-title h2{font-size:19px}.day,.day:nth-child(7n+1),.day:nth-child(7n){padding:5px 2px;min-height:94px}.day .event{font-size:10px;padding:5px 2px;min-height:26px}button.day-number{width:28px;min-height:28px;font-size:12px}.weekdays{padding:10px 0}.weekdays span{font-size:11px}.days{background-position:center;background-size:cover}.calendar-entry-hint{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.day,.nav button,.saju-site-link{transition:none}}

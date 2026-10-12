@@ -1,0 +1,5 @@
+.commute-settings{margin:12px 0;padding:12px;border:1px solid #c9dcd4;border-radius:9px;background:#f3f8f4;color:#234840}
+.commute-settings label{display:block;margin:0 0 6px;font-size:13px;font-weight:700}
+.commute-settings select{width:100%;min-height:44px;padding:8px;border:1px solid #91b3a6;border-radius:6px;font:inherit;background:#fff;color:#234840}
+.commute-settings p{margin:8px 0 0!important;color:#365b50!important;font-size:12px!important;line-height:1.6}
+#commute-target-wrap{margin-top:10px}#commute-target-wrap[hidden]{display:none}

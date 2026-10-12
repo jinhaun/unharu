@@ -1,0 +1,13 @@
+.habit-section { margin:24px 0; padding:18px; border:1px solid var(--report-line); border-radius:16px; background:#f3f8f5; overflow-wrap:anywhere; }
+#expense-report-dialog .habit-section>h3:first-child { margin-top:0; }
+.habit-facts { list-style:none; padding:0; margin:16px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.habit-facts li { background:var(--report-paper); padding:14px; border:1px solid var(--report-line); border-radius:12px; }
+.habit-facts strong { color:var(--report-ink); }
+.habit-facts p { margin:6px 0 0; }
+.habit-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.habit-fields label { display:grid; gap:8px; font-weight:700; }
+#expense-report-dialog .habit-fields select, #expense-report-dialog .habit-fields input { width:100%; min-height:44px; padding:10px; font:inherit; color:var(--report-ink); background:white; border:1px solid var(--report-line); border-radius:10px; }
+#expense-report-dialog .habit-fields select:focus-visible { outline:3px solid var(--report-teal); outline-offset:2px; }
+.habit-fields input:disabled { opacity:.65; cursor:not-allowed; }
+.habit-result { padding:14px; border-left:4px solid var(--report-teal); background:white; font-weight:700; }
+@media(max-width:600px) { .habit-section { padding:14px 10px; } .habit-facts,.habit-fields { grid-template-columns:1fr; } }

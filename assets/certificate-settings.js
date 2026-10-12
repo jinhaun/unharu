@@ -43,6 +43,7 @@
       const checked = document.createElement('small'); checked.textContent = exam.checkedAt ? `공식 안내 확인: ${exam.checkedAt}` : exam.events.length ? `기존 수록 자료: ${window.DAYFLOW_CERT_FEED.checkedAt} · 접수 전 공식 일정 재확인` : '확정 날짜 미수록 · 공식 안내에서 확인 필요';
       const link = document.createElement('a'); link.href = exam.officialUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = `${exam.label} 공식 안내 (새 창)`;
       card.append(label,status,note,checked,link);q('exam-results').append(card);
+      const guide = window.DAYFLOW_EXAM_GUIDES?.render(exam.id); if(guide)card.append(guide);
     }
     summary();
   }

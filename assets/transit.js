@@ -291,9 +291,14 @@
       quotedAt:transitQuote.quotedAt,estimatedDuration:transitQuote.duration,routeConfirmedAt:new Date().toISOString()};
   }
   function appendDetails(root,item) {
+    if(window.DAYFLOW_COMMUTE?.details(root,item))return;
     const trip=item.type==='expense'&&item.transit;if(!trip||!Array.isArray(trip.steps))return;
     const section=document.createElement('section');section.className='trip-record-detail';
     const heading=document.createElement('h4');heading.textContent='실제로 탄 경로';
+    if(trip.source==='manual'){
+      const info=document.createElement('p');info.textContent='직접 입력한 교통비 · '+(trip.originalTitle||item.title)+' (저장된 경로 정보 없음)';
+      section.append(heading,info);root.append(section);return;
+    }
     const description=document.createElement('p');description.textContent=[trip.origin,trip.via,trip.destination].filter(Boolean).join(' → ')+` · 조회 기준 약 ${trip.estimatedDuration}분`+(trip.via?' (경유지 대기시간 제외)':'');
     const reference=document.createElement('p');reference.textContent=trip.via?'경유 구간을 연결한 경로 · 환승할인 총액은 자동 계산하지 않았습니다. 저장 금액은 직접 확인한 실제 전체 결제액입니다.':`경로 전체 예상 요금 ${formatMoney(trip.referenceFare)} · 저장 금액은 ${basisLabel(trip.amountBasis)}입니다. 구간별 요금은 따로 합산하지 않습니다.`;
     if(trip.via&&trip.fareEstimate?.amount!=null)reference.textContent=`환승 예상 요금 ${formatMoney(trip.referenceFare)} · 저장 금액은 ${basisLabel(trip.amountBasis)}입니다. `+estimateDescription(trip.fareEstimate);

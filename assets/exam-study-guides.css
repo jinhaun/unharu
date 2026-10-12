@@ -1,0 +1,7 @@
+.exam-study-guide{margin-top:12px;border-top:1px solid #b8cccc;color:#203a40}
+.exam-study-guide summary{min-height:44px;display:list-item;align-content:center;cursor:pointer;font-weight:700;padding:8px 4px}
+.exam-guide-body{padding:4px 12px 14px;background:#f5f8f5;border-radius:10px;line-height:1.65;overflow-wrap:anywhere}
+.exam-guide-body h3{font-size:15px;margin:14px 0 6px}.exam-guide-body p,.exam-guide-body li{font-size:14px}.exam-guide-body ul,.exam-guide-body ol{padding-left:22px}
+.exam-guide-body small{display:block;color:#485f64}.exam-guide-body a{display:block;min-height:44px;align-content:center;text-decoration:underline}
+.exam-guide-body select{width:100%;min-height:44px;padding:8px;font:inherit;background:#fff;color:#203a40;border:1px solid #819d9e;border-radius:8px}
+.exam-study-guide :focus-visible{outline:3px solid #087780;outline-offset:3px}
