@@ -1,0 +1,38 @@
+/* 소비 분석 화면의 카테고리별 소비 요약 */
+.category-summary { margin:0 0 12px; padding:12px; border:1px solid #edb782; border-radius:9px; background:#fffaf3; color:#5b2c14; }
+.category-summary[hidden] { display:none; }
+.category-summary-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+.category-summary-tabs button { min-height:40px; padding:0 10px; border:1px solid #edb782; border-radius:999px; color:#7c3e1d; background:#fff; font:inherit; font-size:12px; font-weight:850; cursor:pointer; }
+.category-summary-tabs button[aria-pressed="true"] { color:#fff; border-color:#b84f22; background:#b84f22; }
+.category-summary-tabs button:focus-visible { outline:3px solid #b26922; outline-offset:2px; }
+.category-summary-head {display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.category-summary-head h3 { margin:0; font-size:14px; font-weight:850; }
+.category-summary-head strong { font-size:14px; font-weight:900; color:#9a3f17; }
+.category-summary-empty { margin:4px 0 0; font-size:12px; color:#7c5a45; }
+.category-summary-list { display:grid; gap:6px; }
+.category-summary-row { display:grid; grid-template-columns:64px minmax(0,1fr) auto; align-items:center; gap:10px; width:100%; min-height:44px; padding:6px 10px; border:1px solid transparent; border-radius:8px; color:inherit; background:#fff; font:inherit; text-align:left; cursor:pointer; }
+.category-summary-row:hover { border-color:#edb782; }
+.category-summary-row[aria-pressed="true"] { border-color:#b84f22; background:#fff1e3; box-shadow:0 0 0 2px rgba(184,79,34,.18); }
+.category-summary-row:focus-visible { outline:3px solid #b26922; outline-offset:2px; }
+.category-summary-name { font-size:13px; font-weight:850; }
+.category-summary-bar { display:flex; height:10px; border-radius:999px; background:#f6e3d2; overflow:hidden; }
+.category-summary-bar span { display:block; flex:none; height:100%; min-width:2px; background:var(--cat,#d9733f); }
+.category-summary-bar span + span { box-shadow:inset 1px 0 #fff; }
+/* 카테고리마다 같은 색: 막대 조각과 아래 금액 목록이 같은 색을 씁니다. */
+[data-category="식비"] { --cat:#d9733f; }
+[data-category="간식"] { --cat:#d4a017; }
+[data-category="카페"] { --cat:#8d5b3e; }
+[data-category="교통"] { --cat:#2f78b7; }
+[data-category="쇼핑"] { --cat:#c2417a; }
+[data-category="구독"] { --cat:#7254c4; }
+[data-category="의료"] { --cat:#2b8f63; }
+[data-category="기타"] { --cat:#7d838c; }
+.category-summary-parts { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:4px 10px; margin-top:-2px; font-size:11px; font-weight:700; color:#5b3a28; }
+.category-summary-part { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+.category-summary-part::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--cat,#d9733f); }
+.category-summary-amount { font-size:13px; font-weight:850; text-align:right; white-space:nowrap; }
+.category-summary-amount small { display:block; font-size:11px; font-weight:600; color:#8a6450; }
+@media (max-width:480px) {
+  .category-summary-row { grid-template-columns:58px minmax(0,1fr) auto; gap:8px; padding:6px 8px; }
+  .category-summary-name,.category-summary-amount { font-size:12px; }
+}

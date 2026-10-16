@@ -926,6 +926,7 @@
         <section class="card calendar-card">
           <div class="calendar-mode-note" id="certificate-note" hidden><div><strong>선택한 시험 일정</strong><span id="certificate-summary"></span><div id="certificate-notices"></div></div><div class="certificate-actions"><button type="button" id="certificate-settings-button">시험 설정</button><button type="button" id="hide-certificates">내 일정만 보기</button></div></div>
           <div class="expense-category-filter" id="expense-category-filter" aria-label="소비 카테고리 필터" hidden><button type="button" data-expense-category="all" aria-pressed="true">전체</button><button type="button" data-expense-category="식비" aria-pressed="false">식비</button><button type="button" data-expense-category="간식" aria-pressed="false">간식</button><button type="button" data-expense-category="카페" aria-pressed="false">카페</button><button type="button" data-expense-category="교통" aria-pressed="false">교통</button><button type="button" data-expense-category="쇼핑" aria-pressed="false">쇼핑</button><button type="button" data-expense-category="구독" aria-pressed="false">구독</button><button type="button" data-expense-category="의료" aria-pressed="false">의료</button><button type="button" data-expense-category="기타" aria-pressed="false">기타</button></div>
+          <section class="category-summary" id="expense-category-summary" aria-label="카테고리별·날짜별 소비 합계" hidden></section>
           <div class="calendar-head">
             <div class="month-title"><div class="month-nav"><button type="button" id="prev-month" aria-label="이전 달"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button><button type="button" id="next-month" aria-label="다음 달"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button></div><h2 id="month-label">2026년 10월</h2></div>
             <div class="view-buttons" aria-label="보기 방식"><button type="button" data-view="month" aria-pressed="true">월간</button><button type="button" data-view="list" aria-pressed="false">목록</button><button type="button" data-view="today" aria-pressed="false">오늘</button></div>
@@ -1907,6 +1908,7 @@
       renderMetrics();
       renderRecent();
       window.UnharuReports?.refresh();
+      window.DAYFLOW_EXPENSE_CATEGORIES?.refresh();
       window.DAYFLOW_GUIDE?.refresh();
     }
 
@@ -2560,6 +2562,8 @@
   <script src="assets/expense-habits-core.js"></script>
   <script src="assets/expense-habits.js"></script>
   <script src="assets/expense-report.js"></script>
+  <link rel="stylesheet" href="assets/expense-categories.css">
+  <script src="assets/expense-categories.js"></script>
   <script src="assets/dayflow-auth.js"></script>
   <script src="assets/font-choice.js"></script>
   <link rel="stylesheet" href="assets/transit.css">
