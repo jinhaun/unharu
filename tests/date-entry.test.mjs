@@ -25,7 +25,7 @@ test('date change refreshes selected day; blank date restored; failed sharing st
 });
 test('every existing save route refreshes day entry and retains original editor nodes',()=>{
  const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
- assert.equal((html.match(/DAYFLOW_DATE_ENTRY\?\.saved\(/g)||[]).length,3);
+ assert.equal((html.match(/DAYFLOW_DATE_ENTRY\?\.saved\(/g)||[]).length,4);
  assert.equal((html.match(/id="quick-input"/g)||[]).length,1);
  assert.equal((html.match(/id="quick-date"/g)||[]).length,1);
  assert.match(html,/DAYFLOW_DATE_ENTRY\?\.open\(key\)/);

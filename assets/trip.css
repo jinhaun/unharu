@@ -1,0 +1,24 @@
+/* 여행 일정: 시작일부터 마지막 날까지 이어지는 막대 */
+.mode-tabs { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.capture[data-input-mode="trip"] .quick-sharing { display:none; }
+
+.day .event.trip {
+  --ext-l:0px; --ext-r:0px;
+  position:relative; z-index:1;
+  width:calc(100% + var(--ext-l) + var(--ext-r)); max-width:none;
+  margin-left:calc(-1 * var(--ext-l));
+  color:#5a3a00; background:#ffe7a3; border-color:#d99a12;
+  border-radius:6px;
+}
+.day .event.trip.trip-from-left { border-left-width:0; border-top-left-radius:0; border-bottom-left-radius:0; }
+.day .event.trip.trip-to-right { border-top-right-radius:0; border-bottom-right-radius:0; }
+.day .event.trip.trip-extend-left { --ext-l:var(--trip-pad-l,8px); }
+.day .event.trip.trip-extend-right { --ext-r:calc(var(--trip-pad-r,8px) + var(--trip-line,1px)); }
+.day .event.trip:hover { filter:brightness(.97); }
+/* The trip name runs along the whole bar (up to the end of the week row) instead of being cut in the first day. */
+.day .event.trip.trip-titled { overflow:visible; z-index:2; }
+.trip-label { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.trip-titled .trip-label { width:calc(var(--span,1) * var(--trip-cell,100px) - var(--trip-pad-l,8px) - var(--trip-pad-r,8px) - 12px); }
+.event.trip-spacer { visibility:hidden; border:0; background:none; box-shadow:none; }
+.badge.trip { color:#5a3a00; background:#ffe7a3; }
+.day-detail.trip { border-left-color:#d99a12; }

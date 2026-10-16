@@ -1,0 +1,59 @@
+/* Optional per-account fonts. All are unmodified SIL OFL 1.1 fonts; licenses sit next to each file.
+   A font file is downloaded only when the account picks it (html[data-font]) or the font dialog shows it. */
+@font-face {
+  font-family: "Pretendard Variable";
+  src: url("./fonts/choices/pretendard/PretendardVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 45 920;
+  font-display: swap;
+}
+/* NanumSquare Neo: the official variable file is rejected by browsers, so the per-weight files are used. */
+@font-face { font-family: "NanumSquare Neo"; src: url("./fonts/choices/nanum-square-neo/NanumSquareNeoTTF-aLt.woff2") format("woff2"); font-style: normal; font-weight: 300; font-display: swap; }
+@font-face { font-family: "NanumSquare Neo"; src: url("./fonts/choices/nanum-square-neo/NanumSquareNeoTTF-bRg.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: "NanumSquare Neo"; src: url("./fonts/choices/nanum-square-neo/NanumSquareNeoTTF-cBd.woff2") format("woff2"); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: "NanumSquare Neo"; src: url("./fonts/choices/nanum-square-neo/NanumSquareNeoTTF-dEb.woff2") format("woff2"); font-style: normal; font-weight: 800; font-display: swap; }
+@font-face { font-family: "NanumSquare Neo"; src: url("./fonts/choices/nanum-square-neo/NanumSquareNeoTTF-eHv.woff2") format("woff2"); font-style: normal; font-weight: 900; font-display: swap; }
+@font-face {
+  font-family: "SUIT Variable";
+  src: url("./fonts/choices/suit/SUIT-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Wanted Sans Variable";
+  src: url("./fonts/choices/wanted-sans/WantedSansVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 1000;
+  font-display: swap;
+}
+/* Noto Sans KR Variable is split into small pieces in fonts/choices/noto-sans-kr/wght.css. */
+
+:root[data-font="pretendard"] { --app-font: "Pretendard Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+:root[data-font="nanum-square-neo"] { --app-font: "NanumSquare Neo", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+:root[data-font="suit"] { --app-font: "SUIT Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+:root[data-font="wanted-sans"] { --app-font: "Wanted Sans Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+:root[data-font="noto-sans-kr"] { --app-font: "Noto Sans KR Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+
+/* Font settings dialog */
+#font-settings-dialog{width:min(520px,calc(100% - 24px));max-height:90vh;max-height:90dvh;padding:24px;box-sizing:border-box;border:1px solid #a8c6c9;border-radius:20px;background:#f8fcfb;color:#173d43;box-shadow:0 24px 80px #0b303b55;overflow-y:auto}
+#font-settings-dialog::backdrop{background:#102e3caa}
+#font-settings-dialog h2{margin:0;font-size:23px}
+#font-settings-dialog p{font-size:14px;line-height:1.6;margin:10px 0;color:#3e5e63}
+.font-heading,.font-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#font-settings-dialog button{min-height:44px;padding:9px 14px;border:1px solid #688e93;border-radius:10px;background:white;color:#173d43;cursor:pointer;font:inherit;font-weight:700}
+#font-settings-dialog button:hover{background:#e2f1ee}
+#font-settings-dialog #font-save{background:#164e59;color:white;border-color:#164e59}
+#font-settings-dialog :focus-visible{outline:3px solid #b26922;outline-offset:3px}
+.font-options{display:grid;gap:10px;margin:14px 0;padding:0;border:0}
+.font-option{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid #b9d0ce;border-radius:12px;background:white;cursor:pointer;min-width:0}
+.font-option:has(input:checked){border-color:#226757;background:#e8f5ee}
+.font-option input{width:20px;height:20px;margin:2px 0 0;accent-color:#226757;flex-shrink:0}
+.font-option span{display:block;min-width:0}
+.font-option strong{display:block;font-size:17px;font-weight:800}
+.font-option .font-sample{display:block;margin-top:4px;font-size:13px;font-weight:400;color:#24474c}
+.font-option small{display:block;margin-top:4px;font-size:12px;color:#496169;line-height:1.5}
+#font-feedback{min-height:1.6em}
+#font-feedback[data-state=error]{color:#993321}
+.font-footer{border-top:1px solid #cadcda;padding-top:16px;margin-top:6px}
+@media(max-width:540px){#font-settings-dialog{padding:16px}.font-footer button{flex:1}.font-heading h2{font-size:20px}}
