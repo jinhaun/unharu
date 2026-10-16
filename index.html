@@ -1645,6 +1645,10 @@
       const start = new Date(year, month, 1-first.getDay());
       const visible = filteredItems();
       const tripRows = TRIP ? TRIP.slots(visible) : new Map();
+      // 소비 화면에서 카테고리를 고르면 날짜 옆 금액도 그 카테고리만 더하고, 그 외에는 그날 전체 소비를 보여 줍니다.
+      const categoryChosen = activeFilter === 'expense' && expenseCategoryFilter !== 'all';
+      const spentSource = categoryChosen ? items.filter((item) => item.type === 'expense' && itemExpenseCategory(item) === expenseCategoryFilter) : items;
+      const spentScope = categoryChosen ? expenseCategoryFilter : '전체';
       const root = $('#calendar-days');
       root.innerHTML = '';
       for (let index=0; index<42; index++) {
@@ -1665,11 +1669,11 @@
         const dayHeading=document.createElement('div');dayHeading.className='day-heading';dayHeading.append(number);
         if (holiday) { const holidayLabel=document.createElement('span'); holidayLabel.className='holiday-label'; holidayLabel.textContent=holiday; holidayLabel.setAttribute('aria-label',`공휴일 ${holiday}`); dayHeading.append(holidayLabel); }
         cell.append(dayHeading);
-        const spent=dailyExpenseSummary(items,key);
+        const spent=dailyExpenseSummary(spentSource,key);
         if(spent.count){
           const amount=document.createElement('span');amount.className='day-expense-total';
           amount.textContent=spent.missing===spent.count?'금액 미정':`${formatMoney(spent.total)}${spent.missing?' + ?':''}`;
-          amount.title=`이날 전체 소비 ${spent.count}건 · ${formatMoney(spent.total)}${spent.missing?` · 금액 확인 필요 ${spent.missing}건`:''}`;
+          amount.title=`이날 ${spentScope} 소비 ${spent.count}건 · ${formatMoney(spent.total)}${spent.missing?` · 금액 확인 필요 ${spent.missing}건`:''}`;
           number.setAttribute('aria-label',`${key} 하루 기록 전체 보기, ${amount.title}`);
           dayHeading.append(amount);
         }
