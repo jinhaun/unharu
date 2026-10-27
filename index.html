@@ -77,6 +77,8 @@
     .weather-filter-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
     .weather-filter-list label { display:flex; align-items:center; gap:4px; min-height:36px; padding:4px 5px; border:1px solid #d6e3df; border-radius:6px; color:#315b58; background:#fffdf8; font-size:9px; }
     .weather-filter-list input { width:16px; height:16px; accent-color:#087780; }
+    .weather-filter-actions .weather-filter-close { margin-left:auto; min-width:44px; min-height:44px; padding:0; font-size:16px; line-height:1; }
+    .weather-filter-done { display:block; width:100%; min-height:44px; margin-top:8px; border:1px solid #83aaa5; border-radius:7px; color:#174e4d; background:#fffdf8; font-size:10px; font-weight:850; }
     .weather-empty { width:100%; padding:9px 11px; border:1px dashed #8eb5af; border-radius:9px; color:#315b58; background:rgba(255,255,255,.48); font-size:10px; }
     .weather-card[data-state="error"] { border-color:#d6a39e; }
     .weather-card[data-state="error"] .weather-status { color:#8a332d!important; }
@@ -905,8 +907,9 @@
           <div class="weather-districts" id="rain-district-list" aria-label="오늘 비 소식이 있는 서울 지역"><span class="weather-empty">날씨 자료를 불러오고 있습니다.</span></div>
       <details class="weather-filter" id="weather-filter">
             <summary>자주 보는 구 선택 · <span id="weather-filter-summary">25개 구 선택됨</span></summary>
-            <div class="weather-filter-actions"><button type="button" id="weather-filter-all">서울 전체</button><button type="button" id="weather-filter-none">전체 해제</button></div>
+            <div class="weather-filter-actions"><button type="button" id="weather-filter-all">서울 전체</button><button type="button" id="weather-filter-none">전체 해제</button><button type="button" class="weather-filter-close" data-weather-filter-close aria-label="구 선택 닫기" title="닫기">✕</button></div>
             <div class="weather-filter-list" id="rain-district-filter" aria-label="비 알림을 볼 서울 지역 선택"></div>
+            <button type="button" class="weather-filter-done" data-weather-filter-close>✕ 선택 닫기</button>
           </details>
         </div>
       </section>
@@ -1370,6 +1373,14 @@
 
     $('#weather-filter-all')?.addEventListener('click', () => { watchedDistricts=SEOUL_DISTRICTS.map(([name])=>name); renderWeatherDistrictFilter(); saveWeatherDistrictFilter(); });
     $('#weather-filter-none')?.addEventListener('click', () => { watchedDistricts=[]; renderWeatherDistrictFilter(); saveWeatherDistrictFilter(); });
+    // ✕ 버튼: 고른 구는 그대로 두고 선택 목록만 접습니다(아래쪽 버튼으로 닫으면 접힌 제목이 보이게 올려 줍니다).
+    $$('[data-weather-filter-close]').forEach((button) => button.addEventListener('click', () => {
+      const filter = $('#weather-filter');
+      filter.open = false;
+      const summary = filter.querySelector('summary');
+      summary.focus({ preventScroll:true });
+      if (summary.getBoundingClientRect().top < 0) summary.scrollIntoView({ block:'center' });
+    }));
     renderWeatherDistrictFilter();
 
     async function loadSeoulWeather() {
@@ -2107,7 +2118,7 @@
       $$('.mode-tabs button').forEach((item) => item.setAttribute('aria-pressed',String(item===button)));
       $('#input-error').textContent='';
       updateInputGuide();
-      (inputMode === 'expense' && expenseEntryMode === 'transit' ? $('#transit-origin') : $('#quick-input')).focus();
+      // 입력 칸으로 커서를 옮기면 화면이 맨 아래로 내려가므로, 누른 버튼 자리에 그대로 머뭅니다.
     }));
 
     $$('#expense-entry-options button').forEach((button) => button.addEventListener('click', () => {
@@ -2115,7 +2126,7 @@
       $$('#expense-entry-options button').forEach((item) => item.setAttribute('aria-pressed',String(item===button)));
       $('#input-error').textContent='';
       updateInputGuide();
-      (expenseEntryMode === 'transit' ? $('#transit-origin') : $('#quick-input')).focus();
+      // '결제 직후' 등을 눌러도 화면이 입력 칸(맨 아래)으로 내려가지 않게 커서를 옮기지 않습니다.
     }));
 
     $('#repeat-frequency').addEventListener('change',updateRepeatControls);
