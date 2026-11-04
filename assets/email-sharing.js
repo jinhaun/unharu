@@ -70,6 +70,8 @@
    incoming=(result.data||[]).map(core.normalize).filter(Boolean).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));lookupLoaded=true;renderResults();
    const count=core.inTwoWeeks(incoming).length;
    q('lookup-status').textContent=count?`${clean} · 이번 주·다음 주 공유 일정 ${count}건`:'이번 주·다음 주에 조회할 공유 일정이 없습니다. 이메일·공유 여부·일정 날짜를 확인해 주세요.';
+   // 공유 일정이 보였다면 즐겨찾기가 이 이메일을 계정에 기억할 수 있게 알립니다.
+   if(count&&typeof CustomEvent==='function')window.dispatchEvent?.(new CustomEvent('dayflow-shared-lookup-found',{detail:{email:clean,count}}));
   }catch(error){if(version===epoch&&sequence===lookupSequence){incoming=[];renderResults();q('lookup-status').textContent='공유 일정을 확인하지 못했습니다. 연결과 로그인 상태를 확인한 뒤 다시 시도해 주세요.';}}
   finally{if(version===epoch&&sequence===lookupSequence){q('lookup-submit').disabled=false;q('lookup-refresh').disabled=!lookupEmail;}}
  }
