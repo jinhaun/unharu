@@ -78,6 +78,17 @@
  const cloud=()=>window.DAYFLOW_SUPABASE_CLIENT||null;
  const ACCOUNT_FIELD='unharu_shared_favorites';
  const cacheLocal=next=>{try{localStorage.setItem(key(),JSON.stringify(next));}catch{}};
+ const syncedKey=()=>'unharu-shared-favorites-synced:'+owner;
+ const backupKey=()=>'unharu-shared-favorites-backup:'+owner;
+ const synced=()=>{try{return localStorage.getItem(syncedKey())==='1';}catch{return false;}};
+ const markSynced=()=>{try{localStorage.setItem(syncedKey(),'1');}catch{}};
+ // 이 브라우저에 남아 있는 모든 즐겨찾기: 지금 목록 + 예전 형식(v1) + 보관본. 읽을 수 없는 것은 건너뜁니다.
+ function browserFavorites(){
+  const all=[...values];
+  const read=(storageKey,legacy)=>{try{const raw=localStorage.getItem(storageKey);if(raw!==null)for(const entry of parse(JSON.parse(raw),legacy))if(!all.some(value=>value.email===entry.email))all.push(entry);}catch{}};
+  read(legacyKey(),true);read(backupKey(),false);
+  return all;
+ }
  // 계정에 저장된 목록. 아직 한 번도 저장한 적이 없으면 null.
  async function accountList(who){
   const {data,error}=await cloud().auth.getUser();
@@ -93,10 +104,19 @@
   const who=owner;
   if(!cloud()||!who||!readable)return;
   try{
-   const remote=await accountList(who);
+   let remote=await accountList(who);
    if(who!==owner||who!==api.account())return;
-   // 처음 한 번은 이 브라우저에 있던 즐겨찾기를 계정으로 옮깁니다.
-   if(remote===null){if(values.length)await saveAccount(values);return;}
+   // 이 브라우저가 계정과 처음 맞출 때는 계정 목록으로 덮어쓰지 않고,
+   // 이 브라우저에만 있던 즐겨찾기(예전 형식·보관본 포함)를 계정 목록에 더합니다.
+   if(!synced()){
+    const base=remote??[];
+    const missing=browserFavorites().filter(entry=>!base.some(value=>value.email===entry.email));
+    if(missing.length){remote=[...base,...missing].slice(0,20);await saveAccount(remote);if(who!==owner)return;}
+    markSynced();
+   }
+   if(remote===null)return;
+   // 이 브라우저 목록에서 빠지게 될 즐겨찾기는 만일을 위해 따로 보관해 둡니다.
+   if(values.some(entry=>!remote.some(value=>value.email===entry.email)))try{localStorage.setItem(backupKey(),JSON.stringify(values));}catch{}
    values=remote;cacheLocal(remote);nickname.value=currentEntry()?.name||nickname.value;render();
   }catch{}
  }
@@ -108,11 +128,15 @@
   note('내 계정에 저장하고 있습니다…');
   (async()=>{
    try{
-    const next=op((await accountList(who))??values);
+    let base=(await accountList(who))??[];
+    // 아직 계정과 맞춘 적 없는 브라우저라면 이 브라우저의 즐겨찾기도 함께 넣어, 덮어써서 잃지 않게 합니다.
+    if(!synced())base=[...base,...browserFavorites().filter(entry=>!base.some(value=>value.email===entry.email))].slice(0,20);
+    const next=op(base);
     if(who!==owner)return;
     if(next.length>20){note(LIMIT,true);render();return;}
     await saveAccount(next);
     if(who!==owner)return;
+    markSynced();
     values=next;cacheLocal(next);note(message);render();
    }catch{if(who===owner){note('즐겨찾기를 계정에 저장하지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.',true);render();}}
   })();

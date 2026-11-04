@@ -89,3 +89,28 @@ test('a lookup that shows schedules tells the favorites list which email was vie
  const sharing=fs.readFileSync(new URL('../assets/email-sharing.js',import.meta.url),'utf8');
  assert.match(sharing,/if\(count&&typeof CustomEvent==='function'\)window\.dispatchEvent\?\.\(new CustomEvent\('dayflow-shared-lookup-found',\{detail:\{email:clean,count\}\}\)\);/);
 });
+test('when the computer saved first, the phone-only 누나 favorite is merged in, not overwritten',async()=>{
+ const acct=account();
+ const pc=await device(acct);
+ await pc.viewed('friend@gmail.com');                       // 컴퓨터가 먼저 계정 목록을 만듦
+ assert.deepEqual(names(acct.meta),['friend@gmail.com']);
+ const phoneStore=new Map([['unharu-shared-favorites-v2:me',JSON.stringify([{email:'sister@gmail.com',name:'누나'}])]]);
+ const phone=await device(acct,phoneStore);                 // 휴대폰에만 있던 누나
+ assert.deepEqual(names(acct.meta),['friend@gmail.com','누나']);
+ assert.deepEqual(phone.emails(),['friend@gmail.com','누나']);
+ await pc.comeBack();
+ assert.deepEqual(pc.emails(),['friend@gmail.com','누나']);
+});
+test('an old-format favorite and a kept copy in this browser are also brought into the account',async()=>{
+ const acct=account({unharu_shared_favorites:[{email:'a@gmail.com',name:'A'}]});
+ const store=new Map([['unharu-shared-favorites-v1:me',JSON.stringify(['old@gmail.com'])],['unharu-shared-favorites-backup:me',JSON.stringify([{email:'kept@gmail.com',name:'보관'}])]]);
+ await device(acct,store);
+ assert.deepEqual(names(acct.meta),['A','old@gmail.com','보관']);
+});
+test('a lookup that auto-saves before the first merge still keeps this browser’s favorites',async()=>{
+ const acct=account({unharu_shared_favorites:[{email:'friend@gmail.com',name:''}]});
+ const store=new Map([['unharu-shared-favorites-v2:me',JSON.stringify([{email:'sister@gmail.com',name:'누나'}])],['unharu-shared-favorites-synced:me','']]);
+ const phone=await device(acct,store);
+ await phone.viewed('new@gmail.com');
+ assert.deepEqual(names(acct.meta).sort(),['friend@gmail.com','new@gmail.com','누나'].sort());
+});
