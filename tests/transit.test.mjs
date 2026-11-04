@@ -67,9 +67,8 @@ test('existing records, auth source, configuration and storage keys preserved',(
   }
   assert.equal(readFileSync(new URL('../assets/supabase-config.js',import.meta.url),'utf8'),readFileSync(new URL('./baselines/v35/supabase-config.js',import.meta.url),'utf8'));
   const auth=readFileSync(new URL('../assets/dayflow-auth.js',import.meta.url),'utf8');
-  const previousAuth=readFileSync(new URL('./baselines/v43/dayflow-auth.js',import.meta.url),'utf8');
-  // Only the explicit flush hook and removal of the old eight-favorite truncation may differ.
-  const withoutHook=auth.replace(/  window.DAYFLOW_CLOUD = \{[\s\S]*?\n  \};\n/,'');
-  assert.equal(withoutHook.replaceAll('나다운하루','운하루').replaceAll('\r\n','\n'),previousAuth.replace('.slice(0,8)','').replace('.slice(0, 8)','').replaceAll('\r\n','\n'));
+  // 2026-11-04: 여러 기기 기록 합치기(v77) 이후로는 그 버전과 같아야 합니다.
+  const previousAuth=readFileSync(new URL('./baselines/v77/dayflow-auth.js',import.meta.url),'utf8');
+  assert.equal(auth.replaceAll('나다운하루','운하루').replaceAll('\r\n','\n'),previousAuth.replaceAll('\r\n','\n'));
   for(const match of current.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
 });

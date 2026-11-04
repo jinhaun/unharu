@@ -2220,6 +2220,7 @@
           if (!confirm(`“${route.origin} → ${route.destination}” 저장 경로를 삭제할까요?`)) return;
           const previous=savedTransitRoutes;
           savedTransitRoutes = savedTransitRoutes.filter((entry) => entry.id !== route.id);
+          window.DAYFLOW_CLOUD?.markDeleted?.('routes', [route.id]);
           if(!persistSavedTransitRoutes('저장한 경로를 삭제했습니다.'))savedTransitRoutes=previous;
         });
         row.append(useButton,reverseButton,deleteButton);
@@ -2361,6 +2362,7 @@
       try {
         result=window.DAYFLOW_COMMUTE?.plan(item) || {items:[...items,item],saved:item,merged:false};
         items=result.items;
+        if (typeof markRemovedItems === 'function') markRemovedItems(previousItems);
         persist(result.merged ? `출근과 퇴근을 한 건으로 결합했습니다. 합계 ${formatMoney(result.saved.amount)}` : `${result.saved.title} ${formatMoney(result.saved.amount)}을 저장했습니다.`);
       } catch(error) {
         items=previousItems;
@@ -2522,6 +2524,7 @@
       try {
         const result=window.DAYFLOW_COMMUTE_EDIT?.plan(item) || {items:items.map(entry=>entry.id===id?item:entry),merged:false};
         items=result.items;
+        if (typeof markRemovedItems === 'function') markRemovedItems(previousItems);
         persist(result.merged ? '기존 출근과 퇴근 기록을 한 건으로 합쳤습니다. 두 이동의 상세는 보존했습니다.' : '수정한 기록을 저장했습니다.');
       } catch(error) {
         items=previousItems;
@@ -2553,12 +2556,21 @@
 
     $('#weather-refresh').addEventListener('click',loadSeoulWeather);
 
+    // 계정에 저장할 때 '지운 기록'으로 처리할 것만 알려 줍니다(삭제 버튼, 출근·퇴근 합치기).
+    // 그 밖의 이유로 목록에서 빠진 기록은 계정에서 지우지 않습니다.
+    function markRemovedItems(before) {
+      const left = new Set(items.map((entry) => entry.id));
+      window.DAYFLOW_CLOUD?.markDeleted?.('items', before.filter((entry) => !left.has(entry.id)).map((entry) => entry.id));
+    }
+
     $('#delete-button').addEventListener('click', () => {
       const id=$('#edit-id').value;
       const item=items.find((entry)=>entry.id===id);
       if(!item) return;
       if(!confirm(`“${item.title}” 기록을 삭제할까요?`)) return;
+      const before=items;
       items=items.filter((entry)=>entry.id!==id);
+      if (typeof markRemovedItems === 'function') markRemovedItems(before);
       closeEdit();
       persist('기록을 삭제했습니다.');
       renderView();
@@ -2579,6 +2591,7 @@
   <script src="assets/expense-report.js"></script>
   <link rel="stylesheet" href="assets/expense-categories.css">
   <script src="assets/expense-categories.js"></script>
+  <script src="assets/cloud-merge.js"></script>
   <script src="assets/dayflow-auth.js"></script>
   <script src="assets/font-choice.js"></script>
   <link rel="stylesheet" href="assets/transit.css">

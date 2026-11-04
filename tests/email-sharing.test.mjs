@@ -47,7 +47,7 @@ test('account change during private save cannot publish for next account',async(
 });
 test('runtime loads only new email sharing UI, auth and private storage unchanged',()=>{
  const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.ok(html.includes('src="assets/email-sharing.js"'));assert.ok(!html.includes('src="assets/sharing.js"'));assert.ok(!html.includes('src="assets/inline-sharing.js"'));
- assert.equal(fs.readFileSync(new URL('../assets/dayflow-auth.js',import.meta.url),'utf8').replaceAll('나다운하루','운하루'),fs.readFileSync(new URL('./baselines/v44/dayflow-auth.js',import.meta.url),'utf8'));
+ assert.equal(fs.readFileSync(new URL('../assets/dayflow-auth.js',import.meta.url),'utf8').replaceAll('나다운하루','운하루'),fs.readFileSync(new URL('./baselines/v77/dayflow-auth.js',import.meta.url),'utf8'));
 });
 
 test('shared list groups this and next week, shows weekdays, excludes outside dates without mutating rows',async()=>{

@@ -21,6 +21,13 @@
   let saveTimer = null;
   let saveChain = Promise.resolve();
   let sessionGeneration = 0;
+  const merge = window.DAYFLOW_MERGE;
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+  // 이 기기가 마지막으로 계정과 맞춘 기록입니다. 저장하거나 새로 불러올 때 다른 기기의 기록과 합치는 기준이 됩니다.
+  let cloudBase = { items: [], routes: [] };
+  // 삭제 버튼 등으로 이 기기에서 직접 지운 기록입니다. 계정에 저장할 때 이 기록들만 지웁니다.
+  const deleted = { items: new Set(), routes: new Set() };
+  const canDelete = (kind) => (entry) => deleted[kind].has(entry?.id);
 
   function setAuthStatus(message, state = '') {
     authStatus.textContent = message;
@@ -88,31 +95,89 @@
     renderView();
   }
 
+  // 다른 기기(예: 휴대폰)에서 넣은 기록을 지키기 위해, 저장 직전에 계정의 최신 기록을 읽고
+  // 이 기기에서 바뀐 것만 그 위에 합쳐서 저장합니다.
   async function writeCloudSnapshot({ message = '내 계정에 저장됨' } = {}) {
     if (!client || !activeSession || !cloudReady) return false;
     const generation = sessionGeneration;
-    const snapshot = {
-      user_id: activeSession.user.id,
-      items: JSON.parse(JSON.stringify(items)),
-      saved_routes: JSON.parse(JSON.stringify(savedTransitRoutes)),
-      schema_version: 1,
-      updated_at: new Date().toISOString()
-    };
-    setSavedStatus('내 계정에 저장 중…');
-    const { error } = await client
-      .from('dayflow_user_state')
-      .upsert(snapshot, { onConflict: 'user_id' });
-    if (generation !== sessionGeneration || activeSession?.user.id !== snapshot.user_id) return false;
-    if (error) {
+    const userId = activeSession.user.id;
+    const stale = () => generation !== sessionGeneration || activeSession?.user.id !== userId;
+    const failed = (error) => {
       setSavedStatus('클라우드 저장 확인 필요');
       showToast('클라우드 저장 실패', '인터넷 연결 뒤 다시 저장해 주세요. 브라우저에는 기록이 남아 있습니다.');
       console.error('DAYFLOW cloud save failed', error);
       return false;
-    }
-    localStorage.setItem(cacheOwnerKey, activeSession.user.id);
+    };
+    const localItems = clone(items);
+    const localRoutes = clone(savedTransitRoutes);
+    const deleting = { items: [...deleted.items], routes: [...deleted.routes] };
+    setSavedStatus('내 계정에 저장 중…');
+    const { data: remote, error: readError } = await client
+      .from('dayflow_user_state')
+      .select('items, saved_routes')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (stale()) return false;
+    if (readError) return failed(readError);
+    const latest = remote ? keepSafeArrays(remote) : { items: [], savedRoutes: [] };
+    const mergedItems = merge.merge3(cloudBase.items, localItems, latest.items, canDelete('items'));
+    const mergedRoutes = merge.merge3(cloudBase.routes, localRoutes, latest.savedRoutes, canDelete('routes'));
+    const snapshot = {
+      user_id: userId,
+      items: mergedItems,
+      saved_routes: mergedRoutes,
+      schema_version: 1,
+      updated_at: new Date().toISOString()
+    };
+    const { error } = await client
+      .from('dayflow_user_state')
+      .upsert(snapshot, { onConflict: 'user_id' });
+    if (stale()) return false;
+    if (error) return failed(error);
+    for (const id of deleting.items) deleted.items.delete(id);
+    for (const id of deleting.routes) deleted.routes.delete(id);
+    cloudBase = { items: clone(mergedItems), routes: clone(mergedRoutes) };
+    // 저장하는 동안 이 기기에서 더 바꾼 내용은 그대로 두고, 다른 기기의 기록만 화면에 더합니다.
+    showMergedState(localItems, localRoutes, mergedItems, mergedRoutes, userId);
+    localStorage.setItem(cacheOwnerKey, userId);
     setSavedStatus(message);
     return true;
   }
+
+  function showMergedState(baseItems, baseRoutes, cloudItems, cloudRoutes, userId) {
+    const nextItems = merge.merge3(baseItems, items, cloudItems, canDelete('items'));
+    const nextRoutes = merge.merge3(baseRoutes, savedTransitRoutes, cloudRoutes, canDelete('routes'));
+    if (merge.sameEntries(nextItems, items) && merge.sameEntries(nextRoutes, savedTransitRoutes)) return false;
+    applySnapshot(nextItems, nextRoutes, userId);
+    return true;
+  }
+
+  // 화면으로 돌아오거나 1분마다 계정의 최신 기록을 불러와, 다른 기기에서 넣은 기록을 보여 줍니다.
+  function pullLatest() {
+    if (!client || !activeSession || !cloudReady) return saveChain;
+    const generation = sessionGeneration;
+    const userId = activeSession.user.id;
+    saveChain = saveChain.then(async () => {
+      if (generation !== sessionGeneration || !cloudReady) return;
+      const { data, error } = await client
+        .from('dayflow_user_state')
+        .select('items, saved_routes')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (generation !== sessionGeneration || activeSession?.user.id !== userId || error || !data) return;
+      const latest = keepSafeArrays(data);
+      const base = cloudBase;
+      cloudBase = { items: clone(latest.items), routes: clone(latest.savedRoutes) };
+      const changed = showMergedState(base.items, base.routes, latest.items, latest.savedRoutes, userId);
+      // 이 기기에만 있는 바뀐 내용이 남아 있으면 이어서 저장합니다.
+      if (!merge.sameEntries(items, latest.items) || !merge.sameEntries(savedTransitRoutes, latest.savedRoutes)) scheduleCloudSave();
+      else if (changed) setSavedStatus('다른 기기 기록을 불러옴');
+    }).catch((error) => console.error('DAYFLOW cloud refresh failed', error));
+    return saveChain;
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) pullLatest(); });
+  window.addEventListener('focus', () => pullLatest());
+  window.setInterval(() => { if (!document.hidden) pullLatest(); }, 60000);
 
   function scheduleCloudSave() {
     if (!cloudReady || !activeSession) return;
@@ -129,6 +194,11 @@
   const saveBrowserItems = persist;
   window.DAYFLOW_CLOUD = {
     ready:()=>Boolean(cloudReady&&activeSession),
+    // kind: 'items' 또는 'routes'. 삭제 버튼처럼 사용자가 직접 지운 기록만 알려 줍니다.
+    markDeleted(kind, ids){
+      if(!deleted[kind])return;
+      for(const id of ids||[])if(typeof id==='string'&&id)deleted[kind].add(id);
+    },
     async flush(){
       if(!cloudReady||!activeSession)return false;
       clearTimeout(saveTimer);
@@ -170,6 +240,9 @@
     const generation = sessionGeneration;
     activeSession = session;
     cloudReady = false;
+    cloudBase = { items: [], routes: [] };
+    deleted.items.clear();
+    deleted.routes.clear();
     setGateVisible(true);
     setAccount(session);
     setAuthStatus('내 나다운하루 기록을 불러오고 있습니다.');
@@ -197,6 +270,7 @@
     if (data) {
       const safe = keepSafeArrays(data);
       applySnapshot(safe.items, safe.savedRoutes, session.user.id);
+      cloudBase = { items: clone(safe.items), routes: clone(safe.savedRoutes) };
       cloudReady = true;
       setSavedStatus('내 계정에서 불러옴');
       setGateVisible(false);
