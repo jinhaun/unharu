@@ -1,7 +1,7 @@
 /* Pure, local calculations over the report's already bounded real records. */
 (function(root){
  'use strict';
- const categories=['식비','간식','카페','교통','쇼핑','구독','의료','기타'];
+ const categories=['식비','간식','카페','교통','쇼핑','구독','의료','게임','기타'];
  function validRow(r){
   if(!r||r.type!=='expense'||!Number.isSafeInteger(r.amount)||r.amount<=0||typeof r.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(r.date))return false;
   const d=new Date(r.date+'T12:00:00Z');

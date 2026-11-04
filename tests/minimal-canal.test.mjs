@@ -15,7 +15,7 @@ test('Existing assets stay unchanged except approved transit changes and snack c
  if(normalized==='assets/minimal-canal.css'){assert.equal(previousStyle(fs.readFileSync(path.join(root,file),'utf8')),fs.readFileSync(path.join(old,file),'utf8'));continue;}
  if(normalized==='assets/expense-report.js'){
   const report=fs.readFileSync(path.join(root,file),'utf8').replace(/^    window\.UnharuHabits\?\.render\(body,real,baseline,\{target,prior,days:range.targetEnd,priorDays:range.priorEnd,demo:mode==='demo'\}\);\r?\n/m,'');
-  assert.equal(report.replace("['식비','간식','카페','교통','쇼핑','구독','의료','기타']","['식비','카페','교통','쇼핑','구독','의료','기타']"),fs.readFileSync(path.join(old,file),'utf8'));continue;
+  assert.equal(report.replace("['식비','간식','카페','교통','쇼핑','구독','의료','게임','기타']","['식비','카페','교통','쇼핑','구독','의료','기타']"),fs.readFileSync(path.join(old,file),'utf8'));continue;
  }
  if(fs.statSync(path.join(old,file)).isDirectory())compare(file);else assert.ok(fs.readFileSync(path.join(root,file)).equals(fs.readFileSync(path.join(old,file))),file);}}
  for(const dir of ['assets','api','data'])compare(dir);

@@ -1,7 +1,7 @@
 /* Report calculations only read records. Demonstration data never enters the store. */
 (function () {
   'use strict';
-  const categories = ['식비','간식','카페','교통','쇼핑','구독','의료','기타'];
+  const categories = ['식비','간식','카페','교통','쇼핑','구독','의료','게임','기타'];
   const pad = n => String(n).padStart(2,'0');
   const localDate = (d = new Date()) => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
   function shiftMonth(month, delta) {

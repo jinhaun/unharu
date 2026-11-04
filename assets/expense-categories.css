@@ -26,6 +26,7 @@
 [data-category="쇼핑"] { --cat:#c2417a; }
 [data-category="구독"] { --cat:#7254c4; }
 [data-category="의료"] { --cat:#2b8f63; }
+[data-category="게임"] { --cat:#0f9db3; }
 [data-category="기타"] { --cat:#7d838c; }
 .category-summary-parts { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:4px 10px; margin-top:-2px; font-size:11px; font-weight:700; color:#5b3a28; }
 .category-summary-part { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }

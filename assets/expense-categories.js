@@ -1,7 +1,7 @@
 /* 소비 분석 화면의 "카테고리별 / 날짜별 소비" 요약. 저장된 기록을 읽기만 하고 바꾸지 않습니다. */
 (function () {
   'use strict';
-  const CATEGORIES = ['식비','간식','카페','교통','쇼핑','구독','의료','기타'];
+  const CATEGORIES = ['식비','간식','카페','교통','쇼핑','구독','의료','게임','기타'];
   const WEEKDAYS = ['일','월','화','수','목','금','토'];
   const validAmount = (value) => (typeof value === 'number' || typeof value === 'string' && value.trim() !== '') && Number.isSafeInteger(Number(value)) && Number(value) >= 0;
   const normalize = (raw) => CATEGORIES.includes(raw) ? raw : '기타';
