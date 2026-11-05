@@ -46,7 +46,7 @@
  });
  function renderResults(){
   const root=q('lookup-results'),range=core.twoWeekRange(),visible=core.inTwoWeeks(incoming,range);root.replaceChildren();
-  q('lookup-range').textContent=`이번 주 + 다음 주 · ${core.formatDate(range.start)} ~ ${core.formatDate(range.end)}\n오늘: ${core.formatDate(range.today)} · 대한민국 시간 · 월요일 시작`;
+  q('lookup-range').textContent=`오늘부터 다음 주까지 · ${core.formatDate(range.today)} ~ ${core.formatDate(range.end)}\n지난 날짜 일정은 보이지 않습니다 · 대한민국 시간 · 월요일 시작`;
   if(lookupEmail&&lookupLoaded){
    for(const [label,start,end] of [['이번 주',range.start,range.thisEnd],['다음 주',range.nextStart,range.end]]){
     const group=make('section');group.className='shared-week';group.append(make('h3',label),make('p',`${core.formatDate(start)} ~ ${core.formatDate(end)}`));
@@ -69,7 +69,7 @@
   try{const result=await client().rpc('dayflow_lookup_calendar',{p_email:clean});if(version!==epoch||sequence!==lookupSequence)return;if(result.error)throw result.error;
    incoming=(result.data||[]).map(core.normalize).filter(Boolean).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));lookupLoaded=true;renderResults();
    const count=core.inTwoWeeks(incoming).length;
-   q('lookup-status').textContent=count?`${clean} · 이번 주·다음 주 공유 일정 ${count}건`:'이번 주·다음 주에 조회할 공유 일정이 없습니다. 이메일·공유 여부·일정 날짜를 확인해 주세요.';
+   q('lookup-status').textContent=count?`${clean} · 오늘부터 다음 주까지 공유 일정 ${count}건`:'오늘부터 다음 주까지 조회할 공유 일정이 없습니다. 이메일·공유 여부·일정 날짜를 확인해 주세요.';
    // 공유 일정이 보였다면 즐겨찾기가 이 이메일을 계정에 기억할 수 있게 알립니다.
    if(count&&typeof CustomEvent==='function')window.dispatchEvent?.(new CustomEvent('dayflow-shared-lookup-found',{detail:{email:clean,count}}));
   }catch(error){if(version===epoch&&sequence===lookupSequence){incoming=[];renderResults();q('lookup-status').textContent='공유 일정을 확인하지 못했습니다. 연결과 로그인 상태를 확인한 뒤 다시 시도해 주세요.';}}

@@ -33,8 +33,9 @@
     const start=offsetDate(today,-((calendarDate(today).getUTCDay()+6)%7));
     return {today,start,thisEnd:offsetDate(start,6),nextStart:offsetDate(start,7),end:offsetDate(start,13)};
   }
+  // 공유 일정은 오늘부터 다음 주 일요일까지 보여 줍니다(이미 지난 날짜는 뺍니다).
   function inTwoWeeks(rows,range=twoWeekRange()){
-    return rows.filter(item=>calendarDate(item.date)&&item.date>=range.start&&item.date<=range.end);
+    return rows.filter(item=>calendarDate(item.date)&&item.date>=range.today&&item.date<=range.end);
   }
   root.UNHARU_SHARING_CORE={canShare,normalize,email,errorText,formatDate,twoWeekRange,inTwoWeeks};
 })(typeof window!=='undefined'?window:globalThis);

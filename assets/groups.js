@@ -88,7 +88,7 @@
    });row.append(btn);}q('groups-members').append(row);
   });
   q('groups-rotate').hidden=q('groups-delete').hidden=!data.is_owner;q('groups-leave').hidden=data.is_owner;
-  q('groups-range').textContent=`${dates.formatDate(events.start)} ~ ${dates.formatDate(events.end)} · 대한민국 시간 · 월요일 시작`;
+  q('groups-range').textContent=`오늘부터 다음 주까지 · ${dates.formatDate(dates.twoWeekRange().today)} ~ ${dates.formatDate(events.end)} · 지난 날짜 일정은 보이지 않습니다`;
   if(viewed.group!==data.id){viewed.group=data.id;viewed.hidden=new Set();}
   renderGroupEvents(data,events);
  }
@@ -103,7 +103,7 @@
   const list=people(data),personOf=e=>list.find(p=>p.id===e.owner_id)||{id:e.owner_id||e.nickname,name:e.nickname,color:'#5c6b73'};
   const root=q('groups-events');root.replaceChildren();
   const range=dates.twoWeekRange();
-  const all=(events.events||[]).filter(e=>e.date>=range.start&&e.date<=range.end).sort((a,b)=>`${a.date} ${a.time||'99'}`.localeCompare(`${b.date} ${b.time||'99'}`));
+  const all=(events.events||[]).filter(e=>e.date>=range.today&&e.date<=range.end).sort((a,b)=>`${a.date} ${a.time||'99'}`.localeCompare(`${b.date} ${b.time||'99'}`));
   // 보기 방식과 사람 고르기
   const tools=make('div');tools.className='group-view-tools';
   const modes=make('div');modes.className='group-view-modes';modes.setAttribute('role','group');modes.setAttribute('aria-label','그룹 일정 보기 방식');
@@ -137,7 +137,7 @@
     const rows=shown.filter(e=>personOf(e).id===p.id);
     const section=make('section');section.className='shared-week group-person-section';section.style.setProperty('--person',p.color);
     const head=make('h4');const dot=make('span');dot.className='group-person-dot';head.append(dot,make('span',`${p.name} · ${rows.length}건`));section.append(head);
-    if(!rows.length)section.append(make('p','이번 주·다음 주에 공유한 일정이 없습니다.'));
+    if(!rows.length)section.append(make('p','오늘부터 다음 주까지 공유한 일정이 없습니다.'));
     rows.forEach(e=>section.append(card(e,false)));root.append(section);
    }
    return;

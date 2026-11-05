@@ -15,7 +15,7 @@ function setup(store=new Map()){
  }
  const q=id=>{if(!nodes.has(id)){const el=new El();el.id=id;}return nodes.get(id);};
  const day=n=>new Date(Date.now()+9*3600000+n*86400000).toISOString().slice(0,10);
- const events=[[ME,'나','보고서',0,'10:00'],[SIS,'누나','치과',0,'14:30'],[MOM,'엄마','모임',1,'18:00'],[SIS,'누나','출장',2,''],[SIS,'누나','결혼식',8,'12:00']].map(([o,n,t,d,time])=>({owner_id:o,nickname:n,title:t,date:day(d),time}));
+ const events=[[ME,'나','어제 일정',-1,'09:00'],[ME,'나','보고서',0,'10:00'],[SIS,'누나','치과',0,'14:30'],[MOM,'엄마','모임',1,'18:00'],[SIS,'누나','출장',2,''],[SIS,'누나','결혼식',8,'12:00']].map(([o,n,t,d,time])=>({owner_id:o,nickname:n,title:t,date:day(d),time}));
  const data={list:{groups:[{id:G,name:'우리 가족',is_owner:true}]},event_groups:{group_ids:[]},
   detail:{id:G,name:'우리 가족',is_owner:true,members:[{id:ME,nickname:'하운',is_me:true,is_owner:true},{id:SIS,nickname:'누나'},{id:MOM,nickname:'엄마'}]},
   events:{events,start:day(0),end:day(13)}};
@@ -58,4 +58,10 @@ test('tapping a person hides or shows only that person’s schedules',async()=>{
  assert.equal(h.chips().find(c=>c.text.startsWith('누나')).attrs['aria-pressed'],'false');
  await h.chips().find(c=>c.text.startsWith('누나')).fire('click');
  assert.equal(h.cards().length,5);
+});
+test('past days are hidden from group schedules, even within this week',async()=>{
+ const h=setup();await h.show();
+ // 가짜 서버가 어제 일정을 보내도 화면에는 나오지 않아야 합니다.
+ const titles=h.cards().map(c=>c.children[2].textContent);
+ assert.ok(!titles.includes('어제 일정'));
 });

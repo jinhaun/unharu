@@ -50,20 +50,23 @@ test('runtime loads only new email sharing UI, auth and private storage unchange
  assert.equal(fs.readFileSync(new URL('../assets/dayflow-auth.js',import.meta.url),'utf8').replaceAll('나다운하루','운하루'),fs.readFileSync(new URL('./baselines/v77/dayflow-auth.js',import.meta.url),'utf8'));
 });
 
-test('shared list groups this and next week, shows weekdays, excludes outside dates without mutating rows',async()=>{
+test('shared list groups this and next week, shows weekdays, excludes past and outside dates without mutating rows',async()=>{
  const h=harness();await h.ready();
+ // 2026-11-05 요청: 이번 주라도 오늘보다 지난 날짜(10월 5일)는 보이지 않습니다. 시험 속 오늘은 10월 7일(수)입니다.
+ const today=h.window.UNHARU_SHARING_CORE.twoWeekRange().today;
+ assert.equal(today,'2026-10-07');
  const dates=['2026-10-04','2026-10-05','2026-10-11','2026-10-12','2026-10-18','2026-10-19',''];
  const rows=dates.map((date,i)=>({owner_id:'fixture-owner',event_id:String(i),date,time:'18:00',title:'가상 일정 '+i,notes:'공유 메모'}));
  const original=JSON.stringify(rows);h.rows(rows);await h.search('fixture@example.invalid');
  assert.equal(JSON.stringify(rows),original);
- assert.deepEqual(Array.from(h.window.DAYFLOW_SHARING.received(),r=>r.date),dates.slice(1,5));
+ assert.deepEqual(Array.from(h.window.DAYFLOW_SHARING.received(),r=>r.date),dates.slice(2,5));
  const text=el=>[el.textContent||'',...el.children.map(text)].join(' ');
- assert.match(text(h.q('lookup-results')),/2026년 10월 5일 \(월\) · 18:00/);
+ assert.match(text(h.q('lookup-results')),/2026년 10월 11일 \(일\) · 18:00/);
  assert.match(text(h.q('lookup-results')),/2026년 10월 18일 \(일\) · 18:00/);
- assert.doesNotMatch(text(h.q('lookup-results')),/가상 일정 (0|5|6)/);
+ assert.doesNotMatch(text(h.q('lookup-results')),/가상 일정 (0|1|5|6)/);
  assert.equal(h.q('lookup-results').children.length,2);
  assert.match(h.q('lookup-range').textContent,/월요일 시작/);
- assert.match(h.q('lookup-status').textContent,/공유 일정 4건/);
+ assert.match(h.q('lookup-status').textContent,/공유 일정 3건/);
 });
 
 test('weekday formatting and Korean two-week boundaries include Sunday and roll Monday across years',()=>{
