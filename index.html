@@ -1160,6 +1160,7 @@
     let showCertificates = false;
     let watchedDistricts = loadWeatherDistrictFilter();
     let latestWeatherResults = null;
+    let latestKmaWeather = null;
     function selectedCertificateItems() {
       const selected = new Set(window.DAYFLOW_CERT_SETTINGS?.selected() || []);
       return certificateItems.filter(item => selected.has(item.certificateId));
@@ -1311,7 +1312,8 @@
     function saveWeatherDistrictFilter() {
       localStorage.setItem(WEATHER_FILTER_KEY, JSON.stringify(watchedDistricts));
       $('#weather-filter-summary').textContent = `${watchedDistricts.length}개 구 선택됨`;
-      if (latestWeatherResults) renderSeoulWeather(latestWeatherResults);
+      if (latestKmaWeather) renderKmaWeather(latestKmaWeather.now, latestKmaWeather.today, { fetchedAt:latestKmaWeather.fetchedAt });
+      else if (latestWeatherResults) renderSeoulWeather(latestWeatherResults);
     }
 
     function renderWeatherDistrictFilter() {
@@ -1327,16 +1329,103 @@
       $('#weather-filter-summary').textContent = `${watchedDistricts.length}개 구 선택됨`;
     }
 
-    function rainForecastForDistrict(data, districtName) {
+    // 비 표시 기준: 지금 이후 시간 중 강수확률 30% 이상이거나 실제 비 예보가 있는 시간만 봅니다(이미 지난 비는 빼요).
+    const RAIN_PROBABILITY_MIN = 30;
+    function kstNowParts(now = Date.now()) {
+      const d = new Date(now + 9 * 3600000);
+      return { date:`${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`, hour:`${pad(d.getUTCHours())}:00`, minute:d.getUTCMinutes() };
+    }
+    // hours: [{ time:'HH:MM', pop, wet }] — 지금 이후의 시간만 넘겨 줍니다.
+    function rainChipFor(districtName, hours) {
+      const rainy = hours.filter((hour) => Number(hour.pop || 0) >= RAIN_PROBABILITY_MIN || hour.wet);
+      if (!rainy.length) return null;
+      const maxProbability = Math.max(...rainy.map((hour) => Number(hour.pop || 0)));
+      const firstHour = rainy[0].time, lastHour = rainy.at(-1).time;
+      return { name:districtName, maxProbability, time:firstHour === lastHour ? firstHour : `${firstHour}~${lastHour}` };
+    }
+
+    function rainForecastForDistrict(data, districtName, now = Date.now()) {
       const times = data?.hourly?.time || [];
       const probabilities = data?.hourly?.precipitation_probability || [];
       const amounts = data?.hourly?.precipitation || [];
-      const rainyIndexes = times.map((_,index) => index).filter((index) => Number(probabilities[index] || 0) > 0 || Number(amounts[index] || 0) > 0);
-      if (!rainyIndexes.length) return null;
-      const maxProbability = Math.max(...rainyIndexes.map((index) => Number(probabilities[index] || 0)));
-      const firstHour = times[rainyIndexes[0]]?.slice(11,16) || '';
-      const lastHour = times[rainyIndexes.at(-1)]?.slice(11,16) || firstHour;
-      return { name:districtName, maxProbability, time:firstHour === lastHour ? firstHour : `${firstHour}~${lastHour}` };
+      const { date, hour } = kstNowParts(now);
+      const from = `${date}T${hour}`;
+      const hours = times.map((time,index) => ({ time:time.slice(11,16), pop:probabilities[index], wet:Number(amounts[index] || 0) >= 0.1, at:time }))
+        .filter((entry) => entry.at >= from);
+      return rainChipFor(districtName, hours);
+    }
+
+    function renderRainDistricts(chips) {
+      const rainyDistricts = chips.filter(Boolean).filter((district) => watchedDistricts.includes(district.name)).sort((a,b) => b.maxProbability - a.maxProbability || a.name.localeCompare(b.name,'ko'));
+      const list = $('#rain-district-list');
+      list.innerHTML = '';
+      if (!rainyDistricts.length) {
+        list.innerHTML = '<span class="weather-empty">지금부터 오늘 비 소식이 있는 구가 없습니다.</span>';
+      } else {
+        rainyDistricts.forEach((district) => {
+          const chip = document.createElement('span');
+          chip.className = 'weather-chip';
+          chip.textContent = district.now
+            ? `${district.name} · 지금 비${district.later ? ` · 이후 최고 ${district.later.maxProbability}% · ${district.later.time}` : ''}`
+            : `${district.name} · 최고 ${district.maxProbability}% · ${district.time}`;
+          list.appendChild(chip);
+        });
+      }
+      $('#rain-district-count').textContent = rainyDistricts.length ? `${rainyDistricts.length}개 구 표시 · ${watchedDistricts.length}개 구 선택` : (watchedDistricts.length ? '선택한 구에 비 예보 없음' : '선택한 구 없음');
+    }
+
+    // 기상청 강수형태(PTY)·하늘상태(SKY) 코드를 글자로 바꿉니다.
+    function kmaWeatherLabel(pty, sky) {
+      const rain = { 1:'비', 2:'비 또는 눈', 3:'눈', 4:'소나기', 5:'빗방울', 6:'빗방울·눈날림', 7:'눈날림' }[Number(pty)];
+      if (rain) return rain;
+      return { 1:'맑음', 3:'구름 많음', 4:'흐림' }[Number(sky)] || '날씨 확인';
+    }
+
+    // 기상청 자료: now = 초단기실황(지금 실제 관측), today = 단기예보(오늘 최고·최저와 시간별 예보).
+    function renderKmaWeather(now, today, { stale=false, fetchedAt=Date.now() }={}) {
+      const nowBy = new Map(now.districts.map((district) => [district.name, district]));
+      const todayBy = new Map(today.districts.map((district) => [district.name, district]));
+      const center = nowBy.get('종로구'), centerToday = todayBy.get('종로구');
+      const temp = Number(center?.temp);
+      if (!Number.isFinite(temp)) throw new Error('기상청 현재 기온 값이 없습니다.');
+      latestKmaWeather = { now, today, fetchedAt };
+      const { hour } = kstNowParts();
+      const upcoming = (district) => (district?.hours || []).filter((entry) => entry.time >= hour);
+      const thisHour = upcoming(centerToday)[0];
+      // 이미 관측된 기온이 예보 최고·최저를 넘으면 관측값을 씁니다.
+      const max = Math.round(Math.max(Number.isFinite(Number(centerToday?.max)) ? Number(centerToday.max) : temp, temp));
+      const min = Math.round(Math.min(Number.isFinite(Number(centerToday?.min)) ? Number(centerToday.min) : temp, temp));
+      $('#weather-temperature').textContent = `${Math.round(temp)}°`;
+      $('#weather-condition').textContent = kmaWeatherLabel(center.pty, thisHour?.sky);
+      $('#weather-range').textContent = `최고 ${max}° · 최저 ${min}° · 기상청 서울(종로) 기준`;
+      renderRainDistricts(SEOUL_DISTRICTS.map(([name]) => {
+        const hours = upcoming(todayBy.get(name)).map((entry) => ({ time:entry.time, pop:entry.pop, wet:Number(entry.pty) > 0 }));
+        // 지금 실제로 비가 오는 구는 '지금 비'로, 이후 비 예보가 있으면 함께 보여 줍니다.
+        if (Number(nowBy.get(name)?.pty) > 0) return { name, now:true, maxProbability:100, later:rainChipFor(name, hours.filter((entry) => entry.time > hour)) };
+        return rainChipFor(name, hours);
+      }));
+      const checkedAt = new Date(fetchedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+      const observed = `${now.base.time.slice(0,2)}:${now.base.time.slice(2)}`;
+      $('#weather-status').textContent = stale
+        ? `연결이 원활하지 않아 ${checkedAt}에 저장한 기상청 자료를 표시합니다.`
+        : `기상청 ${observed} 관측 · 지금부터 비 올 확률이 ${RAIN_PROBABILITY_MIN}% 이상인 구만 표시했습니다. ${checkedAt} 확인`;
+      $('#seoul-weather').dataset.state = stale ? 'stale' : 'ready';
+    }
+
+    // 기상청 자료를 먼저 시도하고, 키가 없거나 응답이 없으면 false를 돌려 Open-Meteo로 넘어갑니다.
+    async function loadKmaWeather() {
+      try {
+        const replies = await Promise.all(['now','today'].map((part) => fetch(`/api/kma-weather?part=${part}`,{headers:{Accept:'application/json'}})));
+        if (replies.some((reply) => !reply.ok)) return false;
+        const [now, today] = await Promise.all(replies.map((reply) => reply.json()));
+        if (!now?.ok || !today?.ok) return false;
+        const fetchedAt = Date.now();
+        renderKmaWeather(now, today, { fetchedAt });
+        localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ fetchedAt, kma:{ now, today } }));
+        return true;
+      } catch (error) {
+        return false;
+      }
     }
 
     function renderSeoulWeather(rawResults, { stale=false, fetchedAt=Date.now() }={}) {
@@ -1352,22 +1441,10 @@
       $('#weather-condition').textContent = weatherCodeLabel(Number(center?.current?.weather_code));
       $('#weather-range').textContent = `최고 ${maxTemperature}° · 최저 ${minTemperature}° · 구청 인근 대표 좌표 기준`;
 
-      const rainyDistricts = results.map((data,index) => rainForecastForDistrict(data,SEOUL_DISTRICTS[index][0])).filter(Boolean).filter((district) => watchedDistricts.includes(district.name)).sort((a,b) => b.maxProbability - a.maxProbability || a.name.localeCompare(b.name,'ko'));
-      const list = $('#rain-district-list');
-      list.innerHTML = '';
-      if (!rainyDistricts.length) {
-        list.innerHTML = '<span class="weather-empty">오늘 비 소식이 있는 구가 없습니다.</span>';
-      } else {
-        rainyDistricts.forEach((district) => {
-          const chip = document.createElement('span');
-          chip.className = 'weather-chip';
-          chip.textContent = `${district.name} · 최고 ${district.maxProbability}% · ${district.time}`;
-          list.appendChild(chip);
-        });
-      }
-      $('#rain-district-count').textContent = rainyDistricts.length ? `${rainyDistricts.length}개 구 표시 · ${watchedDistricts.length}개 구 선택` : (watchedDistricts.length ? '선택한 구에 비 예보 없음' : '선택한 구 없음');
+      latestKmaWeather = null;
+      renderRainDistricts(results.map((data,index) => rainForecastForDistrict(data,SEOUL_DISTRICTS[index][0])));
       const checkedAt = new Date(fetchedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-      $('#weather-status').textContent = stale ? `연결이 원활하지 않아 ${checkedAt}에 저장한 자료를 표시합니다.` : `오늘 강수확률이 1% 이상인 구를 모두 표시했습니다. ${checkedAt} 확인 · Open-Meteo`;
+      $('#weather-status').textContent = stale ? `연결이 원활하지 않아 ${checkedAt}에 저장한 자료를 표시합니다.` : `지금부터 비 올 확률이 ${RAIN_PROBABILITY_MIN}% 이상인 구만 표시했습니다. ${checkedAt} 확인 · Open-Meteo(기상청 연결 전 임시 자료)`;
       $('#seoul-weather').dataset.state = stale ? 'stale' : 'ready';
     }
 
@@ -1389,7 +1466,8 @@
       let cached = null;
       try {
         cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || 'null');
-        if (cached?.results) renderSeoulWeather(cached.results,{stale:true,fetchedAt:cached.fetchedAt});
+        if (cached?.kma) renderKmaWeather(cached.kma.now, cached.kma.today, { stale:true, fetchedAt:cached.fetchedAt });
+        else if (cached?.results) renderSeoulWeather(cached.results,{stale:true,fetchedAt:cached.fetchedAt});
       } catch (error) {
         cached = null;
       }
@@ -1398,6 +1476,11 @@
       if (!cached) {
         weatherCard.dataset.state = 'loading';
         $('#weather-status').textContent = '서울 25개 구의 오늘 날씨를 확인하고 있습니다.';
+      }
+      if (await loadKmaWeather()) {
+        refreshButton.disabled = false;
+        refreshButton.textContent = '날씨 새로고침';
+        return;
       }
       try {
         const latitude = SEOUL_DISTRICTS.map((district) => district[1]).join(',');
