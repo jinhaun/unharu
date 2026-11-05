@@ -79,8 +79,9 @@
  function renderGroup(data,events){
   detail=data;q('groups-detail').hidden=false;q('groups-name-view').textContent=data.name;
   q('groups-members').replaceChildren();
-  data.members.forEach(member=>{
+  data.members.forEach((member,index)=>{
    const row=make('p',member.nickname+(member.is_me?' (나)':'')+(member.is_owner?' · 그룹장':''));
+   const dot=make('span');dot.className='group-person-dot';dot.style.setProperty('--person',PERSON_COLORS[index%PERSON_COLORS.length]);dot.setAttribute('aria-hidden','true');row.prepend(dot,' ');
    if(data.is_owner&&!member.is_owner){const btn=make('button','내보내기');btn.type='button';btn.setAttribute('aria-label',member.nickname+' 내보내기');btn.addEventListener('click',()=>{
     if(!confirm(`${member.nickname} 님을 내보낼까요? 그 사람의 그룹 공유도 종료하고 기존 초대 코드를 무효화합니다.`))return;
     run(async version=>{const result=await rpc('remove',{group_id:active,member_id:member.id},version);invite(result.code);await refreshDetail(version);note('구성원을 내보내고 초대 코드를 재발급했습니다.');});
@@ -88,15 +89,64 @@
   });
   q('groups-rotate').hidden=q('groups-delete').hidden=!data.is_owner;q('groups-leave').hidden=data.is_owner;
   q('groups-range').textContent=`${dates.formatDate(events.start)} ~ ${dates.formatDate(events.end)} · 대한민국 시간 · 월요일 시작`;
+  if(viewed.group!==data.id){viewed.group=data.id;viewed.hidden=new Set();}
+  renderGroupEvents(data,events);
+ }
+ // 사람별 색·묶어 보기. 색은 그룹에 들어온 순서대로 정해져 같은 그룹에서는 늘 같은 색입니다.
+ const PERSON_COLORS=['#d9480f','#1c6fc4','#2b8a3e','#ae3ec9','#c77700','#0c8599','#c2255c','#5f3dc4','#6b7c18','#8a5a2b'];
+ const VIEW_KEY='unharu-group-view-v1';
+ const viewed={group:'',hidden:new Set(),mode:(()=>{try{return localStorage.getItem(VIEW_KEY)==='person'?'person':'date';}catch{return 'date';}})()};
+ function people(data){
+  return data.members.map((m,i)=>({id:m.id,name:m.nickname+(m.is_me?' (나)':''),color:PERSON_COLORS[i%PERSON_COLORS.length]}));
+ }
+ function renderGroupEvents(data,events){
+  const list=people(data),personOf=e=>list.find(p=>p.id===e.owner_id)||{id:e.owner_id||e.nickname,name:e.nickname,color:'#5c6b73'};
   const root=q('groups-events');root.replaceChildren();
   const range=dates.twoWeekRange();
+  const all=(events.events||[]).filter(e=>e.date>=range.start&&e.date<=range.end).sort((a,b)=>`${a.date} ${a.time||'99'}`.localeCompare(`${b.date} ${b.time||'99'}`));
+  // 보기 방식과 사람 고르기
+  const tools=make('div');tools.className='group-view-tools';
+  const modes=make('div');modes.className='group-view-modes';modes.setAttribute('role','group');modes.setAttribute('aria-label','그룹 일정 보기 방식');
+  for(const [mode,label] of [['date','날짜순'],['person','사람별']]){
+   const b=make('button',label);b.type='button';b.setAttribute('aria-pressed',String(viewed.mode===mode));
+   b.addEventListener('click',()=>{viewed.mode=mode;try{localStorage.setItem(VIEW_KEY,mode);}catch{}renderGroupEvents(data,events);});modes.append(b);
+  }
+  const chips=make('div');chips.className='group-people';chips.setAttribute('role','group');chips.setAttribute('aria-label','볼 사람 고르기 (누르면 켜고 끔)');
+  list.forEach(p=>{
+   const count=all.filter(e=>personOf(e).id===p.id).length;
+   const b=make('button');b.type='button';b.className='group-person';b.style.setProperty('--person',p.color);
+   b.setAttribute('aria-pressed',String(!viewed.hidden.has(p.id)));b.setAttribute('aria-label',`${p.name} 일정 ${count}건 ${viewed.hidden.has(p.id)?'보이기':'숨기기'}`);
+   const dot=make('span');dot.className='group-person-dot';b.append(dot,make('span',`${p.name} ${count}`));
+   b.addEventListener('click',()=>{viewed.hidden.has(p.id)?viewed.hidden.delete(p.id):viewed.hidden.add(p.id);renderGroupEvents(data,events);});chips.append(b);
+  });
+  tools.append(modes,chips);root.append(tools);
+  const shown=all.filter(e=>!viewed.hidden.has(personOf(e).id));
+  const card=(e,withName)=>{
+   const p=personOf(e),el=make('article');el.className='shared-card group-card';el.style.setProperty('--person',p.color);
+   const when=e.time?(e.endTime?e.time+'–'+e.endTime:e.time+(e.endTimeUnknown?' · 종료 잘 모름':'')):'시간 미정';
+   const who=make('small');who.className='group-card-who';
+   if(withName){const dot=make('span');dot.className='group-person-dot';who.append(dot,make('span',p.name));}
+   else who.append(make('span','읽기 전용'));
+   el.append(who,make('p',`${dates.formatDate(e.date)} · ${when}`),make('h4',e.title));
+   if(e.notes)el.append(make('p',e.notes));
+   return el;
+  };
+  if(viewed.mode==='person'){
+   for(const p of list){
+    if(viewed.hidden.has(p.id))continue;
+    const rows=shown.filter(e=>personOf(e).id===p.id);
+    const section=make('section');section.className='shared-week group-person-section';section.style.setProperty('--person',p.color);
+    const head=make('h4');const dot=make('span');dot.className='group-person-dot';head.append(dot,make('span',`${p.name} · ${rows.length}건`));section.append(head);
+    if(!rows.length)section.append(make('p','이번 주·다음 주에 공유한 일정이 없습니다.'));
+    rows.forEach(e=>section.append(card(e,false)));root.append(section);
+   }
+   return;
+  }
   for(const [title,start,end] of [['이번 주',range.start,range.thisEnd],['다음 주',range.nextStart,range.end]]){
    const section=make('section');section.className='shared-week';section.append(make('h4',title));
-   const rows=(events.events||[]).filter(e=>e.date>=start&&e.date<=end);
+   const rows=shown.filter(e=>e.date>=start&&e.date<=end);
    if(!rows.length)section.append(make('p','공유된 일정이 없습니다.'));
-   rows.forEach(e=>{const card=make('article');card.className='shared-card';
-    const when=e.time?(e.endTime?e.time+'–'+e.endTime:e.time+(e.endTimeUnknown?' · 종료 잘 모름':'')):'시간 미정';
-    card.append(make('small',e.nickname+' · 읽기 전용'),make('p',`${dates.formatDate(e.date)} · ${when}`),make('h4',e.title),make('p',e.notes||'메모 없음'));section.append(card);});root.append(section);
+   rows.forEach(e=>section.append(card(e,true)));root.append(section);
   }
  }
  async function refreshDetail(version){
