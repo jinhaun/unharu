@@ -12,7 +12,8 @@
  const actions=document.createElement('div');actions.className='date-entry-switch';actions.setAttribute('role','group');actions.setAttribute('aria-label','선택한 날짜 작업');
  const add=document.createElement('button');add.type='button';add.id='day-entry-add';add.textContent='일정 추가';
  const view=document.createElement('button');view.type='button';view.id='day-entry-records';view.textContent='이날 기록 보기';
- actions.append(add,view);q('day-details-summary').after(actions);home.append(capture);
+ const photos=document.createElement('button');photos.type='button';photos.id='day-entry-photos';photos.textContent='이날 사진';photos.setAttribute('aria-controls','day-photos');
+ actions.append(add,view,photos);q('day-details-summary').after(actions);home.append(capture);
  capture.classList.add('date-entry-capture');
  const hint=document.createElement('p');hint.className='calendar-entry-hint';hint.textContent='날짜를 누르면 그날의 일정을 입력하거나 기록을 확인할 수 있습니다.';
  document.querySelector('.calendar-head').after(hint);
@@ -22,11 +23,14 @@
  function show(next){
   mode=next;capture.hidden=next!=='add';records.hidden=next!=='records';
   add.setAttribute('aria-pressed',String(next==='add'));view.setAttribute('aria-pressed',String(next==='records'));
+  photos.setAttribute('aria-pressed',String(next==='photos'));
+  if(next==='photos')window.DAYFLOW_PHOTOS?.open(selected);else window.DAYFLOW_PHOTOS?.close();
  }
  add.addEventListener('click',()=>{q('quick-date').value=selected;show('add');q('quick-input').focus();});
  view.addEventListener('click',()=>show('records'));
+ photos.addEventListener('click',()=>show('photos'));
  fold.addEventListener('click',()=>{if(dialog.open)return;expanded=!expanded;homeView();if(expanded)q('quick-input').focus();});
- dialog.addEventListener('close',()=>{home.append(capture);fold.disabled=false;homeView();});
+ dialog.addEventListener('close',()=>{window.DAYFLOW_PHOTOS?.close();home.append(capture);fold.disabled=false;homeView();});
  shortcut.addEventListener('click',()=>openDayDetails(window.UNHARU_SHARING_CORE?.twoWeekRange().today||TODAY));
  q('quick-date').addEventListener('change',()=>{
   if(!dialog.open)return;

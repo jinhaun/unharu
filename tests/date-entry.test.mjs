@@ -38,3 +38,20 @@ test('home input starts collapsed, folding keeps draft, and modal close restores
  h.q('day-details-dialog').open=false;h.q('day-details-dialog').events.close();
  assert.equal(h.q('capture-fold').disabled,false);assert.equal(h.q('.capture').hidden,false);assert.equal(h.q('quick-input').value,'보존할 초안');
 });
+
+test('photo tab opens the selected date and keeps the unsaved schedule draft',()=>{
+ const h=harness(),photos=[];h.window.DAYFLOW_PHOTOS={open:key=>photos.push(key),close:()=>photos.push('closed')};
+ h.q('quick-input').value='사진을 보아도 남길 일정 초안';h.ctx.openDayDetails('2026-11-12');
+ h.q('day-entry-photos').events.click();
+ assert.equal(photos.at(-1),'2026-11-12');assert.equal(h.q('.capture').hidden,true);assert.equal(h.q('day-details-list').hidden,true);
+ assert.equal(h.q('day-entry-photos').attrs['aria-pressed'],'true');
+ h.q('day-entry-add').events.click();assert.equal(photos.at(-1),'closed');assert.equal(h.q('quick-input').value,'사진을 보아도 남길 일정 초안');
+});
+
+test('closing or changing a date disposes the previous photo panel',()=>{
+ const h=harness(),photos=[];h.window.DAYFLOW_PHOTOS={open:key=>photos.push(key),close:()=>photos.push('closed')};
+ h.ctx.openDayDetails('2026-11-12');h.q('day-entry-photos').events.click();
+ h.ctx.openDayDetails('2026-11-13');assert.equal(photos.at(-1),'closed');
+ h.q('day-entry-photos').events.click();assert.equal(photos.at(-1),'2026-11-13');
+ h.q('day-details-dialog').events.close();assert.equal(photos.at(-1),'closed');
+});
