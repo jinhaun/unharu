@@ -1,0 +1,25 @@
+.exchange-card { margin:12px 16px 0; padding:16px; color:#173238; border:1px solid #a8cfc8; border-radius:14px; background:linear-gradient(120deg,rgba(230,245,241,.97),rgba(255,250,235,.96)); box-shadow:var(--shadow); }
+.exchange-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.exchange-card h2 { margin:0; font-size:16px; }
+.exchange-card button,.exchange-card summary { min-height:44px; cursor:pointer; font:inherit; font-size:13px; }
+.exchange-card button { padding:8px 12px; border:1px solid #83aaa5; border-radius:8px; background:#fffdf8; color:#174e4d; }
+.exchange-card button:disabled { opacity:.6; cursor:wait; }
+.exchange-card button:active { background:#deeeea; }
+.exchange-card :focus-visible { outline:3px solid #087780; outline-offset:3px; }
+.exchange-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; margin:12px 0; }
+.exchange-item { min-width:0; padding:12px; border:1px solid #bed8d3; border-radius:10px; background:#fffdf8; }
+.exchange-item h3 { margin:0 0 7px; font-size:14px; }
+.exchange-item p { margin:4px 0; font-size:13px; line-height:1.5; }
+.exchange-item strong { display:block; font-size:22px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.exchange-item small { display:block; margin-top:6px; font-size:12px; color:#4a6562; }
+.exchange-card .exchange-note { margin:8px 0; font-size:12px; line-height:1.6; color:#4a6562; }
+.exchange-card[data-state="error"] #exchange-status { color:#8a332d; }
+.exchange-card details { border-top:1px solid #bed8d3; margin-top:12px; padding-top:4px; }
+.exchange-card summary { align-content:center; color:#174e4d; }
+.exchange-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:8px; margin:8px 0; }
+.exchange-options label { display:flex; align-items:center; gap:8px; min-height:44px; padding:4px 8px; background:#fffdf8; border:1px solid #bed8d3; border-radius:8px; font-size:13px; cursor:pointer; }
+.exchange-options input { flex:none; width:18px; height:18px; accent-color:#087780; }
+.exchange-actions { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+.exchange-card a { color:#174e4d; text-decoration:underline; }
+@media(max-width:760px){ .exchange-card { margin:12px 12px 0; padding:13px; } .exchange-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:350px){ .exchange-list { grid-template-columns:1fr; } }
